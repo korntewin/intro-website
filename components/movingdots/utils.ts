@@ -2,7 +2,7 @@
 const maxSpeed = 3; // Maximum speed of dots
 const minDist = 50; // Minimum distance to draw edge
 const maxDist = 200; // Maximum distance to draw edge
-const mouseRadius = 100; // Radius of mouse effect
+const mouseRadius = 200; // Radius of mouse effect
 const mouseForce = 1; // Force of mouse effect
 
 // Define a dot class
