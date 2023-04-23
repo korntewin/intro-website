@@ -1,6 +1,6 @@
 import Link from "next/link";
 
-const assetPrefix = "";
+const assetPrefix = "/intro-website";
 
 const NAV_ITEMS = [
     { text: "Home", href: `${assetPrefix}/` },

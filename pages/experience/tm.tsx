@@ -12,7 +12,7 @@ function TM() {
             <NavBar addClass="z-40 sticky top-0" />
             <div className="md:flex flex-row">
                 <SideBar ls={companies} />
-                <div className="px-2 py-5">
+                <div className="h-screen px-2 py-5">
                     WIP
                 </div>
             </div>
