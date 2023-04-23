@@ -1,8 +1,9 @@
-import { TEMPORARY_REDIRECT_STATUS } from "next/dist/shared/lib/constants";
+import { assetPrefix } from "@/pages";
 import Link from "next/link";
 
 
 const NAV_ITEMS = [
+    { text: "Home", href: `${assetPrefix}` },
     { text: "Working Experience", href: "/experience" },
     { text: "About Me", href: "/about" },
 ];
