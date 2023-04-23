@@ -1,9 +1,10 @@
 import CardList from "@/components/cardlist/cardlist.component";
 import NavBar from "@/components/navbar/v2/navbar.component";
+import { assetPrefix } from ".";
 
 const companies = [
-    { imgSrc: "/linkedin.png", name: "Linkedin", href: "https://www.linkedin.com/in/korntewin/", description: "You can follow my linkedin here", width: 100, height: 100 },
-    { imgSrc: "/github.png", name: "Github", href: "https://github.com/korntewin", description: "And you can follow my Github here", width: 100, height: 100 },
+    { imgSrc: `${assetPrefix}/linkedin.png`, name: "Linkedin", href: "https://www.linkedin.com/in/korntewin/", description: "You can follow my linkedin here", width: 100, height: 100 },
+    { imgSrc: `${assetPrefix}/github.png`, name: "Github", href: "https://github.com/korntewin", description: "And you can follow my Github here", width: 100, height: 100 },
 ]
 
 function About() {

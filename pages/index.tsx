@@ -4,12 +4,14 @@ import Navbar from '../components/navbar/v2/navbar.component';
 import MovingDots from '@/components/movingdots/movingdots.component';
 import CardList from '@/components/cardlist/cardlist.component';
 
+const assetPrefix = "/intro-website";
+
 const companies = [
-  { imgSrc: "/tm.png", name: "Thinking Machines", href: "/experience/tm", description: "Machine Learning Engineer", width: 200, height: 200 },
-  { imgSrc: "/kbtg.png", name: "KBTG", href: "/experience/kbtg", description: "Machine Learning Engineer", width: 90, height: 90 },
-  { imgSrc: "/blockfint.jpg", name: "Blockfint", href: "/experience/blockfint", description: "Business Analyst", width: 140, height: 90 },
-  { imgSrc: "/gpsc.png", name: "GPSC", href: "/experience/gpsc", description: "Power System Engineer", width: 180, height: 180 },
-  { imgSrc: "/cu.png", name: "CU", href: "/experience/cu", description: "Researcher", width: 90, height: 90 },
+  { imgSrc: `${assetPrefix}/tm.png`, name: "Thinking Machines", href: "/experience/tm", description: "Machine Learning Engineer", width: 200, height: 200 },
+  { imgSrc: `${assetPrefix}/kbtg.png`, name: "KBTG", href: "/experience/kbtg", description: "Machine Learning Engineer", width: 90, height: 90 },
+  { imgSrc: `${assetPrefix}/blockfint.jpg`, name: "Blockfint", href: "/experience/blockfint", description: "Business Analyst", width: 140, height: 90 },
+  { imgSrc: `${assetPrefix}/gpsc.png`, name: "GPSC", href: "/experience/gpsc", description: "Power System Engineer", width: 180, height: 180 },
+  { imgSrc: `${assetPrefix}/cu.png`, name: "CU", href: "/experience/cu", description: "Researcher", width: 90, height: 90 },
 ]
 
 export default function Home() {
@@ -74,4 +76,4 @@ export default function Home() {
   )
 }
 
-export { companies };
+export { companies, assetPrefix };
