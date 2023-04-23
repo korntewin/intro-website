@@ -22,7 +22,7 @@ export default function Home() {
         movingDotsId='home-movingdots'
         dispMain="Welcome to my Homepage!"
         dispSub={[
-          "I&apos;m Korn, and this is my self-introduction website.",
+          "I'm Korn, and this is my self-introduction website.",
           "You can find everything related to my working experience here, enjoy!"
         ]}
       />
