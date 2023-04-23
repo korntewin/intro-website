@@ -4,6 +4,7 @@ import Navbar from '../components/navbar/v2/navbar.component';
 import MovingDots from '@/components/movingdots/movingdots.component';
 import CardList from '@/components/cardlist/cardlist.component';
 import { assetPrefix } from '@/components/navbar/v2/navitem.component';
+import { PDE, PCA, TFD } from './about';
 
 
 const companies = [
@@ -63,12 +64,12 @@ export default function Home() {
           className="text-center mx-20 mt-10 text-xl text-white subpixel-antialiased drop-shadow-lg font-semibold"
         >
           Hello👋,
-          I&apos;m a self-starter with a willingness to learn, exhibited by proven self-taught skills in Engineergin with GCP&apos;s Professional Data Enginner and GCP&apos;s Professional Data Architect certificate, Deep Learning with Tensorflow Developer Certificate and contribution to Tensorflow Organization codebase.
+          I&apos;m a self-starter with a willingness to learn, exhibited by proven self-taught skills in Engineering & Deep Learning with {PDE}, {PCA}, and {TFD} Certificate. I have also contributed to Tensorflow codebase.
         </p>
         <p
           className="text-center mt-5 mb-10 text-xl text-white subpixel-antialiased drop-shadow-lg font-semibold"
         >
-          <Link href="/about"> You can read more about me here </Link>.
+          <Link className="underline font-bold" href="/about"> You can read more about me here </Link>.
         </p>
       </div>
 
