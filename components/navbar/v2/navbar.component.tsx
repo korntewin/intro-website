@@ -13,7 +13,7 @@ function NavBar({ addClass }: Props) {
     return (
         <div className={`bg-gradient-to-r from-green-400 to-blue-500 drop-shadow ${addClass}`}>
             <nav className="flex">
-                <Link href={`${assetPrefix}`} className="md:flex ml-4 mt-3 mb-3 hover:bg-green-300 hover:font-bold rounded-xl">
+                <Link href={`${assetPrefix}/`} className="md:flex ml-4 mt-3 mb-3 hover:bg-green-300 hover:font-bold rounded-xl">
                     <Image
                         src={`${assetPrefix}/logo.jpg`}
                         alt="Logo"

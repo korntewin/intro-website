@@ -3,8 +3,8 @@ import Link from 'next/link';
 import Navbar from '../components/navbar/v2/navbar.component';
 import MovingDots from '@/components/movingdots/movingdots.component';
 import CardList from '@/components/cardlist/cardlist.component';
+import { assetPrefix } from '@/components/navbar/v2/navitem.component';
 
-const assetPrefix = "/intro-website";
 
 const companies = [
   { imgSrc: `${assetPrefix}/tm.png`, name: "Thinking Machines", href: "/experience/tm", description: "Machine Learning Engineer", width: 200, height: 200, target: "_self" },

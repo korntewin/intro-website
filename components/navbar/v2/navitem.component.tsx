@@ -1,9 +1,9 @@
-import { assetPrefix } from "@/pages";
 import Link from "next/link";
 
+const assetPrefix = "";
 
 const NAV_ITEMS = [
-    { text: "Home", href: `${assetPrefix}` },
+    { text: "Home", href: `${assetPrefix}/` },
     { text: "Working Experience", href: "/experience" },
     { text: "About Me", href: "/about" },
 ];
@@ -33,3 +33,4 @@ function NavItem() {
 
 
 export default NavItem;
+export { assetPrefix };

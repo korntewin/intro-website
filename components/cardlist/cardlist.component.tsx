@@ -17,7 +17,7 @@ type Props = {
 const CardList = ({ ls }: Props) => {
 
     return (
-        <div className="flex items-center flex-row flex-wrap gap-10">
+        <div className="flex items-center flex-row flex-wrap gap-5">
             {ls.map(({ imgSrc, name, href, description, width, height, target }) => {
                 return (
                     <Link href={href} target={target} key={`${imgSrc}-${name}`}>

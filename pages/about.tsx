@@ -1,3 +1,4 @@
+import Link from "next/link";
 import CardList from "@/components/cardlist/cardlist.component";
 import NavBar from "@/components/navbar/v2/navbar.component";
 import { assetPrefix } from ".";
@@ -10,11 +11,13 @@ const SOCIAL_LINKS = [
 function About() {
 
     return (
-        <div className="bg-gradient-to-r from-green-400 to-blue-500 brightness-90" >
+        <div >
             <NavBar addClass="z-40 sticky top-0" />
-            <div className="flex flex-col items-center h-screen">
+            <div
+                className="flex flex-col items-center h-full md:h-screen bg-gradient-to-r from-green-400 to-blue-500 brightness-90"
+            >
                 <p className="mx-20 mt-10 text-justify text-2xl text-white font-semibold drop-shadow">
-                    I&apos;m a self-starter with a willingness to learn, exhibited by proven self-taught skills in Engineering with GCP&apos;s Professional Data Enginner and GCP&apos;s Professional Data Architect certificate, Deep Learning with Tensorflow Developer Certificate and contribution to Tensorflow Organization codebase.
+                    I&apos;m a self-starter with a willingness to learn, exhibited by proven self-taught skills in Engineering & Deep Learning with GCP&apos;s Professional Data Engineer and GCP&apos;s Professional Data Architect certificate, and Tensorflow Developer Certificate. I have also contributed to Tensorflow codebase.
                 </p>
                 <p className="mx-20 mt-5 text-justify text-2xl text-white font-semibold drop-shadow">
                     I am currently working at Thinking Machines as a Machine Learning Engineer, with experience in developing, building, deploying, and monitoring ML model (scikit-learn/tensorflow) and data processing pipeline (Spark on hadoop ecosystem) in production. I have experience working with data processing systems for big data of multiple TB scale with Spark on both batch/online channel.
