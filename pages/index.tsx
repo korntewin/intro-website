@@ -7,11 +7,11 @@ import CardList from '@/components/cardlist/cardlist.component';
 const assetPrefix = "/intro-website";
 
 const companies = [
-  { imgSrc: `${assetPrefix}/tm.png`, name: "Thinking Machines", href: "/experience/tm", description: "Machine Learning Engineer", width: 200, height: 200 },
-  { imgSrc: `${assetPrefix}/kbtg.png`, name: "KBTG", href: "/experience/kbtg", description: "Machine Learning Engineer", width: 90, height: 90 },
-  { imgSrc: `${assetPrefix}/blockfint.jpg`, name: "Blockfint", href: "/experience/blockfint", description: "Business Analyst", width: 140, height: 90 },
-  { imgSrc: `${assetPrefix}/gpsc.png`, name: "GPSC", href: "/experience/gpsc", description: "Power System Engineer", width: 180, height: 180 },
-  { imgSrc: `${assetPrefix}/cu.png`, name: "CU", href: "/experience/cu", description: "Researcher", width: 90, height: 90 },
+  { imgSrc: `${assetPrefix}/tm.png`, name: "Thinking Machines", href: "/experience/tm", description: "Machine Learning Engineer", width: 200, height: 200, target: "_self" },
+  { imgSrc: `${assetPrefix}/kbtg.png`, name: "KBTG", href: "/experience/kbtg", description: "Machine Learning Engineer", width: 90, height: 90, target: "_self" },
+  { imgSrc: `${assetPrefix}/blockfint.jpg`, name: "Blockfint", href: "/experience/blockfint", description: "Business Analyst", width: 140, height: 90, target: "_self" },
+  { imgSrc: `${assetPrefix}/gpsc.png`, name: "GPSC", href: "/experience/gpsc", description: "Power System Engineer", width: 180, height: 180, target: "_self" },
+  { imgSrc: `${assetPrefix}/cu.png`, name: "CU", href: "/experience/cu", description: "Researcher", width: 90, height: 90, target: "_self" },
 ]
 
 export default function Home() {

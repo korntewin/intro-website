@@ -8,6 +8,7 @@ type Item = {
     description: string;
     width: number;
     height: number;
+    target: string;
 }
 type Props = {
     ls: Array<Item>;
@@ -17,9 +18,9 @@ const CardList = ({ ls }: Props) => {
 
     return (
         <div className="flex items-center flex-row flex-wrap gap-10">
-            {ls.map(({ imgSrc, name, href, description, width, height }) => {
+            {ls.map(({ imgSrc, name, href, description, width, height, target }) => {
                 return (
-                    <Link href={href} target="_blank" key={`${imgSrc}-${name}`}>
+                    <Link href={href} target={target} key={`${imgSrc}-${name}`}>
                         <CardContainer imgSrc={imgSrc} name={name} description={description} width={width} height={height} />
                     </Link>
                 );

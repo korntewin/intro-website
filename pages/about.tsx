@@ -2,9 +2,9 @@ import CardList from "@/components/cardlist/cardlist.component";
 import NavBar from "@/components/navbar/v2/navbar.component";
 import { assetPrefix } from ".";
 
-const companies = [
-    { imgSrc: `${assetPrefix}/linkedin.png`, name: "Linkedin", href: "https://www.linkedin.com/in/korntewin/", description: "You can follow my linkedin here", width: 100, height: 100 },
-    { imgSrc: `${assetPrefix}/github.png`, name: "Github", href: "https://github.com/korntewin", description: "And you can follow my Github here", width: 100, height: 100 },
+const SOCIAL_LINKS = [
+    { imgSrc: `${assetPrefix}/linkedin.png`, name: "Linkedin", href: "https://www.linkedin.com/in/korntewin/", description: "You can follow my linkedin here", width: 100, height: 100, target: "_blank" },
+    { imgSrc: `${assetPrefix}/github.png`, name: "Github", href: "https://github.com/korntewin", description: "And you can follow my Github here", width: 100, height: 100, target: "_blank" },
 ]
 
 function About() {
@@ -23,7 +23,7 @@ function About() {
                     My background is in Master of Engineering major in Power System which heavily applies various optimization techniques (Linear programming/Quadratic programming/Stochastic optimization) for research field in disruptive technology, especially Battery Energy Storage System (BESS).
                     I am also familiar with financial feasibility studies to evaluate financial profit for Photovoltaic System and BESS project.
                 </p>
-                <CardList ls={companies} />
+                <CardList ls={SOCIAL_LINKS} />
             </div>
         </div>
     )
