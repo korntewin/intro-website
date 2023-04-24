@@ -1,5 +1,6 @@
 import NavBar from "@/components/navbar/v2/navbar.component";
 import Link from "next/link";
+import { assetPrefix } from "..";
 import { getSortedPostsData } from "../../lib/utils";
 
 
@@ -25,7 +26,7 @@ function Experience({ allPostsData }: Props) {
                     hover:transition-transform transition ease-out delay-150 transform hover:scale-105
                     "
                     key={`${id}-${date}-${title}`}
-                    ><Link href={`/experience/${id}`}>
+                    ><Link href={`${assetPrefix}/experience/${id}`}>
                         <span className="italic text-slate-100">{date}</span> {title}
                     </Link>
                     </h1>

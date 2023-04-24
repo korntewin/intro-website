@@ -8,11 +8,11 @@ import { PDE, PCA, TFD } from './about';
 
 
 const companies = [
-  { imgSrc: `${assetPrefix}/tm.png`, name: "Thinking Machines", href: "/experience/tm", description: "Machine Learning Engineer", width: 200, height: 200, target: "_self" },
-  { imgSrc: `${assetPrefix}/kbtg.png`, name: "KBTG", href: "/experience/kbtg", description: "Machine Learning Engineer", width: 90, height: 90, target: "_self" },
-  { imgSrc: `${assetPrefix}/blockfint.jpg`, name: "Blockfint", href: "/experience/blockfint", description: "Business Analyst", width: 140, height: 90, target: "_self" },
-  { imgSrc: `${assetPrefix}/gpsc.png`, name: "GPSC", href: "/experience/gpsc", description: "Power System Engineer", width: 180, height: 180, target: "_self" },
-  { imgSrc: `${assetPrefix}/cu.png`, name: "CU", href: "/experience/cu", description: "Researcher", width: 90, height: 90, target: "_self" },
+  { imgSrc: `${assetPrefix}/tm.png`, name: "Thinking Machines", href: `${assetPrefix}/experience/tm`, description: "Machine Learning Engineer", width: 200, height: 200, target: "_self" },
+  { imgSrc: `${assetPrefix}/kbtg.png`, name: "KBTG", href: `${assetPrefix}/experience/kbtg`, description: "Machine Learning Engineer", width: 90, height: 90, target: "_self" },
+  { imgSrc: `${assetPrefix}/blockfint.jpg`, name: "Blockfint", href: `${assetPrefix}/experience/blockfint`, description: "Business Analyst", width: 140, height: 90, target: "_self" },
+  { imgSrc: `${assetPrefix}/gpsc.png`, name: "GPSC", href: `${assetPrefix}/experience/gpsc`, description: "Power System Engineer", width: 180, height: 180, target: "_self" },
+  { imgSrc: `${assetPrefix}/cu.png`, name: "CU", href: `${assetPrefix}/experience/cu`, description: "Researcher", width: 90, height: 90, target: "_self" },
 ]
 
 export default function Home() {
@@ -69,7 +69,7 @@ export default function Home() {
         <p
           className="text-center mx-20 mt-5 mb-10 text-xl text-white subpixel-antialiased drop-shadow-lg font-semibold"
         >
-          <Link className="underline font-bold" href="/about"> You can read more about me here </Link>.
+          <Link className="underline font-bold" href={`${assetPrefix}/about`}> You can read more about me here </Link>.
         </p>
       </div>
 
