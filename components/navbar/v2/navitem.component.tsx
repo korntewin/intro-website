@@ -4,8 +4,8 @@ const assetPrefix = "/intro-website";
 
 const NAV_ITEMS = [
     { text: "Home", href: `${assetPrefix}/` },
-    { text: "Working Experience", href: "/experience" },
-    { text: "About Me", href: "/about" },
+    { text: "Working Experience", href: `${assetPrefix}/experience` },
+    { text: "About Me", href: `${assetPrefix}/about` },
 ];
 
 
