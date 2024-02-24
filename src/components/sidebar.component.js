@@ -31,9 +31,9 @@ const SideBarComponent = ({ open }) => {
     <div>
         <Sidebar isOpen={open}>
             <SidebarContent>
-                <StyledLink href='#'>Link 1</StyledLink>
-                <StyledLink href='#'>Link 2</StyledLink>
-                <StyledLink href='#'>Link 3</StyledLink>
+                <StyledLink href='/about'>Link 1</StyledLink>
+                <StyledLink href='/'>Link 2</StyledLink>
+                <StyledLink href='/testhomepage'>Link 3</StyledLink>
             </SidebarContent>
         </Sidebar>
     </div>
