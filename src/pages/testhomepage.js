@@ -1,41 +1,23 @@
 import React, { useState } from 'react';
 import styled from 'styled-components';
-import { FaGithub, FaLinkedin, FaBars } from 'react-icons/fa';
+import NavigationBar from '../components/navbar.component';
 
-const RustColor = '#B7410E';
+const RustColor = '#3b2e2a';
 const SIDE_BAR_WIDTH = 200;
-
-const Navbar = styled.nav`
-  display: flex;
-  justify-content: space-between;
-  padding: 1em;
-  background-color: ${RustColor};
-  position: sticky;
-  top: 0;
-`;
-
-const Hamburger = styled(FaBars)`
-  font-size: 1.5em;
-`;
-
-const Icon = styled.a`
-  color: white;
-  margin: 0 1em;
-  text-decoration: none;
-`;
 
 const Body = styled.div`
     padding: 1em;
-    color: ${RustColor};
     margin-left: ${props => props.isSidebarOpen ? `${SIDE_BAR_WIDTH + 50}px` : '0'};
     transition: margin-left 0.3s ease;
+    background-color: hsl(60, 9%, 87%);
 `;
 
 const Sidebar = styled.aside`
   position: fixed;
+  top: 0;
+  background-color: ${RustColor}; 
   width: ${SIDE_BAR_WIDTH}px;
   height: 100vh;
-  background-color: #f5f5f5;
   transform: ${props => props.isOpen ? 'translateX(0)' : 'translateX(-100%)'};
   transition: transform 0.3s ease;
   padding: 20px;
@@ -47,6 +29,10 @@ const SidebarContent = styled.div`
   gap: 20px;
 `;
 
+const StyledLink = styled.a`
+  color: #c8c9db;
+`;
+
 function TestHomePage() {
 
     const [open, setOpen] = useState(false);
@@ -54,23 +40,12 @@ function TestHomePage() {
 
   return (
     <div>
-      <Navbar>
-        <Hamburger onClick={() => setOpen(!open)}/>
-        <div>
-          <Icon href="https://github.com/korntewin" target="_blank" rel="noopener noreferrer">
-            <FaGithub size="1.5em" />
-          </Icon>
-          <Icon href="https://linkedin.com/in/korntewin" target="_blank" rel="noopener noreferrer">
-            <FaLinkedin size="1.5em" />
-          </Icon>
-        </div>
-      </Navbar>
+    <NavigationBar open={open} setOpen={setOpen} />
     <Sidebar isOpen={open}>
         <SidebarContent>
-          <a href="#">Link 1</a>
-          <a href="#">Link 2</a>
-          <a href="#">Link 3</a>
-          {/* Add more links as needed */}
+            <StyledLink href='#'>Link 1</StyledLink>
+            <StyledLink href='#'>Link 2</StyledLink>
+            <StyledLink href='#'>Link 3</StyledLink>
         </SidebarContent>
       </Sidebar>
       <Body isSidebarOpen={open}>
