@@ -1,7 +1,6 @@
 import styled from 'styled-components';
 import { FaGithub, FaLinkedin, FaBars } from 'react-icons/fa';
-
-const SIDE_BAR_WIDTH = 200;
+import { SIDE_BAR_WIDTH } from './sidebar.component';
 
 const Navbar = styled.nav`
     display: flex;
