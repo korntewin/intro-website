@@ -19,7 +19,7 @@ const Hamburger = styled(FaBars)`
 `;
 
 const Icon = styled.a`
-  color: brown;
+  color: gray;
   margin: 0 1em;
   text-decoration: none;
 `;

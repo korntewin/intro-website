@@ -6,8 +6,8 @@ const RustColor = '#3b2e2a';
 const SIDE_BAR_WIDTH = 200;
 
 const Body = styled.div`
-    padding: 1em;
-    margin-left: ${props => props.isSidebarOpen ? `${SIDE_BAR_WIDTH + 50}px` : '0'};
+    padding: 0.1em 5em 0em 5em;
+    margin-left: ${props => props.isSidebarOpen ? `${SIDE_BAR_WIDTH + 40}px` : '0'};
     transition: margin-left 0.3s ease;
     background-color: hsl(60, 9%, 87%);
 `;
