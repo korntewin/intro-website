@@ -4,7 +4,6 @@ const Footer = styled.footer`
   width: 100%;
   color: gray;
   text-align: left;
-  margin-top: 5em;
   margin-right: 1em;
 `;
 
@@ -12,6 +11,7 @@ const CopyrightText = styled.p`
   font-family: 'Arial', sans-serif;
   font-size: 14px;
   padding-left: 1em;
+  ${props => props.marginTop && `margin-top: ${props.marginTop};`}
 `;
 
 const StyledLink = styled.a`
@@ -30,7 +30,7 @@ const name = "Korntewin";
 export default function FooterComponent() {
     return (
         <Footer>
-            <CopyrightText>&copy; {year} {name}. All rights reserved</CopyrightText>
+            <CopyrightText marginTop={"4em"}>&copy; {year} {name}. All rights reserved</CopyrightText>
             <CopyrightText> 
                 <CustomSpan>Please follow me here 👉</CustomSpan>
                 <StyledLink href="https://github.com/korntewin" target="_blank" rel="noopener noreferrer">

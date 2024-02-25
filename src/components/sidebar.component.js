@@ -36,10 +36,11 @@ const SideBarComponent = ({ open }) => {
         <Sidebar isOpen={open}>
             <SidebarContent>
                 <PixelArtBold color="white"> Village Map </PixelArtBold>
-                <StyledLink href='/'>Village Entrance</StyledLink>
+                <StyledLink href={`${BASENAME}`}>Village Entrance</StyledLink>
                 <StyledLink href={`${BASENAME}/about`}>Korn's House</StyledLink>
                 <StyledLink href={`${BASENAME}/experience`}>Guild Post Experience</StyledLink>
                 <StyledLink href={`${BASENAME}/projects`}>Korn's Training Ground</StyledLink>
+                <StyledLink href={`${BASENAME}/mycat`}>Play with Cat</StyledLink>
             </SidebarContent>
         </Sidebar>
     </div>
