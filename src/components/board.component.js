@@ -15,13 +15,15 @@ const Board = styled.div`
 `;
 
 const Box = styled(Link)`
-  width: 25%;
+  max-width: 20%;
+  min-width: 15em;
   padding: 1em 1em 0em 1em;
   margin: 0.5em;
   box-sizing: border-box; // includes padding and border in the box's width and height
   display: flex;
   flex-direction: column;
   align-items: center;
+  justify-content: center;
   text-decoration: none; // to remove the default underline of Link
   color: inherit; // to inherit the color from parent
   transition: transform 0.3s ease-in-out; // for smooth transition
@@ -39,16 +41,18 @@ const Box = styled(Link)`
 `;
 
 const Image = styled.img`
-  width: 50%;
+  width: 80%;
   height: auto;
+  align-items: center;
 `;
 
 const Summary = styled(PixelArtP)`
   text-align: center;
   justify-content: center;
   align-items: center;
-  font-size: 0.7em;
+  font-size: 1.5em;
   padding-top: 1em;
+  font-weight: bold;
 `;
 
 export default function BoardComponent({ children }) {

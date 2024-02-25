@@ -8,7 +8,7 @@ const HomePageLayout = ({ children, open, setOpen, navbar_welcomemsg }) => {
     return (
         <div>
             <NavigationBar open={open} setOpen={setOpen} welcomemsg={navbar_welcomemsg}/>
-            <SideBarComponent open={open} />
+            <SideBarComponent open={open} setOpen={setOpen}/>
             <BodyComponent open={open} setOpen={setOpen}> 
                 {children}
                 <FooterComponent />

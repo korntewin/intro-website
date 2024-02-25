@@ -5,7 +5,6 @@ import { Link } from 'react-router-dom';
 
 const RustColor = '#3b2e2a';
 const SIDE_BAR_WIDTH = 250;
-const BASENAME = process.env.PUBLIC_URL;
 
 const Sidebar = styled.aside`
   position: fixed;
@@ -30,17 +29,21 @@ const LinkStyle = {
   fontSize: "0.7em",
 };
 
-const SideBarComponent = ({ open }) => {
+const SideBarComponent = ({ open, setOpen }) => {
+
+  const onclickHandle = () => {
+    setOpen(!open);
+  }
 
   return (
     <div>
         <Sidebar isOpen={open}>
             <SidebarContent>
                 <PixelArtBold color="white"> Village Map </PixelArtBold>
-                <Link to="/" style={LinkStyle}>Village Entrance</Link>
-                <Link to="/about" style={LinkStyle}>Korn's House</Link>
-                <Link to="/project" style={LinkStyle}>Project Bulletin Board</Link>
-                <Link to="/mycat" style={LinkStyle}>Cats' Playground</Link>
+                <Link to="/" style={LinkStyle} onClick={onclickHandle}>Village Entrance</Link>
+                <Link to="/about" style={LinkStyle} onClick={onclickHandle}>Korn's House</Link>
+                <Link to="/project" style={LinkStyle} onClick={onclickHandle}>Project Bulletin Board</Link>
+                <Link to="/mycat" style={LinkStyle} onClick={onclickHandle}>Cats' Playground</Link>
             </SidebarContent>
         </Sidebar>
     </div>

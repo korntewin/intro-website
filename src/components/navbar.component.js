@@ -2,6 +2,7 @@ import styled from 'styled-components';
 import { FaGithub, FaLinkedin, FaBars } from 'react-icons/fa';
 import { SIDE_BAR_WIDTH } from './sidebar.component';
 import { PixelArtBold } from './pixelart.component.';
+import { SM_BREAKPOINT } from '../config';
 
 const Navbar = styled.nav`
     display: flex;
@@ -15,8 +16,14 @@ const Navbar = styled.nav`
 `;
 
 const Hamburger = styled(FaBars)`
-  font-size: 1em;
+  font-size: 1.5em;
   cursor: pointer;
+
+  @media (max-width: ${SM_BREAKPOINT}px) {
+    font-size: 3em;
+    cursor: pointer;
+  }
+
 `;
 
 const Icon = styled.a`

@@ -1,0 +1,3 @@
+const SM_BREAKPOINT = 768;
+
+export { SM_BREAKPOINT };
