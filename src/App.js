@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { BrowserRouter, Route, Routes } from 'react-router-dom';
+import { HashRouter, Route, Routes } from 'react-router-dom';
 import HomePage from './pages/home.page';
 import AboutMe from './pages/aboutme.page';
 
@@ -12,13 +12,13 @@ function App() {
   const [open, setOpen] = useState(false);
 
   return (
-    <BrowserRouter basename={`/${BASENAME}`}>
+    <HashRouter>
       <Routes>
         <Route path="/" element={<HomePage isSidebarOpen={open} setSideBarOpen={setOpen}/>}></Route>
         <Route path="/about" element={<AboutMe isSidebarOpen={open} setSideBarOpen={setOpen}/>}></Route>
       </Routes>
 
-    </BrowserRouter>
+    </HashRouter>
   );
 }
 

@@ -1,6 +1,7 @@
 import React from 'react';
 import styled from 'styled-components';
 import { PixelArtBold } from './pixelart.component.';
+import { Link } from 'react-router-dom';
 
 const RustColor = '#3b2e2a';
 const SIDE_BAR_WIDTH = 250;
@@ -23,11 +24,11 @@ const SidebarContent = styled.div`
   gap: 20px;
 `;
 
-const StyledLink = styled.a`
-  color: #c8c9db;
-  font-family: 'Press Start 2P', cursive; // This is a pixel art-like font
-  font-size: 0.7em;
-`;
+const LinkStyle = {
+  color: "#c8c9db",
+  fontFamily: "'Press Start 2P', cursive",
+  fontSize: "0.7em",
+};
 
 const SideBarComponent = ({ open }) => {
 
@@ -36,11 +37,11 @@ const SideBarComponent = ({ open }) => {
         <Sidebar isOpen={open}>
             <SidebarContent>
                 <PixelArtBold color="white"> Village Map </PixelArtBold>
-                <StyledLink href={`${BASENAME}`}>Village Entrance</StyledLink>
-                <StyledLink href={`${BASENAME}/about`}>Korn's House</StyledLink>
-                <StyledLink href={`${BASENAME}/experience`}>Guild Post Experience</StyledLink>
-                <StyledLink href={`${BASENAME}/projects`}>Korn's Training Ground</StyledLink>
-                <StyledLink href={`${BASENAME}/mycat`}>Play with Cat</StyledLink>
+                <Link to="/" style={LinkStyle}>Village Entrance</Link>
+                <Link to="/about" style={LinkStyle}>Korn's House</Link>
+                <Link to="/experience" style={LinkStyle}>Experience Board</Link>
+                <Link to="/project" style={LinkStyle}>Training Ground</Link>
+                <Link to="/mycat" style={LinkStyle}>Cats' Playground</Link>
             </SidebarContent>
         </Sidebar>
     </div>
