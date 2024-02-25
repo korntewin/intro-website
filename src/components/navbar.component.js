@@ -1,13 +1,15 @@
 import styled from 'styled-components';
 import { FaGithub, FaLinkedin, FaBars } from 'react-icons/fa';
 import { SIDE_BAR_WIDTH } from './sidebar.component';
+import { PixelArtBold } from './pixelart.component.';
 
 const Navbar = styled.nav`
     display: flex;
     justify-content: space-between;
-    padding: 1em 0.5em 0.5em 1.5em;
+    padding: 1em 0.5em 0.0em 1.5em;
     background-color: hsl(60, 9%, 87%);
     position: sticky;
+    top: 0;
     margin-left: ${props => props.isSidebarOpen ? `${SIDE_BAR_WIDTH + 40}px` : '0'};
     transition: margin-left 0.3s ease;
 `;
@@ -23,12 +25,12 @@ const Icon = styled.a`
   text-decoration: none;
 `;
 
-const NavigationBar = ({ open, setOpen }) => {
+const NavigationBar = ({ open, setOpen, welcomemsg }) => {
 
   return (
-    <div>
       <Navbar isSidebarOpen={open}>
         <Hamburger onClick={() => setOpen(!open)}/>
+        <PixelArtBold>{welcomemsg}</PixelArtBold>
         <div>
           <Icon href="https://github.com/korntewin" target="_blank" rel="noopener noreferrer">
             <FaGithub size="1.5em" />
@@ -38,7 +40,6 @@ const NavigationBar = ({ open, setOpen }) => {
           </Icon>
         </div>
       </Navbar>
-    </div>
   );
 }
 
