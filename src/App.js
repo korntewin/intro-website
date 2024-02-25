@@ -5,9 +5,6 @@ import AboutMe from './pages/aboutme.page';
 import ProjectPage from './pages/projects.page';
 
 
-const BASENAME = process.env.PUBLIC_URL;
-
-
 function App() {
 
   const [open, setOpen] = useState(false);

@@ -16,7 +16,7 @@ const Board = styled.div`
 
 const Box = styled(Link)`
   width: 25%;
-  padding: 1em;
+  padding: 1em 1em 0.2em 1em;
   margin: 0.5em;
   box-sizing: border-box; // includes padding and border in the box's width and height
   display: flex;
@@ -39,13 +39,14 @@ const Box = styled(Link)`
 `;
 
 const Image = styled.img`
-  width: 100%;
+  width: 50%;
   height: auto;
 `;
 
 const Summary = styled(PixelArtP)`
   text-align: center;
   font-size: 0.7em;
+  padding-top: 1em;
 `;
 
 export default function BoardComponent({ children }) {
