@@ -9,11 +9,11 @@ const Body = styled.div`
     min-height: 100vh;
 `;
 
-const BodyComponent = ({ children, open }) => {
+const BodyComponent = ({ children, open, setOpen}) => {
 
     return (
         <div>
-            <Body isSidebarOpen={open}>
+            <Body isSidebarOpen={open} onClick={() => setOpen(false)}>
                 {children}
             </Body>
         </div>

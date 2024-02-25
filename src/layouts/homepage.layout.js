@@ -9,7 +9,7 @@ const HomePageLayout = ({ children, open, setOpen, navbar_welcomemsg }) => {
         <div>
             <NavigationBar open={open} setOpen={setOpen} welcomemsg={navbar_welcomemsg}/>
             <SideBarComponent open={open} />
-            <BodyComponent open={open}> 
+            <BodyComponent open={open} setOpen={setOpen}> 
                 {children}
                 <FooterComponent />
             </BodyComponent>

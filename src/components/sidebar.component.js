@@ -12,7 +12,7 @@ const Sidebar = styled.aside`
   top: 0;
   background-color: ${RustColor}; 
   width: ${SIDE_BAR_WIDTH}px;
-  height: 100vh;
+  min-height: 100vh;
   transform: ${props => props.isOpen ? 'translateX(0)' : 'translateX(-100%)'};
   transition: transform 0.3s ease;
   padding: 20px;
@@ -39,8 +39,8 @@ const SideBarComponent = ({ open }) => {
                 <PixelArtBold color="white"> Village Map </PixelArtBold>
                 <Link to="/" style={LinkStyle}>Village Entrance</Link>
                 <Link to="/about" style={LinkStyle}>Korn's House</Link>
-                <Link to="/experience" style={LinkStyle}>Experience Board</Link>
-                <Link to="/project" style={LinkStyle}>Training Ground</Link>
+                <Link to="/project" style={LinkStyle}>Finished Quest Board</Link>
+                <Link to="/experience" style={LinkStyle}>Experience Library</Link>
                 <Link to="/mycat" style={LinkStyle}>Cats' Playground</Link>
             </SidebarContent>
         </Sidebar>
