@@ -21,7 +21,7 @@ export default function AboutMe({ isSidebarOpen, setSideBarOpen }) {
         <HomePageLayout 
             open={isSidebarOpen} 
             setOpen={setSideBarOpen} 
-            navbar_welcomemsg={"You met with Korn, He is a friendly villager!"}
+            navbar_welcomemsg={"You met with Korn, he is a friendly villager!"}
         >
             <FigureComponent src={pixelart} caption="Pixel Art Generated from Copilot!"/>
             <PixelArtH2>Korn: Hi there, welcome to the village! Well...</PixelArtH2>

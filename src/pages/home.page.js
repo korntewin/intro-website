@@ -18,9 +18,13 @@ export default function HomePage({ isSidebarOpen, setSideBarOpen }) {
     }, [])
 
     return (
-        <HomePageLayout open={isSidebarOpen} setOpen={setSideBarOpen} navbar_welcomemsg={"You are entering my small village!"}>
-            <FigureComponent src={pixelart} caption="Pixel Art Generated from Copilot!"/>
-            <PixelArtH2>Welcome to My Personal Website!</PixelArtH2>
+        <HomePageLayout 
+            open={isSidebarOpen} 
+            setOpen={setSideBarOpen} 
+            navbar_welcomemsg={"You are entering small korn's village!"}
+        >
+            <FigureComponent src={pixelart} caption="Pixel Art Generated from Copilot!" />
+            <PixelArtH2>Villagers: Welcome to Korn's Village!</PixelArtH2>
             <Markdown remarkPlugins={[remarkGfm]}>
                 {markdown}
             </Markdown>
