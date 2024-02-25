@@ -14,6 +14,7 @@ const PixelArtBold = styled.span`
   font-family: 'Press Start 2P', cursive; // This is a pixel art-like font
   font-size: 1em;
   padding-bottom: 0.5em;
+  text-align: center;
   ${props => props.color && `color: ${props.color}`};
 `;
 
