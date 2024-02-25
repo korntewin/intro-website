@@ -16,7 +16,7 @@ const Board = styled.div`
 
 const Box = styled(Link)`
   width: 25%;
-  padding: 1em 1em 0.2em 1em;
+  padding: 1em 1em 0em 1em;
   margin: 0.5em;
   box-sizing: border-box; // includes padding and border in the box's width and height
   display: flex;
@@ -45,6 +45,8 @@ const Image = styled.img`
 
 const Summary = styled(PixelArtP)`
   text-align: center;
+  justify-content: center;
+  align-items: center;
   font-size: 0.7em;
   padding-top: 1em;
 `;

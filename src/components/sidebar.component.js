@@ -40,7 +40,6 @@ const SideBarComponent = ({ open }) => {
                 <Link to="/" style={LinkStyle}>Village Entrance</Link>
                 <Link to="/about" style={LinkStyle}>Korn's House</Link>
                 <Link to="/project" style={LinkStyle}>Project Bulletin Board</Link>
-                <Link to="/experience" style={LinkStyle}>Experience Library</Link>
                 <Link to="/mycat" style={LinkStyle}>Cats' Playground</Link>
             </SidebarContent>
         </Sidebar>
