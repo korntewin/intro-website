@@ -30,7 +30,7 @@ const NavigationBar = ({ open, setOpen, welcomemsg }) => {
   return (
       <Navbar isSidebarOpen={open}>
         <Hamburger onClick={() => setOpen(!open)}/>
-        <PixelArtBold>{welcomemsg}</PixelArtBold>
+        <PixelArtBold color="gray">{welcomemsg}</PixelArtBold>
         <div>
           <Icon href="https://github.com/korntewin" target="_blank" rel="noopener noreferrer">
             <FaGithub size="1.5em" />

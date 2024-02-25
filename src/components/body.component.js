@@ -6,6 +6,7 @@ const Body = styled.div`
     margin-left: ${props => props.isSidebarOpen ? `${SIDE_BAR_WIDTH + 40}px` : '0'};
     transition: margin-left 0.3s ease;
     background-color: hsl(60, 9%, 87%);
+    height: 100vh;
 `;
 
 const BodyComponent = ({ children, open }) => {

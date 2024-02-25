@@ -10,10 +10,11 @@ const PixelArtH4 = styled.h4`
   color: #333;
 `;
 
-const PixelArtBold = styled.i`
-  font-family: 'Press Start 2P'; // This is a pixel art-like font
-  color: gray;
-  font-size: 0.75em;
+const PixelArtBold = styled.span`
+  font-family: 'Press Start 2P', cursive; // This is a pixel art-like font
+  font-size: 1em;
+  padding-bottom: 0.5em;
+  ${props => props.color && `color: ${props.color}`};
 `;
 
 export default PixelArtH2;

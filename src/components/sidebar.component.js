@@ -1,8 +1,10 @@
 import React from 'react';
 import styled from 'styled-components';
+import { PixelArtBold } from './pixelart.component.';
 
 const RustColor = '#3b2e2a';
-const SIDE_BAR_WIDTH = 200;
+const SIDE_BAR_WIDTH = 250;
+const BASENAME = process.env.PUBLIC_URL;
 
 const Sidebar = styled.aside`
   position: fixed;
@@ -23,6 +25,8 @@ const SidebarContent = styled.div`
 
 const StyledLink = styled.a`
   color: #c8c9db;
+  font-family: 'Press Start 2P', cursive; // This is a pixel art-like font
+  font-size: 0.7em;
 `;
 
 const SideBarComponent = ({ open }) => {
@@ -31,9 +35,11 @@ const SideBarComponent = ({ open }) => {
     <div>
         <Sidebar isOpen={open}>
             <SidebarContent>
-                <StyledLink href='/about'>Link 1</StyledLink>
-                <StyledLink href='/'>Link 2</StyledLink>
-                <StyledLink href='/testhomepage'>Link 3</StyledLink>
+                <PixelArtBold color="white"> Village Map </PixelArtBold>
+                <StyledLink href='/'>Village Entrance</StyledLink>
+                <StyledLink href={`${BASENAME}/about`}>Korn's House</StyledLink>
+                <StyledLink href={`${BASENAME}/experience`}>Guild Post Experience</StyledLink>
+                <StyledLink href={`${BASENAME}/projects`}>Korn's Training Ground</StyledLink>
             </SidebarContent>
         </Sidebar>
     </div>
