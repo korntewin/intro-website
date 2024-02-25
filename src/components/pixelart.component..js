@@ -18,5 +18,14 @@ const PixelArtBold = styled.span`
   ${props => props.color && `color: ${props.color}`};
 `;
 
+
+const PixelArtP = styled.p`
+  font-family: 'Press Start 2P', cursive; // This is a pixel art-like font
+  font-size: 1em;
+  padding-bottom: 0.5em;
+  text-align: center;
+  ${props => props.color && `color: ${props.color}`};
+`;
+
 export default PixelArtH2;
-export { PixelArtH4, PixelArtBold };
+export { PixelArtH4, PixelArtBold, PixelArtP };
