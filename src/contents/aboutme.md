@@ -6,11 +6,11 @@ Hello! I'm a **Machine Learning Engineer** with a passion for solving complex pr
 
 ### My professional programming languages:
 
-| Programming Language | Level | Frameworks |
-| :-: |  :-: | :-: |
-| 🐍 Python | Professional | Scikit-learn, PySpark, Tensorflow, Pytorch, FastAPI, huggingface |
-| 🦀 Rust | Professional | WebAssembly, Candle ML Framework, Actix |
-| JavaScript | Intermediate | React |
+| Programming Language | Frameworks |
+| :-: |  :-: |
+| 🐍 Python | Scikit-learn, PySpark, Tensorflow, Pytorch, FastAPI, huggingface |
+| 🦀 Rust | WebAssembly, Candle (ML Framework), Polars, Actix |
+| 💻 JavaScript | React, React-Router, React-Redux |
 
 ## 2. 🔥Early Days at ![KBTG logo](https://www.kbtg.tech/images/logo.svg)
 
