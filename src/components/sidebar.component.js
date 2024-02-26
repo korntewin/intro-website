@@ -2,6 +2,8 @@ import React from 'react';
 import styled from 'styled-components';
 import { PixelArtBold } from './pixelart.component.';
 import { Link } from 'react-router-dom';
+import { connect } from 'react-redux';
+import { mapStateToProps, mapDispatchToProps } from '../actions/sidebarAction';
 
 const RustColor = '#3b2e2a';
 const SIDE_BAR_WIDTH = 250;
@@ -29,26 +31,22 @@ const LinkStyle = {
   fontSize: "0.7em",
 };
 
-const SideBarComponent = ({ open, setOpen }) => {
-
-  const onclickHandle = () => {
-    setOpen(!open);
-  }
+const SideBarComponent = ({ isSideBarOpen, closeSideBar }) => {
 
   return (
     <div>
-        <Sidebar isOpen={open}>
+        <Sidebar isOpen={isSideBarOpen}>
             <SidebarContent>
                 <PixelArtBold color="white"> Village Map </PixelArtBold>
-                <Link to="/" style={LinkStyle} onClick={onclickHandle}>Village Entrance</Link>
-                <Link to="/about" style={LinkStyle} onClick={onclickHandle}>Korn's House</Link>
-                <Link to="/project" style={LinkStyle} onClick={onclickHandle}>Project Bulletin Board</Link>
-                <Link to="/mycat" style={LinkStyle} onClick={onclickHandle}>Cats' Playground</Link>
+                <Link to="/" style={LinkStyle} onClick={closeSideBar}>Village Entrance</Link>
+                <Link to="/about" style={LinkStyle} onClick={closeSideBar}>Korn's House</Link>
+                <Link to="/project" style={LinkStyle} onClick={closeSideBar}>Project Bulletin Board</Link>
+                <Link to="/mycat" style={LinkStyle} onClick={closeSideBar}>Cats' Playground</Link>
             </SidebarContent>
         </Sidebar>
     </div>
   );
 };
 
-export default SideBarComponent;
+export default connect(mapStateToProps, mapDispatchToProps)(SideBarComponent);
 export {SIDE_BAR_WIDTH};

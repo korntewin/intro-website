@@ -7,7 +7,7 @@ import Markdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import path from '../contents/aboutme.md';
 
-export default function AboutMe({ isSidebarOpen, setSideBarOpen }) {
+export default function AboutMe() {
 
     const [markdown, setMarkdown] = useState('');
 
@@ -19,8 +19,6 @@ export default function AboutMe({ isSidebarOpen, setSideBarOpen }) {
 
     return (
         <HomePageLayout 
-            open={isSidebarOpen} 
-            setOpen={setSideBarOpen} 
             navbar_welcomemsg={"You met with Korn, he is a friendly villager!"}
         >
             <FigureComponent src={pixelart} caption="Pixel Art Generated from Copilot!"/>

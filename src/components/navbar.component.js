@@ -3,6 +3,8 @@ import { FaGithub, FaLinkedin, FaBars } from 'react-icons/fa';
 import { SIDE_BAR_WIDTH } from './sidebar.component';
 import { PixelArtBold } from './pixelart.component.';
 import { SM_BREAKPOINT } from '../config';
+import { mapDispatchToProps, mapStateToProps } from '../actions/sidebarAction';
+import { connect } from 'react-redux';
 
 const Navbar = styled.nav`
     display: flex;
@@ -32,11 +34,11 @@ const Icon = styled.a`
   text-decoration: none;
 `;
 
-const NavigationBar = ({ open, setOpen, welcomemsg }) => {
+const NavigationBar = ({ isSideBarOpen, openSideBar, closeSideBar, welcomemsg }) => {
 
   return (
-      <Navbar isSidebarOpen={open}>
-        <Hamburger onClick={() => setOpen(!open)}/>
+      <Navbar isSidebarOpen={isSideBarOpen}>
+        <Hamburger onClick={() => isSideBarOpen ? closeSideBar() : openSideBar()}/>
         <PixelArtBold color="gray">{welcomemsg}</PixelArtBold>
         <div>
           <Icon href="https://github.com/korntewin" target="_blank" rel="noopener noreferrer">
@@ -50,4 +52,4 @@ const NavigationBar = ({ open, setOpen, welcomemsg }) => {
   );
 }
 
-export default NavigationBar;
+export default connect(mapStateToProps, mapDispatchToProps)(NavigationBar);

@@ -17,7 +17,7 @@ const Board = styled.div`
 const Box = styled(Link)`
   max-width: 20%;
   min-width: 15em;
-  padding: 1em 1em 0em 1em;
+  padding: 1em 1em 1em 1em;
   margin: 0.5em;
   box-sizing: border-box; // includes padding and border in the box's width and height
   display: flex;

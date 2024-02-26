@@ -1,6 +1,8 @@
 import styled from 'styled-components';
 import { SIDE_BAR_WIDTH } from '../components/sidebar.component';
 import { SM_BREAKPOINT } from '../config';
+import { connect }  from 'react-redux';
+import { mapDispatchToProps, mapStateToProps } from '../actions/sidebarAction';
 
 const Body = styled.div`
     padding: 0.1em 5em 5em 5em;
@@ -18,15 +20,15 @@ const Body = styled.div`
     }
 `;
 
-const BodyComponent = ({ children, open, setOpen}) => {
+const BodyComponent = ({ isSideBarOpen, closeSideBar, children}) => {
 
     return (
         <div>
-            <Body isSidebarOpen={open} onClick={() => setOpen(false)}>
+            <Body isSidebarOpen={isSideBarOpen} onClick={closeSideBar}>
                 {children}
             </Body>
         </div>
     );
 }
 
-export default BodyComponent;
+export default connect(mapStateToProps, mapDispatchToProps)(BodyComponent);

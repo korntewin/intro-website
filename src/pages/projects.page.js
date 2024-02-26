@@ -17,16 +17,14 @@ const boxes = [
   { image: gcpPCA, summary: "Google Cloud Certified Professional Cloud Architect", link: "https://google.accredible.com/34e8fd91-a68a-4325-83e0-fdea8c1e3d44"},
   { image: bsa, summary: "Bank Statement Analyzer: First project at KBTG", link: "https://principled-zebu-497.notion.site/Bank-Statement-Analyzer-a97988bdad4545e7aad7483664931a1d?pvs=4"},
   { image: "https://miro.medium.com/v2/resize:fit:750/format:webp/0*3UXLgiXFgKnOLiZc", summary: "Thai NLP project using Streamlit on GCP", link: "https://korntewin-b.medium.com/thai-nlp-project-on-streamlit-webapp-gcp-509180faf6cd"},
-  { image: "https://miro.medium.com/v2/resize:fit:1100/format:webp/1*BaCi_5HkM7szgV-CgRv1-g.jpeg", summary: "Intensive C & Shell programming at 42!", link: "https://medium.com/@korntewin-b/awesome-experience-in-42-university-application-b4a21cc8f8ca"},
+  { image: "https://miro.medium.com/v2/resize:fit:1100/format:webp/1*BaCi_5HkM7szgV-CgRv1-g.jpeg", summary: "Intensive C & Shell programming bootcamp at 42!", link: "https://medium.com/@korntewin-b/awesome-experience-in-42-university-application-b4a21cc8f8ca"},
 ];
 
 
-export default function ProjectPage({ isSidebarOpen, setSideBarOpen }) {
+export default function ProjectPage() {
 
     return (
         <HomePageLayout 
-            open={isSidebarOpen} 
-            setOpen={setSideBarOpen} 
             navbar_welcomemsg={"You are at Village's bulletin board, looking at the finished project!"}
         >
             <FigureComponent src={pixelart} caption="Pixel Art Generated from Copilot!"/>

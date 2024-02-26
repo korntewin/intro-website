@@ -3,12 +3,10 @@ import PixelArtH2 from '../components/pixelart.component.';
 import FigureComponent from '../components/img.component';
 import pixelart from '../pics/cats-playground.jpg';
 
-export default function AboutMyCat({ isSidebarOpen, setSideBarOpen }) {
+export default function AboutMyCat() {
 
     return (
         <HomePageLayout
-            open={isSidebarOpen}
-            setOpen={setSideBarOpen}
             navbar_welcomemsg={"As you wondered around the village, you found playground full of cats!"}
         >
             <FigureComponent src={pixelart} caption="Pixel Art Generated from Copilot!" />

@@ -7,7 +7,7 @@ import Markdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import hompageContentPath from '../contents/homepage.md';
 
-export default function HomePage({ isSidebarOpen, setSideBarOpen }) {
+export default function HomePage() {
 
     const [markdown, setMarkdown] = useState('');
 
@@ -19,8 +19,6 @@ export default function HomePage({ isSidebarOpen, setSideBarOpen }) {
 
     return (
         <HomePageLayout
-            open={isSidebarOpen}
-            setOpen={setSideBarOpen}
             navbar_welcomemsg={"You are entering small korn's village!"}
         >
             <FigureComponent src={pixelart} caption="Pixel Art Generated from Copilot!" />
