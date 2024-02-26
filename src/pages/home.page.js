@@ -19,7 +19,7 @@ export default function HomePage() {
 
     return (
         <HomePageLayout
-            navbar_welcomemsg={"You are entering small korn's village!"}
+            navbar_welcomemsg={"You are entering Small Korn's village!"}
         >
             <FigureComponent src={pixelart} caption="Pixel Art Generated from Copilot!" />
             <PixelArtH2>Villagers: Welcome to Korn's Village!</PixelArtH2>

@@ -24,7 +24,7 @@ export default function ProjectPage() {
 
     return (
         <HomePageLayout 
-            navbar_welcomemsg={"You are at Village's bulletin board, looking at the finished project!"}
+            navbar_welcomemsg={"You are at the village's bulletin board, looking at the finished project!"}
         >
             <FigureComponent src={pixelart} caption="Pixel Art Generated from Copilot!"/>
             <PixelArtH2>Someone nearby: All of the Korn's finished quests are posted here.</PixelArtH2>

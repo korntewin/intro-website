@@ -20,7 +20,7 @@ export default function AboutMe() {
 
     return (
         <HomePageLayout 
-            navbar_welcomemsg={"You met with Korn, he is a friendly villager!"}
+            navbar_welcomemsg={"You meet with Korn, he is a friendly villager!"}
         >
             <FigureComponent src={pixelart} caption="Pixel Art Generated from Copilot!"/>
             <PixelArtH2>Korn: Hi there, welcome to the village! Well...</PixelArtH2>
