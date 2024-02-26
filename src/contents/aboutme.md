@@ -6,11 +6,11 @@ Hello! I'm a **Machine Learning Engineer** with a passion for solving complex pr
 
 ### My professional programming languages:
 
-| Programming Language | Frameworks |
-| :-: |  :-: |
-| 🐍 Python | Scikit-learn, PySpark, Tensorflow, Pytorch, FastAPI, huggingface |
-| 🦀 Rust | WebAssembly, Candle (ML Framework), Polars, Actix |
-| 💻 JavaScript | React, React-Router, React-Redux |
+| Language | Frameworks |
+| :- |  :- |
+| <img src="https://img.shields.io/badge/Rust-000000?style=for-the-badge&logo=rust&logoColor=white"> | <img src="https://github.com/carlosbaraza/web-assembly-logo/blob/master/dist/icon/web-assembly-icon-32px.png?raw=true"/> <img src="https://img.shields.io/badge/Candle-orange" height="25px"/>  <img src="https://raw.githubusercontent.com/pola-rs/polars-static/master/logos/polars_github_logo_rect_dark_name.svg" height="25px" width="auto"> <img src="https://actix.rs/img/logo.png" height="25px"> **Actix** |
+| <img src="https://img.shields.io/badge/Python-3776AB?style=for-the-badge&logo=python&logoColor=white"> | <img src="https://scikit-learn.org/stable/_static/scikit-learn-logo-small.png" height="25px" style="background-color:white"> <img src="https://spark.apache.org/docs/latest/api/python/_static/spark-logo-reverse.png" height="25px" style="background-color:black"> <img src="https://img.shields.io/badge/TensorFlow-FF6F00?style=for-the-badge&logo=tensorflow&logoColor=white"> <img src="https://github.com/pytorch/pytorch/raw/main/docs/source/_static/img/pytorch-logo-dark.png" height="25px"> <img src="https://fastapi.tiangolo.com/img/logo-margin/logo-teal.png" height="30px"> <img src="https://huggingface.co/front/assets/huggingface_logo-noborder.svg" height= "25px"> **huggingface** |
+| <img src="https://img.shields.io/badge/JavaScript-323330?style=for-the-badge&logo=javascript&logoColor=F7DF1E"> |<img src="https://img.shields.io/badge/React-20232A?style=for-the-badge&logo=react&logoColor=61DAFB"> <img src="https://img.shields.io/badge/React_Router-CA4245?style=for-the-badge&logo=react-router&logoColor=white"> <img src="https://img.shields.io/badge/Redux-593D88?style=for-the-badge&logo=redux&logoColor=white"> |
 
 ## 2. 🔥Early Days at ![KBTG logo](https://www.kbtg.tech/images/logo.svg)
 
@@ -20,8 +20,8 @@ My journey began at **KBTG**, where I spent **1.5 years** as a Machine Learning 
 
 One of the most exciting aspects was working with a complex mathematical model—**wavelet analysis**—to identify salaries. This involved diving deep into the intricacies of signal processing and pattern recognition. But that wasn't all; we also had to tackle super complex business logic to identify income patterns regardless of fraudulent activities.
 
-## 3. 🚉 Next Stop: Thinking Machines
-![TM logo](https://thinkingmachin.es/static/imgs/tab-logo.jpg)
+## 3. 🚉 Next Stop: Thinking Machines 
+<img src="https://thinkingmachin.es/static/imgs/tab-logo.jpg" width="70px" height="auto"/>
 
 After my stint at KBTG, I joined **Thinking Machines**, a dynamic tech consultancy focused on AI and data platforms. Here, I've been responsible for developing NLP (Natural Language Processing) machine learning models to extract valuable information from a large number of documents for **Stock Exchange Thailand (SET)**.
 

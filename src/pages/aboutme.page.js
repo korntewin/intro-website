@@ -5,6 +5,7 @@ import FigureComponent from '../components/img.component';
 import pixelart from '../pics/korn-pixel-art.jpg';
 import Markdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
+import rehypeRaw from 'rehype-raw'
 import path from '../contents/aboutme.md';
 
 export default function AboutMe() {
@@ -23,7 +24,7 @@ export default function AboutMe() {
         >
             <FigureComponent src={pixelart} caption="Pixel Art Generated from Copilot!"/>
             <PixelArtH2>Korn: Hi there, welcome to the village! Well...</PixelArtH2>
-            <Markdown remarkPlugins={[remarkGfm]}>
+            <Markdown rehypePlugins={[rehypeRaw]} remarkPlugins={[remarkGfm]}>
                 {markdown}
             </Markdown>
         </HomePageLayout>
