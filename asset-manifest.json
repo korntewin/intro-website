@@ -1,0 +1,25 @@
+{
+  "files": {
+    "main.css": "/intro-website/static/css/main.e6c13ad2.css",
+    "main.js": "/intro-website/static/js/main.567f4557.js",
+    "static/js/453.253ccfac.chunk.js": "/intro-website/static/js/453.253ccfac.chunk.js",
+    "static/media/woodenboard-pixel-art.jpg": "/intro-website/static/media/woodenboard-pixel-art.05e80e977763067d9082.jpg",
+    "static/media/homepage-pixel-art.jpg": "/intro-website/static/media/homepage-pixel-art.613f318dcb7be074e5d3.jpg",
+    "static/media/bsa-pixel-art.jpg": "/intro-website/static/media/bsa-pixel-art.c53f17e82569c8837e56.jpg",
+    "static/media/cats-playground.jpg": "/intro-website/static/media/cats-playground.ed42e2d60ff5b54ad263.jpg",
+    "static/media/bulletin-board-pixel-art.jpg": "/intro-website/static/media/bulletin-board-pixel-art.fd1fdb1380c48618ede3.jpg",
+    "static/media/korn-pixel-art.jpg": "/intro-website/static/media/korn-pixel-art.950927da10e754b595c0.jpg",
+    "static/media/gcp-pde.jpg": "/intro-website/static/media/gcp-pde.97da0b82fef8aa08221a.jpg",
+    "static/media/gcp-pca.jpg": "/intro-website/static/media/gcp-pca.3beec4b21a99bc5938d5.jpg",
+    "static/media/aboutme.md": "/intro-website/static/media/aboutme.77d1aae0f8e3ff4e8bfe.md",
+    "static/media/homepage.md": "/intro-website/static/media/homepage.645325198b137deb394e.md",
+    "index.html": "/intro-website/index.html",
+    "main.e6c13ad2.css.map": "/intro-website/static/css/main.e6c13ad2.css.map",
+    "main.567f4557.js.map": "/intro-website/static/js/main.567f4557.js.map",
+    "453.253ccfac.chunk.js.map": "/intro-website/static/js/453.253ccfac.chunk.js.map"
+  },
+  "entrypoints": [
+    "static/css/main.e6c13ad2.css",
+    "static/js/main.567f4557.js"
+  ]
+}
