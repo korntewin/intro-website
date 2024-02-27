@@ -2,8 +2,8 @@ import React from 'react';
 import styled from 'styled-components';
 import { PixelArtBold } from './pixelart.component.';
 import { Link } from 'react-router-dom';
-import { connect } from 'react-redux';
-import { mapStateToProps, mapDispatchToProps } from '../actions/sidebarAction';
+import useStore from '../store';
+import { useShallow } from 'zustand/react/shallow';
 
 const RustColor = '#3b2e2a';
 const SIDE_BAR_WIDTH = 250;
@@ -31,7 +31,9 @@ const LinkStyle = {
   fontSize: "0.7em",
 };
 
-const SideBarComponent = ({ isSideBarOpen, closeSideBar }) => {
+const SideBarComponent = () => {
+
+  const [isSideBarOpen, closeSideBar] = useStore(useShallow(state => [state.isSideBarOpen, state.closeSideBar]));
 
   return (
     <div>
@@ -48,5 +50,5 @@ const SideBarComponent = ({ isSideBarOpen, closeSideBar }) => {
   );
 };
 
-export default connect(mapStateToProps, mapDispatchToProps)(SideBarComponent);
+export default SideBarComponent;
 export {SIDE_BAR_WIDTH};

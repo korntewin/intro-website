@@ -3,8 +3,8 @@ import { FaGithub, FaLinkedin, FaBars } from 'react-icons/fa';
 import { SIDE_BAR_WIDTH } from './sidebar.component';
 import { PixelArtBold } from './pixelart.component.';
 import { SM_BREAKPOINT } from '../config';
-import { mapDispatchToProps, mapStateToProps } from '../actions/sidebarAction';
-import { connect } from 'react-redux';
+import useStore from '../store.js';
+import { useShallow } from 'zustand/react/shallow';
 
 const Navbar = styled.nav`
     display: flex;
@@ -34,7 +34,12 @@ const Icon = styled.a`
   text-decoration: none;
 `;
 
-const NavigationBar = ({ isSideBarOpen, openSideBar, closeSideBar, welcomemsg }) => {
+const NavigationBar = ({welcomemsg }) => {
+
+  const [isSideBarOpen, openSideBar, closeSideBar] = useStore(
+    useShallow(state => [state.isSideBarOpen, state.openSideBar, state.closeSideBar])
+  );
+
 
   return (
       <Navbar isSidebarOpen={isSideBarOpen}>
@@ -52,4 +57,4 @@ const NavigationBar = ({ isSideBarOpen, openSideBar, closeSideBar, welcomemsg })
   );
 }
 
-export default connect(mapStateToProps, mapDispatchToProps)(NavigationBar);
+export default NavigationBar;

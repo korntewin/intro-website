@@ -1,7 +1,11 @@
-import { configureStore } from "@reduxjs/toolkit";
-import sidebarReducer from "./reducers/sidebarReducer";
+import { create } from "zustand";
 
 
-const store = configureStore({reducer: sidebarReducer});
+const useStore = create((set) => ({
+    isSideBarOpen: false,
+    openSideBar: () => set({ isSideBarOpen: true }),
+    closeSideBar: () => set({ isSideBarOpen: false }),
+}))
 
-export default store;
+
+export default useStore;
