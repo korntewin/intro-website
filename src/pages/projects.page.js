@@ -9,7 +9,7 @@ import bsa from '../pics/bsa-pixel-art.jpg'
 const boxes = [
   // Add your box data here
   // { image: 'image_url', summary: 'summary text', link: 'page_link' }
-  { image: "https://avatars.githubusercontent.com/u/37272798?s=200&v=4", summary: "Real-time Object Detection using Rust's WebAssembly + React on YOLOv8", link: "https://github.com/korntewin/yolo-wasm"},
+  { image: "https://assets-global.website-files.com/5f6bc60e665f54db361e52a9/63f6895d515270ffdafd36d5_yolov8-p-500.png", summary: "Real-time Object Detection using Rust's WebAssembly + React on YOLOv8", link: "https://github.com/korntewin/yolo-wasm"},
   { image: "https://images.credly.com/size/340x340/images/2d84e428-9078-49b6-a804-13c15383d0de/image.png", summary: "AWS Certified Solutions Architect – Professional", link: "https://www.credly.com/badges/039ba124-fcf5-4fbf-b4b5-de7817f1d675/linked_in_profile"},
   { image: "https://templates.images.credential.net/16590181582433100721069374350922.png", summary: "GCP Certified Professional Cloud Architect", link: "https://google.accredible.com/34e8fd91-a68a-4325-83e0-fdea8c1e3d44"},
   { image: "https://templates.images.credential.net/16590189412502689960209276019161.png", summary: "GCP Certified Professional Data Engineer", link: "https://google.accredible.com/0bc42dee-895c-4e69-a924-8640cdfe01fd"},
