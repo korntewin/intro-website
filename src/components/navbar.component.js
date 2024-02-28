@@ -15,6 +15,8 @@ const Navbar = styled.nav`
     top: 0;
     margin-left: ${props => props.isSidebarOpen ? `${SIDE_BAR_WIDTH + 40}px` : '0'};
     transition: margin-left 0.3s ease;
+    transform: ${props => props.isNavOpen ? 'translateY(0)' : 'translateY(-100%)'};
+    transition: transform 0.3s ease;
 `;
 
 const Hamburger = styled(FaBars)`
@@ -36,13 +38,13 @@ const Icon = styled.a`
 
 const NavigationBar = ({welcomemsg }) => {
 
-  const [isSideBarOpen, openSideBar, closeSideBar] = useStore(
-    useShallow(state => [state.isSideBarOpen, state.openSideBar, state.closeSideBar])
+  const [isSideBarOpen, openSideBar, closeSideBar, isNavOpen] = useStore(
+    useShallow(state => [state.isSideBarOpen, state.openSideBar, state.closeSideBar, state.isNavOpen])
   );
 
 
   return (
-      <Navbar isSidebarOpen={isSideBarOpen}>
+      <Navbar isSidebarOpen={isSideBarOpen} isNavOpen={isNavOpen}>
         <Hamburger onClick={() => isSideBarOpen ? closeSideBar() : openSideBar()}/>
         <PixelArtBold color="gray">{welcomemsg}</PixelArtBold>
         <div>

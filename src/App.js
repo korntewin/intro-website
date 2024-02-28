@@ -1,12 +1,20 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { HashRouter, Route, Routes } from 'react-router-dom';
 import HomePage from './pages/home.page';
 import AboutMe from './pages/aboutme.page';
 import ProjectPage from './pages/projects.page';
 import AboutMyCat from './pages/mycat.page';
+import useStore from './store';
+import { useShallow } from 'zustand/react/shallow';
 
 
 function App() {
+
+  const onScrollHandler = useStore(useShallow(state => state.onScrollHandler));
+
+  useEffect(() => {
+      window.addEventListener('scroll', onScrollHandler);
+  }, []);
 
   const [open, setOpen] = useState(false);
 
