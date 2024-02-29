@@ -17,7 +17,11 @@ const PixelArtH4 = styled.h4`
   color: #333;
 `;
 
-const PixelArtBold = styled.span`
+type PixelArtProps = {
+  color?: String
+};
+
+const PixelArtBold = styled.span<PixelArtProps>`
   font-family: 'Press Start 2P', cursive; // This is a pixel art-like font
   font-size: 1em;
   padding-bottom: 0.5em;
@@ -35,7 +39,7 @@ const PixelArtBold = styled.span`
 `;
 
 
-const PixelArtP = styled.span`
+const PixelArtP = styled.span<PixelArtProps>`
   font-family: 'VT323', cursive; // This is a pixel art-like font
   text-align: center;
   ${props => props.color && `color: ${props.color}`};

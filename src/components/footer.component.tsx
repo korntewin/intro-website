@@ -7,7 +7,11 @@ const Footer = styled.footer`
   margin-right: 1em;
 `;
 
-const CopyrightText = styled.p`
+type CopyrightTextProps = {
+  marginTop?: string;
+};
+
+const CopyrightText = styled.p<CopyrightTextProps>`
   font-family: 'Arial', sans-serif;
   font-size: 14px;
   padding-left: 1em;

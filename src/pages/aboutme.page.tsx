@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import HomePageLayout from '../layouts/homepage.layout';
 import PixelArtH2 from '../components/pixelart.component.';
 import FigureComponent from '../components/img.component';

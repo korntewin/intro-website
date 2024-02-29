@@ -3,7 +3,13 @@ import SideBarComponent from '../components/sidebar.component';
 import BodyComponent from '../components/body.component';
 import FooterComponent from '../components/footer.component';
 
-const HomePageLayout = ({ children, navbar_welcomemsg }) => {
+interface HomePageLayoutProps {
+    children: React.ReactNode;
+    navbar_welcomemsg: string;
+}
+
+
+const HomePageLayout = ({ children, navbar_welcomemsg }: HomePageLayoutProps) => {
 
     return (
         <div>

@@ -16,15 +16,13 @@ function App() {
       window.addEventListener('scroll', onScrollHandler);
   }, []);
 
-  const [open, setOpen] = useState(false);
-
   return (
     <HashRouter>
       <Routes>
-        <Route path="/" element={<HomePage isSidebarOpen={open} setSideBarOpen={setOpen}/>}></Route>
-        <Route path="/about" element={<AboutMe isSidebarOpen={open} setSideBarOpen={setOpen}/>}></Route>
-        <Route path="/project" element={<ProjectPage isSidebarOpen={open} setSideBarOpen={setOpen}/>}></Route>
-        <Route path="/mycat" element={<AboutMyCat isSidebarOpen={open} setSideBarOpen={setOpen}/>}></Route>
+        <Route path="/" element={<HomePage />}></Route>
+        <Route path="/about" element={<AboutMe />}></Route>
+        <Route path="/project" element={<ProjectPage />}></Route>
+        <Route path="/mycat" element={<AboutMyCat />}></Route>
       </Routes>
 
     </HashRouter>

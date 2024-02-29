@@ -2,6 +2,7 @@ import { Link } from 'react-router-dom';
 import styled from 'styled-components';
 import { PixelArtP } from './pixelart.component.';
 import woodTexture from '../pics/woodenboard-pixel-art.jpg'
+import React from 'react';
 
 const Board = styled.div`
   display: flex;
@@ -55,7 +56,7 @@ const Summary = styled(PixelArtP)`
   font-weight: bold;
 `;
 
-export default function BoardComponent({ children }) {
+export default function BoardComponent({ children }: {children: React.ReactNode }) {
     return (
         <Board>
             {children}

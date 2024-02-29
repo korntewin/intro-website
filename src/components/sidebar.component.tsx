@@ -8,7 +8,11 @@ import { useShallow } from 'zustand/react/shallow';
 const RustColor = '#3b2e2a';
 const SIDE_BAR_WIDTH = 250;
 
-const Sidebar = styled.aside`
+type SidebarProps = {
+  isOpen: boolean;
+}
+
+const Sidebar = styled.aside<SidebarProps>`
   position: fixed;
   top: 0;
   background-color: ${RustColor}; 

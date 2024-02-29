@@ -1,10 +1,11 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import HomePageLayout from '../layouts/homepage.layout';
 import PixelArtH2 from '../components/pixelart.component.';
 import FigureComponent from '../components/img.component';
 import pixelart from '../pics/homepage-pixel-art.jpg';
 import Markdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
+import rehypeRaw from 'rehype-raw';
 import hompageContentPath from '../contents/homepage.md';
 
 export default function HomePage() {
@@ -23,7 +24,7 @@ export default function HomePage() {
         >
             <FigureComponent src={pixelart} caption="Pixel Art Generated from Copilot!" />
             <PixelArtH2>Villagers: Welcome to Korn's Village!</PixelArtH2>
-            <Markdown remarkPlugins={[remarkGfm]}>
+            <Markdown remarkPlugins={[remarkGfm]} rehypePlugins={[rehypeRaw]}>
                 {markdown}
             </Markdown>
         </HomePageLayout>

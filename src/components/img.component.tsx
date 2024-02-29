@@ -15,7 +15,7 @@ const FigCaption = styled.figcaption`
   color: gray;
 `
 
-export default function FigureComponent({ src, caption }) {
+export default function FigureComponent({ src, caption }: { src: string, caption: string }) {
   return (
     <Figure>
         <Image src={src}></Image>

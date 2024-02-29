@@ -3,10 +3,15 @@ import { FaGithub, FaLinkedin, FaBars } from 'react-icons/fa';
 import { SIDE_BAR_WIDTH } from './sidebar.component';
 import { PixelArtBold } from './pixelart.component.';
 import { SM_BREAKPOINT } from '../config';
-import useStore from '../store.js';
+import useStore from '../store';
 import { useShallow } from 'zustand/react/shallow';
 
-const Navbar = styled.nav`
+type NavBarProps = {
+  isSidebarOpen: boolean;
+  isNavOpen: boolean;
+};
+
+const Navbar = styled.nav<NavBarProps>`
     display: flex;
     justify-content: space-between;
     padding: 1em 0.5em 0.0em 1.5em;
@@ -36,7 +41,7 @@ const Icon = styled.a`
   text-decoration: none;
 `;
 
-const NavigationBar = ({welcomemsg }) => {
+const NavigationBar = ({ welcomemsg }: { welcomemsg: String }) => {
 
   const [isSideBarOpen, openSideBar, closeSideBar, isNavOpen] = useStore(
     useShallow(state => [state.isSideBarOpen, state.openSideBar, state.closeSideBar, state.isNavOpen])
