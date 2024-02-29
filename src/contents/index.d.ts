@@ -1,4 +1,4 @@
 declare module "*.md" {
-    const value: any;
-    export = value;
+  const value: any;
+  export = value;
 }

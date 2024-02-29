@@ -1,8 +1,8 @@
-import { Link } from 'react-router-dom';
-import styled from 'styled-components';
-import { PixelArtP } from './pixelart.component.';
-import woodTexture from '../pics/woodenboard-pixel-art.jpg'
-import React from 'react';
+import { Link } from "react-router-dom";
+import styled from "styled-components";
+import { PixelArtP } from "./pixelart.component.";
+import woodTexture from "../pics/woodenboard-pixel-art.jpg";
+import React from "react";
 
 const Board = styled.div`
   display: flex;
@@ -35,7 +35,7 @@ const Box = styled(Link)`
   }
 
   // Pixel-art border
-  box-shadow: 
+  box-shadow:
     0 0 0 1px #000,
     0 0 0 4px #fff,
     0 0 0 5px #000;
@@ -56,12 +56,12 @@ const Summary = styled(PixelArtP)`
   font-weight: bold;
 `;
 
-export default function BoardComponent({ children }: {children: React.ReactNode }) {
-    return (
-        <Board>
-            {children}
-        </Board>
-    );
+export default function BoardComponent({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
+  return <Board>{children}</Board>;
 }
 
 export { Box, Image, Summary };

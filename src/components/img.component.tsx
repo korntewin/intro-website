@@ -8,20 +8,26 @@ const Image = styled.img`
 const Figure = styled.figure`
   margin: 0;
   text-align: center;
-`
+`;
 
 const FigCaption = styled.figcaption`
   font-size: 0.8em;
   color: gray;
-`
+`;
 
-export default function FigureComponent({ src, caption }: { src: string, caption: string }) {
+export default function FigureComponent({
+  src,
+  caption,
+}: {
+  src: string;
+  caption: string;
+}) {
   return (
     <Figure>
-        <Image src={src}></Image>
-        <FigCaption>{caption}</FigCaption>
+      <Image src={src}></Image>
+      <FigCaption>{caption}</FigCaption>
     </Figure>
   );
 }
 
-export {Image, Figure};
+export { Image, Figure };
