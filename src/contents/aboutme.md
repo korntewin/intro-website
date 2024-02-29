@@ -42,7 +42,7 @@ Our NLP model is a powerful ensemble of:
 
 Before diving into industry work, I pursued my Master's in Electrical Engineering at **Chulalongkorn University**, specializing in Power Systems. My research focused on optimizing battery energy storage systems and demand response using quadratic programming and augmented Lagrangian particle swarm optimization.
 
-After graduating, I landed my first job as a **power system engineer** at <a href="https://www.gpscgroup.com/th/home" target="_blank" rel="noopener noreferrer">GPCS</a> around 2020. At that time, data science was booming in Thailand, piquing my interest and making me consider a career switch! I dedicated my evenings to studying Software Engineering and Machine Learning. Eventually, I transitioned to a software-house startup company called <a href="https://www.blockfint.com/" target="_blank" rel="noopener noreferrer">Blockfint</a> as a Business Analyst before successfully switching to the role of a **Machine Learning Engineer** at KBTG. Woohoo!
+After graduating, I landed my first job as a **power system engineer** at <a href="https://www.gpscgroup.com/th/home" target="_blank" rel="noopener noreferrer">GPSC</a> around 2020. At that time, data science was booming in Thailand, piquing my interest and making me consider a career switch! I dedicated my evenings to studying Software Engineering and Machine Learning. Eventually, I transitioned to a software-house startup company called <a href="https://www.blockfint.com/" target="_blank" rel="noopener noreferrer">Blockfint</a> as a Business Analyst before successfully switching to the role of a **Machine Learning Engineer** at KBTG. Woohoo!
 
 
 ## 5. The Role of a Machine Learning Engineer
