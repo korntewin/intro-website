@@ -15,6 +15,13 @@ const boxes = [
   // { image: 'image_url', summary: 'summary text', link: 'page_link' }
   {
     image:
+      "https://github.com/korntewin/gpt-tkn-analyzer/raw/main/pics/en_wordcloud.jpg.png",
+    summary:
+      "Analyze language bias' in GPT tokenizer using WordCloud",
+    link: "https://github.com/korntewin/gpt-tkn-analyzer",
+  },
+  {
+    image:
       "https://assets-global.website-files.com/5f6bc60e665f54db361e52a9/63f6895d515270ffdafd36d5_yolov8-p-500.png",
     summary:
       "Real-time Object Detection using Rust's WebAssembly + React on YOLOv8",
