@@ -15,6 +15,13 @@ const boxes = [
   // { image: 'image_url', summary: 'summary text', link: 'page_link' }
   {
     image:
+      "https://yew.rs/img/logo.svg",
+    summary:
+      "Real-time Object Detection using Pure Rust: Yew + WebAssembly on YOLOv8!",
+    link: "https://github.com/korntewin/yolo-wasm-yew",
+  },
+  {
+    image:
       "https://github.com/korntewin/gpt-tkn-analyzer/raw/main/pics/en_wordcloud.jpg.png",
     summary:
       "Analyze language bias' in GPT tokenizer using WordCloud",
