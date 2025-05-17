@@ -28,7 +28,8 @@ export default function ShowCasesV2({
 }: ShowCasesV2Props) {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isPaused, setIsPaused] = useState(false);
-  const [progress, setProgress] = useState(0);
+  const progressBarRef = useRef<HTMLDivElement>(null);
+  const progressRef = useRef<number>(0);
   const containerRef = useRef<HTMLDivElement>(null);
 
   // Auto-rotate with progress tracking using configurable interval
@@ -36,21 +37,19 @@ export default function ShowCasesV2({
     if (highlights.length <= 1 || isPaused) return;
 
     // Reset progress when index changes
-    setProgress(0);
 
     // Animation interval for progress bar
     const progressUpdateInterval = AppConfig.showcases.progressUpdateIntervalMs;
     const progressIntervalRef = setInterval(() => {
-      setProgress((prev) => {
-        const newProgress =
-          prev + (progressUpdateInterval / autoRotateIntervalMs) * 100;
-        return newProgress > 100 ? 100 : newProgress;
-      });
+      const newProgress = progressRef.current + (progressUpdateInterval / autoRotateIntervalMs) * 100;
+      progressRef.current = newProgress > 100 ? 100 : newProgress;
+      progressBarRef.current!.style.width = `${progressRef.current}%`;
     }, progressUpdateInterval);
 
     // Slide change interval
     const slideInterval = setInterval(() => {
       setCurrentIndex((prevIndex) => (prevIndex + 1) % highlights.length);
+      progressRef.current = 0;
     }, autoRotateIntervalMs);
 
     return () => {
@@ -64,12 +63,12 @@ export default function ShowCasesV2({
     setCurrentIndex((prevIndex) =>
       prevIndex === 0 ? highlights.length - 1 : prevIndex - 1
     );
-    setProgress(0); // Reset progress when manually changing slides
+    progressRef.current = 0;
   }, [highlights.length]);
 
   const goToNext = useCallback(() => {
     setCurrentIndex((prevIndex) => (prevIndex + 1) % highlights.length);
-    setProgress(0); // Reset progress when manually changing slides
+    progressRef.current = 0;
   }, [highlights.length]);
 
   // Handle keyboard navigation
@@ -90,8 +89,9 @@ export default function ShowCasesV2({
 
   // Pause on hover
   const handleMouseEnter = useCallback(() => {
+    progressRef.current = 0;
+    progressBarRef.current!.style.width = `${progressRef.current}%`;
     setIsPaused(true);
-    setProgress(0);
   }, []);
 
   const handleMouseLeave = useCallback(() => {
@@ -180,10 +180,12 @@ export default function ShowCasesV2({
 
       {/* Progress bar */}
       {highlights.length > 1 && (
-        <div className={styles.progressContainer}>
+        <div 
+          ref={progressBarRef}
+          className={styles.progressContainer}
+        >
           <div
             className={styles.progressBar}
-            style={{ width: `${progress}%` }}
           />
         </div>
       )}
@@ -199,7 +201,7 @@ export default function ShowCasesV2({
               }`}
               onClick={() => {
                 setCurrentIndex(i);
-                setProgress(0);
+                progressRef.current = 0;
               }}
               aria-label={`Go to slide ${i + 1}`}
             />
