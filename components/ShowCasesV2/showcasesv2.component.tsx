@@ -107,8 +107,6 @@ export default function ShowCasesV2({
     return null; // Don't render if no highlights
   }
 
-  const currentHighlight = highlights[currentIndex];
-
   return (
     <div
       ref={containerRef}
