@@ -31,6 +31,7 @@ export default function ShowCasesV2({
   const progressBarRef = useRef<HTMLDivElement>(null);
   const progressRef = useRef<number>(0);
   const containerRef = useRef<HTMLDivElement>(null);
+  const [slideDirection, setSlideDirection] = useState<"next" | "prev">("next");
 
   // Auto-rotate with progress tracking using configurable interval
   useEffect(() => {
@@ -41,7 +42,9 @@ export default function ShowCasesV2({
     // Animation interval for progress bar
     const progressUpdateInterval = AppConfig.showcases.progressUpdateIntervalMs;
     const progressIntervalRef = setInterval(() => {
-      const newProgress = progressRef.current + (progressUpdateInterval / autoRotateIntervalMs) * 100;
+      const newProgress =
+        progressRef.current +
+        (progressUpdateInterval / autoRotateIntervalMs) * 100;
       progressRef.current = newProgress > 100 ? 100 : newProgress;
       progressBarRef.current!.style.width = `${progressRef.current}%`;
     }, progressUpdateInterval);
@@ -60,6 +63,7 @@ export default function ShowCasesV2({
 
   // Manual navigation functions
   const goToPrevious = useCallback(() => {
+    setSlideDirection("prev");
     setCurrentIndex((prevIndex) =>
       prevIndex === 0 ? highlights.length - 1 : prevIndex - 1
     );
@@ -67,6 +71,7 @@ export default function ShowCasesV2({
   }, [highlights.length]);
 
   const goToNext = useCallback(() => {
+    setSlideDirection("next");
     setCurrentIndex((prevIndex) => (prevIndex + 1) % highlights.length);
     progressRef.current = 0;
   }, [highlights.length]);
@@ -129,43 +134,102 @@ export default function ShowCasesV2({
           <ArrowLeft />
         </button>
 
-        <div className={styles.showcaseContent}>
-          <div className={styles.imageContainer}>
-            <Image
-              src={currentHighlight.image}
-              alt={currentHighlight.title}
-              style={{ objectFit: "contain" }}
-              fill
-              className={styles.showcaseImage}
-            />
-          </div>
+        {/* NEW: Viewport for slides */}
+        <div className={styles.slidesViewport}>
+          {highlights.map((highlight, index) => {
+            let positionStyle: React.CSSProperties = {};
+            if (index === currentIndex) {
+              positionStyle = {
+                transform: "translateX(0%)",
+                opacity: 1,
+                zIndex: 1,
+              };
+            } else if (
+              index ===
+              (currentIndex - 1 + highlights.length) % highlights.length
+            ) {
+              // Previous slide
+              positionStyle = {
+                transform:
+                  slideDirection === "next"
+                    ? "translateX(-100%)"
+                    : "translateX(-100%)",
+                opacity: 0,
+                zIndex: 0,
+              };
+            } else if (index === (currentIndex + 1) % highlights.length) {
+              // Next slide
+              positionStyle = {
+                transform:
+                  slideDirection === "prev"
+                    ? "translateX(100%)"
+                    : "translateX(100%)",
+                opacity: 0,
+                zIndex: 0,
+              };
+            } else {
+              // Other slides (further away)
+              // Position them further out to avoid them flashing in during quick transitions
+              // or if the transition logic needs them to be 'somewhere'
+              positionStyle = {
+                transform:
+                  index < currentIndex
+                    ? "translateX(-200%)"
+                    : "translateX(200%)",
+                opacity: 0,
+                zIndex: 0,
+              };
+            }
 
-          <div className={styles.textContainer}>
-            <h2 className={styles.showcaseTitle}>{currentHighlight.title}</h2>
-            <p className={styles.showcaseSummary}>{currentHighlight.summary}</p>
-
-            {currentHighlight.technologies && (
-              <div className={styles.technologies}>
-                {currentHighlight.technologies.map((tech, i) => (
-                  <span key={i} className={styles.techBadge}>
-                    {tech}
-                  </span>
-                ))}
-              </div>
-            )}
-
-            {currentHighlight.link && (
-              <a
-                href={currentHighlight.link}
-                className={styles.projectLink}
-                target="_blank"
-                rel="noopener noreferrer"
+            return (
+              <div
+                key={highlight.id} // Use a unique ID from your data
+                className={`${styles.showcaseContent} ${
+                  index === currentIndex ? styles.activeSlide : ""
+                }`}
+                style={positionStyle}
+                aria-hidden={index !== currentIndex}
               >
-                View Project
-                <FollowLink />
-              </a>
-            )}
-          </div>
+                <div className={styles.imageContainer}>
+                  <Image
+                    src={highlight.image} // Use highlight.image
+                    alt={highlight.title} // Use highlight.title
+                    style={{ objectFit: "contain" }}
+                    fill
+                    className={styles.showcaseImage}
+                    priority={index === 0} // Prioritize the first image
+                  />
+                </div>
+
+                <div className={styles.textContainer}>
+                  <h2 className={styles.showcaseTitle}>{highlight.title}</h2>
+                  <p className={styles.showcaseSummary}>{highlight.summary}</p>
+
+                  {highlight.technologies && (
+                    <div className={styles.technologies}>
+                      {highlight.technologies.map((tech, i) => (
+                        <span key={i} className={styles.techBadge}>
+                          {tech}
+                        </span>
+                      ))}
+                    </div>
+                  )}
+
+                  {highlight.link && (
+                    <a
+                      href={highlight.link}
+                      className={styles.projectLink}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
+                      View Project
+                      <FollowLink />
+                    </a>
+                  )}
+                </div>
+              </div>
+            );
+          })}
         </div>
 
         <button
@@ -179,13 +243,8 @@ export default function ShowCasesV2({
 
       {/* Progress bar */}
       {highlights.length > 1 && (
-        <div 
-          className={styles.progressContainer}
-        >
-          <div
-            ref={progressBarRef}
-            className={styles.progressBar}
-          />
+        <div className={styles.progressContainer}>
+          <div ref={progressBarRef} className={styles.progressBar} />
         </div>
       )}
 
@@ -199,6 +258,9 @@ export default function ShowCasesV2({
                 i === currentIndex ? styles.active : ""
               }`}
               onClick={() => {
+                // Determine direction for transition if needed, though direct click might not need it
+                // For simplicity, we can assume 'next' or check if i > currentIndex
+                setSlideDirection(i > currentIndex ? "next" : "prev");
                 setCurrentIndex(i);
                 progressRef.current = 0;
               }}

@@ -49,6 +49,14 @@
   position: relative;
 }
 
+.slidesViewport {
+  position: relative;
+  width: 100%;
+  min-height: 400px;
+  overflow: hidden;
+  border-radius: 12px;
+}
+
 .showcaseContent {
   display: flex;
   flex-direction: row;
@@ -62,10 +70,12 @@
   border-radius: 12px;
   padding: 2rem;
   box-shadow: 0 15px 40px rgba(0, 0, 0, 0.3);
-  transition: all 0.3s ease;
-  overflow: hidden;
   backdrop-filter: blur(10px);
   border: 1px solid rgba(148, 163, 184, 0.1);
+  position: absolute;
+  top: 0;
+  left: 0;
+  transition: transform 0.5s ease-in-out, opacity 0.5s ease-in-out;
 }
 
 .imageContainer {
@@ -82,7 +92,7 @@
   transition: transform 0.5s ease;
 }
 
-.showcaseContent:hover .showcaseImage {
+.showcaseContent.activeSlide:hover .showcaseImage {
   transform: scale(1.05);
 }
 
@@ -229,6 +239,10 @@
     min-height: auto;
     padding: 1.5rem;
     gap: 1.5rem;
+  }
+  
+  .slidesViewport {
+    min-height: auto;
   }
   
   .imageContainer {
