@@ -1,0 +1,290 @@
+.showcasesContainer {
+  width: 100%;
+  max-width: 1200px;
+  margin: 2rem auto;
+  position: relative;
+  outline: none;
+}
+
+.showcasesContainer:focus {
+  outline: 2px solid rgba(255, 255, 255, 0.2);
+  border-radius: 12px;
+}
+
+.slideIndicator {
+  position: absolute;
+  top: -30px;
+  right: 0;
+  color: white;
+  font-size: 0.85rem;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  z-index: 3;
+}
+
+.pausedIndicator {
+  background-color: rgba(255, 255, 255, 0.2);
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-weight: 600;
+  letter-spacing: 1px;
+  font-size: 0.7rem;
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0% { opacity: 0.6; }
+  50% { opacity: 1; }
+  100% { opacity: 0.6; }
+}
+
+.showcaseWrapper {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  width: 100%;
+  position: relative;
+}
+
+.showcaseContent {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  gap: 2rem;
+  width: 100%;
+  min-height: 400px;
+  background-color: rgba(22, 22, 26, 0.9);
+  border-radius: 12px;
+  padding: 2rem;
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.2);
+  transition: all 0.3s ease;
+  overflow: hidden;
+}
+
+.imageContainer {
+  position: relative;
+  width: 50%;
+  height: 350px;
+  border-radius: 8px;
+  overflow: hidden;
+  flex-shrink: 0;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+}
+
+.showcaseImage {
+  transition: transform 0.5s ease;
+}
+
+.showcaseContent:hover .showcaseImage {
+  transform: scale(1.05);
+}
+
+.textContainer {
+  width: 45%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 1.2rem;
+}
+
+.showcaseTitle {
+  font-size: 2rem;
+  font-weight: 700;
+  margin: 0;
+  color: #f8f8f8;
+  background: linear-gradient(135deg, #f8f8f8, #d3d3d3);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.showcaseSummary {
+  font-size: 1.1rem;
+  line-height: 1.6;
+  color: #e0e0e0;
+  margin: 0;
+}
+
+.technologies {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-top: 0.5rem;
+}
+
+.techBadge {
+  background-color: rgba(255, 255, 255, 0.15);
+  color: #e0e0e0;
+  padding: 0.25rem 0.75rem;
+  border-radius: 50px;
+  font-size: 0.85rem;
+  font-weight: 500;
+}
+
+.projectLink {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 0.75rem;
+  color: #66ccff;
+  font-weight: 500;
+  text-decoration: none;
+  padding: 8px 16px;
+  background-color: rgba(102, 204, 255, 0.1);
+  border-radius: 4px;
+  transition: all 0.2s ease;
+}
+
+.projectLink svg {
+  transition: transform 0.2s ease;
+}
+
+.projectLink:hover {
+  background-color: rgba(102, 204, 255, 0.2);
+}
+
+.projectLink:hover svg {
+  transform: translateX(2px);
+}
+
+.navButton {
+  background-color: rgba(255, 255, 255, 0.1);
+  border: none;
+  color: white;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  z-index: 2;
+  opacity: 0.7;
+}
+
+.navButton:hover {
+  background-color: rgba(255, 255, 255, 0.2);
+  transform: scale(1.1);
+  opacity: 1;
+}
+
+.progressContainer {
+  width: 100%;
+  height: 4px;
+  background-color: rgba(255, 255, 255, 0.1);
+  border-radius: 2px;
+  margin-top: 1rem;
+  overflow: hidden;
+}
+
+.progressBar {
+  height: 100%;
+  background-color: rgba(255, 255, 255, 0.7);
+  border-radius: 2px;
+  transition: width 30ms linear;
+}
+
+.indicators {
+  display: flex;
+  justify-content: center;
+  gap: 0.7rem;
+  margin-top: 1.5rem;
+}
+
+.indicator {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background-color: rgba(255, 255, 255, 0.3);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  border: none;
+  padding: 0;
+}
+
+.indicator.active {
+  background-color: white;
+  transform: scale(1.2);
+}
+
+@media (max-width: 768px) {
+  .showcaseContent {
+    flex-direction: column;
+    min-height: auto;
+    padding: 1.5rem;
+    gap: 1.5rem;
+  }
+  
+  .imageContainer {
+    width: 100%;
+    height: 250px;
+  }
+  
+  .textContainer {
+    width: 100%;
+    margin-top: 0;
+  }
+  
+  .showcaseTitle {
+    font-size: 1.75rem;
+  }
+  
+  .navButton {
+    width: 36px;
+    height: 36px;
+  }
+  
+  .showcaseWrapper {
+    gap: 0.5rem;
+  }
+  
+  .technologies {
+    margin-bottom: 0.5rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .showcasesContainer {
+    margin: 1rem auto;
+  }
+  
+  .showcaseContent {
+    padding: 1rem;
+  }
+  
+  .imageContainer {
+    height: 200px;
+  }
+  
+  .showcaseTitle {
+    font-size: 1.5rem;
+  }
+  
+  .showcaseSummary {
+    font-size: 1rem;
+  }
+  
+  .navButton {
+    width: 32px;
+    height: 32px;
+  }
+  
+  .navButton svg {
+    width: 16px;
+    height: 16px;
+  }
+  
+  .indicators {
+    margin-top: 1rem;
+  }
+  
+  .indicator {
+    width: 10px;
+    height: 10px;
+  }
+}
