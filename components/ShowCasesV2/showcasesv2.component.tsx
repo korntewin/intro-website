@@ -94,11 +94,11 @@ export default function ShowCasesV2({
   // Pause on hover
   const handleMouseEnter = useCallback(() => {
     setIsPaused(true);
+    setProgress(0);
   }, []);
 
   const handleMouseLeave = useCallback(() => {
     setIsPaused(false);
-    setProgress(0); // Reset progress when resuming
   }, []);
 
   if (highlights.length === 0) {
@@ -182,7 +182,7 @@ export default function ShowCasesV2({
       </div>
 
       {/* Progress bar */}
-      {highlights.length > 1 && !isPaused && (
+      {highlights.length > 1 && (
         <div className={styles.progressContainer}>
           <div
             className={styles.progressBar}
