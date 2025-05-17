@@ -28,7 +28,7 @@ export default function Hero() {
       <div className={styles.heroImageContainer}>
         <div className={styles.heroImageWrapper}>
           <Image
-            src="/globe.svg"
+            src="https://raw.githubusercontent.com/korntewin/intro-website/fe4f4f19fccd45c8fa4c094422aec1be0913e1af/public/globe.svg"
             alt="Profile"
             className={styles.heroImage}
             width={300}
