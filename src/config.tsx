@@ -1,4 +1,0 @@
-const SM_BREAKPOINT = 768;
-const MIN_SCROLL_DIFF = 60;
-
-export { SM_BREAKPOINT, MIN_SCROLL_DIFF };
