@@ -134,9 +134,8 @@ export default function ShowCasesV2({
             <Image
               src={currentHighlight.image}
               alt={currentHighlight.title}
-              fill
               style={{ objectFit: "contain" }}
-              priority
+              fill
               className={styles.showcaseImage}
             />
           </div>

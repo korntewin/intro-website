@@ -88,6 +88,9 @@
 
 .textContainer {
   width: 45%;
+  height: 400px;
+  padding-top: 1.5rem;
+  overflow: scroll;
   display: flex;
   flex-direction: column;
   justify-content: center;

@@ -12,7 +12,7 @@ export const AppConfig = {
   highlightedProjects: [
     {
       id: "fullstack-chatbot",
-      image: "./chatbot-fullstack-logo.svg",
+      image: "./chatbot-fullstack-logo.webp",
       title: "Fullstack Realtime Chatbot",
       summary:
         "A comprehensive chatbot application with real-time messaging capabilities. Built with a modern tech stack including Next.js, React, Python backend, and advanced AI integrations.",
@@ -54,7 +54,7 @@ export const AppConfig = {
       id: "hybrid-search-vector-db-thai",
       image: "./vector-db-article-logo.webp",
       title:
-        "Full-Text, Vector, and Hybrid Search in Vector Databases for Thai",
+        "Full-Text, Vector, and Hybrid Search for Thai",
       summary:
         "This article details Full-Text, Vector, and Hybrid search in vector databases, stressing Thai tokenization's vital role for Full-Text/Hybrid methods (using Inverted Indexes, BM25).",
       technologies: [
