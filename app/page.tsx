@@ -1,9 +1,8 @@
 import styles from "./page.module.css";
 import ShowCasesV2 from "@/components/ShowCasesV2/showcasesv2.component";
 import Hero from "@/components/Hero/hero.component";
+import About from "@/components/About/about.component";
 import { AppConfig } from "@/config/app-config";
-import Image from "next/image";
-import Link from "next/link";
 
 export default function Home() {
   return (
@@ -18,33 +17,7 @@ export default function Home() {
 
         {/* Hero Section */}
         <Hero />
-
-        {/* About Section */}
-        <section className={styles.section} id="about">
-          <h2 className={styles.sectionTitle}>About Me</h2>
-          <div className={styles.aboutContent}>
-            <p className={styles.description}>
-              I'm a passionate Softare Engineer specializing in LLMs and Machine Learning applications.
-              With a strong foundation in software engineering principles and cloud technologies, 
-              I specialize in turning complex data challenges into elegant, scalable solutions.
-            </p>
-            
-            <div className={styles.highlights}>
-              <div className={styles.highlight}>
-                <h3>5+</h3>
-                <p>Years of Experience</p>
-              </div>
-              {/* <div className={styles.highlight}>
-                <h3>20+</h3>
-                <p>Projects Completed</p>
-              </div>
-              <div className={styles.highlight}>
-                <h3>10+</h3>
-                <p>Technologies Mastered</p>
-              </div> */}
-            </div>
-          </div>
-        </section>
+        <About />
 
         {/* Skills Section */}
         <section className={styles.section} id="skills">

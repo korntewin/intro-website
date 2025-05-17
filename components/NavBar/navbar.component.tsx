@@ -29,7 +29,7 @@ export default function Navbar() {
         <nav className={`${styles.navbar} ${isScrolled ? styles.scrolled : ""}`}>
             <div className={styles.navContainer}>
                 <Link href="/" className={styles.logo}>
-                    <span>John Doe</span>
+                    <span>Korntewin (korn) </span>
                 </Link>
 
                 <button className={styles.mobileMenuButton} onClick={toggleMobileMenu} aria-label="Toggle navigation menu">
@@ -43,9 +43,6 @@ export default function Navbar() {
                 <ul className={`${styles.navLinks} ${mobileMenuOpen ? styles.mobileActive : ""}`}>
                     <li className={styles.navItem}>
                         <Link href="/" className={styles.navLink} onClick={() => setMobileMenuOpen(false)}>Home</Link>
-                    </li>
-                    <li className={styles.navItem}>
-                        <Link href="#projects" className={styles.navLink} onClick={() => setMobileMenuOpen(false)}>Projects</Link>
                     </li>
                     <li className={styles.navItem}>
                         <Link href="#about" className={styles.navLink} onClick={() => setMobileMenuOpen(false)}>About</Link>
