@@ -4,6 +4,10 @@
   margin: 0 auto;
   padding: 2rem 0;
   scroll-margin-top: 5rem;
+  height: 80vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
 }
 
 .sectionTitle {

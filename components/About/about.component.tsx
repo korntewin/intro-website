@@ -8,7 +8,7 @@ export default function About() {
       <h2 className={styles.sectionTitle}>About Me</h2>
       <div className={styles.aboutContent}>
         <p className={styles.description}>
-          I&aposm a Softare Engineer specializing in LLMs and Machine
+          I'm a Softare Engineer specializing in LLMs and Machine
           Learning applications with a passion on Rust & Python! 
           With a strong foundation in software
           engineering principles and cloud technologies, I specialize in turning

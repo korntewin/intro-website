@@ -6,7 +6,7 @@ import styles from "./hero.module.css";
 
 export default function Hero() {
   return (
-    <section className={styles.hero}>
+    <section className={styles.hero} id="whoami">
       <div className={styles.heroContent}>
         <h1 className={styles.heroTitle}>Korntewin Boonchuay</h1>
         <h2 className={styles.heroSubtitle}>
