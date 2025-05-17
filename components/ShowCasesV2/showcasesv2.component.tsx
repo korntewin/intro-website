@@ -129,7 +129,7 @@ export default function ShowCasesV2({
           onClick={goToPrevious}
           aria-label="Previous project"
         >
-         <ArrowLeft />
+          <ArrowLeft />
         </button>
 
         <div className={styles.showcaseContent}>
@@ -177,7 +177,7 @@ export default function ShowCasesV2({
           onClick={goToNext}
           aria-label="Next project"
         >
-            <ArrowRight />
+          <ArrowRight />
         </button>
       </div>
 

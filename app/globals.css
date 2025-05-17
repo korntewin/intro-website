@@ -1,8 +1,11 @@
-
 * {
   box-sizing: border-box;
   padding: 0;
   margin: 0;
+}
+
+html {
+  scroll-behavior: smooth;
 }
 
 html,
@@ -14,10 +17,15 @@ body {
 }
 
 body {
-  color: #ffffff;
-  background: linear-gradient(135deg, #3a1c71, #d76d77, #ffaf7b);
+  color: #1e293b;
+  background: #f8fafc;
   min-height: 100vh;
-  padding: 120px 20px 50px 20px;
+  padding: 80px 0 0 0;
+}
+
+/* Dark mode gradient for navbar and accents */
+.gradient-bg {
+  background: linear-gradient(135deg, #4F46E5, #7C3AED);
 }
 
 a {
@@ -25,15 +33,24 @@ a {
   text-decoration: none;
 }
 
-@media (prefers-color-scheme: dark) {
-  body {
-    color: #ffffff;
-  }
+h1, h2, h3, h4, h5, h6 {
+  line-height: 1.2;
 }
 
-@media (prefers-color-scheme: light) {
-  body {
-    color: #333333;
-    background: linear-gradient(135deg, #e0eafc, #cfdef3);
-  }
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 10px;
+}
+
+::-webkit-scrollbar-track {
+  background: #f1f1f1;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #7C3AED;
+  border-radius: 5px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #4F46E5;
 }
