@@ -1,7 +1,10 @@
+"use client";
+
 import styles from "./page.module.css";
 import ShowCasesV2 from "@/components/ShowCasesV2/showcasesv2.component";
 import Hero from "@/components/Hero/hero.component";
 import About from "@/components/About/about.component";
+import Skills from "@/components/Skill/skills.component";
 import { AppConfig } from "@/config/app-config";
 
 export default function Home() {
@@ -9,59 +12,14 @@ export default function Home() {
     <div className={styles.container}>
       <main className={styles.main}>
 
-        {/* Projects Section */}
         <section className={styles.section} id="projects">
           <h2 className={styles.sectionTitle}>Featured Projects</h2>
           <ShowCasesV2 highlights={AppConfig.highlightedProjects} />
         </section>
 
-        {/* Hero Section */}
         <Hero />
         <About />
-
-        {/* Skills Section */}
-        <section className={styles.section} id="skills">
-          <h2 className={styles.sectionTitle}>Skills & Expertise</h2>
-          <div className={styles.skillsContainer}>
-            <div className={styles.skillCategory}>
-              <h3>Data Engineering</h3>
-              <div className={styles.skillTags}>
-                <span className={styles.skillTag}>Apache Spark</span>
-                <span className={styles.skillTag}>SQL</span>
-                <span className={styles.skillTag}>Hadoop</span>
-                <span className={styles.skillTag}>ETL Pipelines</span>
-                <span className={styles.skillTag}>Data Warehousing</span>
-              </div>
-            </div>
-            <div className={styles.skillCategory}>
-              <h3>Machine Learning</h3>
-              <div className={styles.skillTags}>
-                <span className={styles.skillTag}>PyTorch</span>
-                <span className={styles.skillTag}>TensorFlow</span>
-                <span className={styles.skillTag}>Scikit-Learn</span>
-                <span className={styles.skillTag}>Natural Language Processing</span>
-              </div>
-            </div>
-            <div className={styles.skillCategory}>
-              <h3>Programming</h3>
-              <div className={styles.skillTags}>
-                <span className={styles.skillTag}>Python</span>
-                <span className={styles.skillTag}>Java</span>
-                <span className={styles.skillTag}>Scala</span>
-                <span className={styles.skillTag}>JavaScript/TypeScript</span>
-              </div>
-            </div>
-            <div className={styles.skillCategory}>
-              <h3>Cloud Platforms</h3>
-              <div className={styles.skillTags}>
-                <span className={styles.skillTag}>AWS</span>
-                <span className={styles.skillTag}>Azure</span>
-                <span className={styles.skillTag}>Google Cloud</span>
-                <span className={styles.skillTag}>Kubernetes</span>
-              </div>
-            </div>
-          </div>
-        </section>
+        <Skills />
 
         {/* Contact Section */}
         <section className={styles.section} id="contact">

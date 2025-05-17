@@ -42,7 +42,7 @@ export default function Navbar() {
 
                 <ul className={`${styles.navLinks} ${mobileMenuOpen ? styles.mobileActive : ""}`}>
                     <li className={styles.navItem}>
-                        <Link href="/" className={styles.navLink} onClick={() => setMobileMenuOpen(false)}>Home</Link>
+                        <Link href="#projects" className={styles.navLink} onClick={() => setMobileMenuOpen(false)}>Projects</Link>
                     </li>
                     <li className={styles.navItem}>
                         <Link href="#about" className={styles.navLink} onClick={() => setMobileMenuOpen(false)}>About</Link>
