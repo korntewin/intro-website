@@ -1,5 +1,6 @@
 import styles from "./page.module.css";
 import ShowCasesV2 from "@/components/ShowCasesV2/showcasesv2.component";
+import Hero from "@/components/Hero/hero.component";
 import { AppConfig } from "@/config/app-config";
 import Image from "next/image";
 import Link from "next/link";
@@ -16,35 +17,7 @@ export default function Home() {
         </section>
 
         {/* Hero Section */}
-        <section className={styles.hero}>
-          <div className={styles.heroContent}>
-            <h1 className={styles.title}>John Doe</h1>
-            <h2 className={styles.subtitle}>Data Engineer | ML Specialist</h2>
-            <p className={styles.tagline}>
-              Transforming data into actionable insights and innovative solutions
-            </p>
-            <div className={styles.heroButtons}>
-              <Link href="#contact" className={styles.primaryButton}>
-                Contact Me
-              </Link>
-              <Link href="#projects" className={styles.secondaryButton}>
-                View Projects
-              </Link>
-            </div>
-          </div>
-          <div className={styles.heroImageContainer}>
-            <div className={styles.heroImageWrapper}>
-              {/* Replace with your profile image if available */}
-              <Image 
-                src="/globe.svg" 
-                alt="Profile" 
-                width={300} 
-                height={300} 
-                className={styles.heroImage} 
-              />
-            </div>
-          </div>
-        </section>
+        <Hero />
 
         {/* About Section */}
         <section className={styles.section} id="about">

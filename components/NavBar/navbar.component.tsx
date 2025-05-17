@@ -45,13 +45,13 @@ export default function Navbar() {
                         <Link href="/" className={styles.navLink} onClick={() => setMobileMenuOpen(false)}>Home</Link>
                     </li>
                     <li className={styles.navItem}>
+                        <Link href="#projects" className={styles.navLink} onClick={() => setMobileMenuOpen(false)}>Projects</Link>
+                    </li>
+                    <li className={styles.navItem}>
                         <Link href="#about" className={styles.navLink} onClick={() => setMobileMenuOpen(false)}>About</Link>
                     </li>
                     <li className={styles.navItem}>
                         <Link href="#skills" className={styles.navLink} onClick={() => setMobileMenuOpen(false)}>Skills</Link>
-                    </li>
-                    <li className={styles.navItem}>
-                        <Link href="#projects" className={styles.navLink} onClick={() => setMobileMenuOpen(false)}>Projects</Link>
                     </li>
                     <li className={styles.navItem}>
                         <Link href="#contact" className={styles.navLink} onClick={() => setMobileMenuOpen(false)}>Contact</Link>
