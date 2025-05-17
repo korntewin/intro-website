@@ -1,0 +1,90 @@
+.section {
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 2rem 0;
+  scroll-margin-top: 5rem;
+  height: 40vh;
+}
+
+.sectionTitle {
+  font-size: 2.5rem;
+  font-weight: 700;
+  margin-bottom: 2.5rem;
+  text-align: center;
+  background: linear-gradient(to right, #60a5fa, #a78bfa);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  color: transparent;
+}
+
+.contactContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 3rem;
+}
+
+@media (min-width: 768px) {
+  .contactContainer {
+    flex-direction: row;
+    justify-content: space-around;
+  }
+}
+
+.contactInfo {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.contactItem {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.contactIcon {
+  width: 24px;
+  height: 24px;
+  color: #60a5fa;
+}
+
+.contactItem p {
+  color: #cbd5e1;
+  font-size: 1.1rem;
+}
+
+.socialLinks {
+  display: flex;
+  gap: 1.5rem;
+}
+
+.socialLink {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background: rgba(30, 41, 59, 0.7);
+  border: 1px solid rgba(167, 139, 250, 0.3);
+  transition: all 0.3s ease;
+}
+
+.socialIcon {
+  width: 24px;
+  height: 24px;
+  color: #60a5fa;
+}
+
+.socialLink:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 10px 25px rgba(96, 165, 250, 0.3);
+  background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+}
+
+.socialLink:hover .socialIcon {
+  color: white;
+}

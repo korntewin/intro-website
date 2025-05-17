@@ -86,7 +86,7 @@
   background: linear-gradient(135deg, #3b82f6, #8b5cf6);
   padding: 5px;
   box-shadow: 0 0 40px rgba(96, 165, 250, 0.3);
-  animation: pulseGlow 4s ease-in-out infinite;
+  animation: pulseGlow 2s ease-in-out infinite;
 }
 
 .heroImage {
@@ -123,4 +123,16 @@
   margin-bottom: 2rem;
   max-width: 500px;
   animation: fadeIn 1.5s ease-out 0.4s forwards;
+}
+
+@keyframes pulseGlow {
+  0% {
+    box-shadow: 0 0 40px rgba(96, 165, 250, 0.3);
+  }
+  50% {
+    box-shadow: 0 0 60px rgba(167, 139, 250, 0.5);
+  }
+  100% {
+    box-shadow: 0 0 40px rgba(96, 165, 250, 0.3);
+  }
 }
