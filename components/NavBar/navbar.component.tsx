@@ -45,7 +45,7 @@ export default function Navbar() {
                         <Link href="#projects" className={styles.navLink} onClick={() => setMobileMenuOpen(false)}>Projects</Link>
                     </li>
                     <li className={styles.navItem}>
-                        <Link href="#whoami" className={styles.navLink} onClick={() => setMobileMenuOpen(false)}>Who am I</Link>
+                        <Link href="#whoami" className={styles.navLink} onClick={() => setMobileMenuOpen(false)}>Profile</Link>
                     </li>
                     <li className={styles.navItem}>
                         <Link href="#about" className={styles.navLink} onClick={() => setMobileMenuOpen(false)}>About</Link>
