@@ -1,12 +1,9 @@
 import styles from "./page.module.css";
-import ShowCases, {ShowCaseData} from "@/components/ShowCases/showcases.component";
 import ShowCasesV2, {ShowCaseV2Data} from "@/components/ShowCasesV2/showcasesv2.component";
+import { AppConfig } from "@/config/app-config";
 
 export default function Home() {
 
-  const showcases: ShowCaseData[] = [];
-  
-  // Sample highlighted projects data
   const highlightedProjects: ShowCaseV2Data[] = [
     {
       id: "project-1",
