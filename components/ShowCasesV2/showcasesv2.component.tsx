@@ -50,7 +50,7 @@ export default function ShowCasesV2({
     const slideInterval = setInterval(() => {
       setCurrentIndex((prevIndex) => (prevIndex + 1) % highlights.length);
       progressRef.current = 0;
-    }, autoRotateIntervalMs);
+    }, autoRotateIntervalMs + 1000);
 
     return () => {
       clearInterval(slideInterval);
@@ -181,10 +181,10 @@ export default function ShowCasesV2({
       {/* Progress bar */}
       {highlights.length > 1 && (
         <div 
-          ref={progressBarRef}
           className={styles.progressContainer}
         >
           <div
+            ref={progressBarRef}
             className={styles.progressBar}
           />
         </div>
