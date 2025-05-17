@@ -30,7 +30,6 @@ export default function ShowCasesV2({
   const [isPaused, setIsPaused] = useState(false);
   const [progress, setProgress] = useState(0);
   const containerRef = useRef<HTMLDivElement>(null);
-  const progressIntervalRef = useRef<NodeJS.Timeout | null>(null);
 
   // Auto-rotate with progress tracking using configurable interval
   useEffect(() => {
@@ -41,7 +40,7 @@ export default function ShowCasesV2({
 
     // Animation interval for progress bar
     const progressUpdateInterval = AppConfig.showcases.progressUpdateIntervalMs;
-    progressIntervalRef.current = setInterval(() => {
+    const progressIntervalRef = setInterval(() => {
       setProgress((prev) => {
         const newProgress =
           prev + (progressUpdateInterval / autoRotateIntervalMs) * 100;
@@ -56,9 +55,7 @@ export default function ShowCasesV2({
 
     return () => {
       clearInterval(slideInterval);
-      if (progressIntervalRef.current) {
-        clearInterval(progressIntervalRef.current);
-      }
+      clearInterval(progressIntervalRef);
     }; // Cleanup on unmount
   }, [highlights.length, currentIndex, isPaused, autoRotateIntervalMs]);
 
