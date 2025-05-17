@@ -69,7 +69,6 @@
     justify-content: center;
     gap: 2rem;
     border-radius: 2rem;
-    min-height: fit-content;
     backdrop-filter: blur(10px);
     transform: translateX(100%);
     transition: transform 0.3s ease-in-out;
