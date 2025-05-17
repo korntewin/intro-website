@@ -17,15 +17,17 @@ body {
 }
 
 body {
-  color: #1e293b;
-  background: #f8fafc;
+  color: #f8fafc;
+  background: linear-gradient(135deg, #0f172a, #1e293b);
+  background-size: 400% 400%;
   min-height: 100vh;
-  padding: 80px 0 0 0;
+  padding: 120px 0 0 0;
+  animation: gradientAnimation 15s ease infinite;
 }
 
 /* Dark mode gradient for navbar and accents */
 .gradient-bg {
-  background: linear-gradient(135deg, #4F46E5, #7C3AED);
+  background: linear-gradient(135deg, #3b82f6, #8b5cf6);
 }
 
 a {
@@ -43,14 +45,26 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 ::-webkit-scrollbar-track {
-  background: #f1f1f1;
+  background: #1e293b;
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #7C3AED;
+  background: linear-gradient(135deg, #60a5fa, #a78bfa);
   border-radius: 5px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: #4F46E5;
+  background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+}
+
+@keyframes gradientAnimation {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
 }

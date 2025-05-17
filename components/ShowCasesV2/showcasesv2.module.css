@@ -57,12 +57,15 @@
   gap: 2rem;
   width: 100%;
   min-height: 400px;
-  background-color: rgba(22, 22, 26, 0.9);
+  background: rgba(15, 23, 42, 0.7);
+  background: linear-gradient(135deg, rgba(30, 41, 59, 0.8), rgba(15, 23, 42, 0.8));
   border-radius: 12px;
   padding: 2rem;
-  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 15px 40px rgba(0, 0, 0, 0.3);
   transition: all 0.3s ease;
   overflow: hidden;
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(148, 163, 184, 0.1);
 }
 
 .imageContainer {
@@ -96,7 +99,7 @@
   font-weight: 700;
   margin: 0;
   color: #f8f8f8;
-  background: linear-gradient(135deg, #f8f8f8, #d3d3d3);
+  background: linear-gradient(135deg, #60a5fa, #a78bfa);
   -webkit-background-clip: text;
   background-clip: text;
   -webkit-text-fill-color: transparent;
@@ -117,12 +120,13 @@
 }
 
 .techBadge {
-  background-color: rgba(255, 255, 255, 0.15);
-  color: #e0e0e0;
+  background-color: rgba(96, 165, 250, 0.15);
+  color: #cbd5e1;
   padding: 0.25rem 0.75rem;
   border-radius: 50px;
   font-size: 0.85rem;
   font-weight: 500;
+  border: 1px solid rgba(167, 139, 250, 0.2);
 }
 
 .projectLink {
@@ -130,13 +134,14 @@
   align-items: center;
   gap: 6px;
   margin-top: 0.75rem;
-  color: #66ccff;
+  color: #60a5fa;
   font-weight: 500;
   text-decoration: none;
   padding: 8px 16px;
-  background-color: rgba(102, 204, 255, 0.1);
+  background-color: rgba(96, 165, 250, 0.1);
   border-radius: 4px;
   transition: all 0.2s ease;
+  border: 1px solid rgba(167, 139, 250, 0.2);
 }
 
 .projectLink svg {
@@ -144,7 +149,7 @@
 }
 
 .projectLink:hover {
-  background-color: rgba(102, 204, 255, 0.2);
+  background-color: rgba(96, 165, 250, 0.2);
 }
 
 .projectLink:hover svg {
@@ -152,8 +157,8 @@
 }
 
 .navButton {
-  background-color: rgba(255, 255, 255, 0.1);
-  border: none;
+  background: rgba(96, 165, 250, 0.2);
+  border: 1px solid rgba(167, 139, 250, 0.3);
   color: white;
   width: 44px;
   height: 44px;
@@ -165,18 +170,20 @@
   transition: all 0.2s ease;
   z-index: 2;
   opacity: 0.7;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
 }
 
 .navButton:hover {
-  background-color: rgba(255, 255, 255, 0.2);
+  background: linear-gradient(135deg, rgba(59, 130, 246, 0.3), rgba(139, 92, 246, 0.3));
   transform: scale(1.1);
   opacity: 1;
+  box-shadow: 0 6px 15px rgba(96, 165, 250, 0.3);
 }
 
 .progressContainer {
   width: 100%;
   height: 4px;
-  background-color: rgba(255, 255, 255, 0.1);
+  background-color: rgba(96, 165, 250, 0.1);
   border-radius: 2px;
   margin-top: 1rem;
   overflow: hidden;
@@ -184,7 +191,7 @@
 
 .progressBar {
   height: 100%;
-  background-color: rgba(255, 255, 255, 0.7);
+  background: linear-gradient(to right, #60a5fa, #a78bfa);
   border-radius: 2px;
   transition: width 30ms linear;
 }
@@ -200,16 +207,17 @@
   width: 12px;
   height: 12px;
   border-radius: 50%;
-  background-color: rgba(255, 255, 255, 0.3);
+  background-color: rgba(96, 165, 250, 0.2);
   cursor: pointer;
   transition: all 0.2s ease;
-  border: none;
+  border: 1px solid rgba(167, 139, 250, 0.3);
   padding: 0;
 }
 
 .indicator.active {
-  background-color: white;
+  background: linear-gradient(135deg, #60a5fa, #a78bfa);
   transform: scale(1.2);
+  box-shadow: 0 0 10px rgba(96, 165, 250, 0.4);
 }
 
 @media (max-width: 768px) {
