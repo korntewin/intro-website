@@ -262,6 +262,7 @@
   .navButton {
     width: 36px;
     height: 36px;
+    display: none;
   }
   
   .showcaseWrapper {

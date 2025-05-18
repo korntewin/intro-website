@@ -32,6 +32,8 @@ export default function ShowCasesV2({
   const progressRef = useRef<number>(0);
   const containerRef = useRef<HTMLDivElement>(null);
   const [slideDirection, setSlideDirection] = useState<"next" | "prev">("next");
+  const touchStartXRef = useRef<number | null>(null); // Added for touch handling
+  const touchEndXRef = useRef<number | null>(null); // Added for touch handling
 
   // Auto-rotate with progress tracking using configurable interval
   useEffect(() => {
@@ -103,6 +105,43 @@ export default function ShowCasesV2({
     setIsPaused(false);
   }, []);
 
+  // Touch event handlers
+  const handleTouchStart = useCallback((e: React.TouchEvent) => {
+    touchStartXRef.current = e.touches[0].clientX;
+    // Pause rotation on touch
+    setIsPaused(true);
+    progressRef.current = 0;
+    if (progressBarRef.current) {
+      progressBarRef.current.style.width = `0%`;
+    }
+  }, []);
+
+  const handleTouchMove = useCallback((e: React.TouchEvent) => {
+    touchEndXRef.current = e.touches[0].clientX;
+  }, []);
+
+  const handleTouchEnd = useCallback(() => {
+    if (touchStartXRef.current === null || touchEndXRef.current === null) {
+      return;
+    }
+
+    const diffX = touchEndXRef.current - touchStartXRef.current;
+    const swipeThreshold = 50; // Minimum distance for a swipe
+
+    if (diffX > swipeThreshold) {
+      goToPrevious();
+    } else if (diffX < -swipeThreshold) {
+      goToNext();
+    }
+
+    // Reset touch positions
+    touchStartXRef.current = null;
+    touchEndXRef.current = null;
+    // Optionally resume auto-rotation after a delay or keep it paused
+    // For now, it will remain paused as per handleTouchStart logic
+    // To resume, you might want to set a timeout here to set isPaused(false)
+  }, [goToPrevious, goToNext]);
+
   if (highlights.length === 0) {
     return null; // Don't render if no highlights
   }
@@ -113,6 +152,9 @@ export default function ShowCasesV2({
       className={styles.showcasesContainer}
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
+      onTouchStart={handleTouchStart}
+      onTouchMove={handleTouchMove}
+      onTouchEnd={handleTouchEnd}
       tabIndex={0} // Make it focusable for keyboard navigation
     >
       {/* Current slide indicator */}
