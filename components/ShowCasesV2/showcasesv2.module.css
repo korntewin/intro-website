@@ -275,6 +275,7 @@
 @media (max-width: 480px) {
   .showcasesContainer {
     margin: 1rem auto;
+    scroll-margin-top: 7rem;
   }
   
   .showcaseContent {
