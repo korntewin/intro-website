@@ -237,7 +237,7 @@
     flex-direction: column;
     min-height: auto;
     padding: 1.5rem;
-    gap: 1.5rem;
+    gap: 0.5rem;
   }
   
   .slidesViewport {
@@ -252,6 +252,7 @@
   .textContainer {
     width: 100%;
     margin-top: 0;
+    height: auto;
   }
   
   .showcaseTitle {
