@@ -21,6 +21,8 @@
 }
 
 .scrolled {
+  top: 0;
+  animation: none; /* Stop float animation when scrolled */
   background: rgba(15, 23, 42, 0.85);
   background: linear-gradient(135deg, rgba(31, 41, 55, 0.9), rgba(17, 24, 39, 0.95));
   border: 1px solid rgba(167, 139, 250, 0.2);
