@@ -241,7 +241,7 @@
   }
   
   .slidesViewport {
-    min-height: auto;
+    min-height: 60vh;
   }
   
   .imageContainer {

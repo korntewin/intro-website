@@ -13,7 +13,7 @@ export default function Hero() {
           Software Engineer in LLMs and ML
         </h2>
         <p className={styles.heroTagline}>
-          Passinate developer with a focus on LLMs and machine learning. I love
+          Passionate developer with a focus on LLMs and machine learning. I love
           to build things that make a difference.
         </p>
         <div className={styles.heroButtons}>
