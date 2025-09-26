@@ -1,29 +1,27 @@
-import Navbar from "@/components/NavBar/navbar.component";
-import "./globals.css";
 import type { Metadata } from "next";
+import type { ReactNode } from "react";
+import "./globals.css";
+import "../styles/prose.css";
+import { Header } from "@/components/Header";
+import { Footer } from "@/components/Footer";
+import { ThemeProvider } from "@/components/ThemeToggle";
+import { themeHydrationScript } from "@/lib/theme-store";
 
 export const metadata: Metadata = {
-  title: "Korntewin (Korn) | Developer & Designer Portfolio",
-  description: "Personal portfolio and introduction website showcasing Korntewin's projects, skills, and professional background",
-  icons: {
-    icon: [
-      { url: "/favicon.ico" },
-      { url: "/icon.png", type: "image/png", sizes: "32x32" },
-    ],
-    apple: "/apple-icon.png",
-  },
+  title: "Korntewin Boonchuay — Portfolio",
+  description: "Rust-first ML/Software Engineer — Portfolio & Projects",
 };
 
-export default function RootLayout({
-  children,
-}: Readonly<{
-  children: React.ReactNode;
-}>) {
+export default function RootLayout({ children }: { children: ReactNode }) {
   return (
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning>
       <body>
-        <Navbar />
-        {children}
+        <script dangerouslySetInnerHTML={{ __html: themeHydrationScript }} />
+        <ThemeProvider>
+          <Header />
+          <main className="container py-10">{children}</main>
+          <Footer />
+        </ThemeProvider>
       </body>
     </html>
   );

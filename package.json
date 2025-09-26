@@ -1,31 +1,35 @@
 {
-  "name": "intro-website",
-  "version": "0.1.0",
+  "name": "korntewin-portfolio",
   "private": true,
+  "version": "1.0.1",
   "scripts": {
-    "dev": "next dev --turbopack",
+    "dev": "next dev -p 5173",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint",
-    "deploy": "npm run build && touch out/.nojekyll && gh-pages -d out -t"
+    "preview": "npx http-server ./out -p 4173",
+    "lint": "eslint .",
+    "lint:fix": "eslint --fix .",
+    "format": "prettier --write ."
   },
   "dependencies": {
-    "next": "15.3.2",
-    "react": "^19.0.0",
-    "react-dom": "^19.0.0"
+    "clsx": "^2.1.1",
+    "next": "^15.5.4",
+    "react": "^19.1.0",
+    "react-dom": "^19.1.0",
+    "zustand": "^5.0.8"
   },
   "devDependencies": {
-    "@eslint/eslintrc": "^3",
-    "@types/node": "^20",
-    "@types/react": "^19",
-    "@types/react-dom": "^19",
-    "canvas": "^3.1.0",
-    "eslint": "^9",
-    "eslint-config-next": "15.3.2",
-    "favicons": "^7.2.0",
-    "favicons-webpack-plugin": "^6.0.1",
-    "gh-pages": "^6.3.0",
-    "svg-to-png": "^3.0.0",
-    "typescript": "^5"
+    "@tailwindcss/typography": "^0.5.13",
+    "@types/node": "^22.10.1",
+    "@types/react": "^19.0.7",
+    "@types/react-dom": "^19.0.3",
+    "autoprefixer": "^10.4.20",
+    "eslint": "^9.36.0",
+    "eslint-config-next": "^15.5.4",
+    "pnpm": "^10.17.1",
+    "postcss": "^8.4.49",
+    "prettier": "^3.6.2",
+    "tailwindcss": "^3.4.16",
+    "typescript": "^5.6.3"
   }
 }
