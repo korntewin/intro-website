@@ -1,3 +1,9 @@
+const repoBasePath = process.env.NEXT_PUBLIC_BASE_PATH
+  ? `/${process.env.NEXT_PUBLIC_BASE_PATH}`
+  : "";
+
+const withBasePath = (path: `/${string}`) => `${repoBasePath}${path}`;
+
 export const data = {
   tags: [
     "Rust",
@@ -22,27 +28,27 @@ export const data = {
       description:
         "Automated trading on Binance; low-latency Rust stack, risk controls.",
       href: "https://medium.com/thinking-machines-thailand/crypto-trading-bots-with-rust-db754daf474e",
-      image: "/highlights/rust-trading.svg",
+      image: withBasePath("/highlights/rust-trading.svg"),
     },
     {
       title: "Python vs Rust ML inference comparison",
       description:
         "Automated trading on Binance; low-latency Rust stack, risk controls.",
       href: "https://github.com/korntewin/python-vs-rust-DL-inference",
-      image: "/highlights/kafka-delta.svg",
+      image: withBasePath("/highlights/kafka-delta.svg"),
     },
     {
       title: "Real-time Object Detection — Rust + WASM",
       description: "YOLO in the browser with WebAssembly & pure Rust pipeline.",
       href: "https://github.com/korntewin/yolo-wasm",
-      image: "/highlights/rust-wasm.svg",
+      image: withBasePath("/highlights/rust-wasm.svg"),
     },
     {
       title: "Kafka → Delta Lake (Liquid Clustering)",
       description:
         "Real-time PySpark streaming into Delta, optimized for analytics.",
       href: "https://medium.com/@korntewin-b/delta-table-liquid-clustering-for-real-time-event-streaming-b6f48d111aa6",
-      image: "/highlights/kafka-delta.svg",
+      image: withBasePath("/highlights/kafka-delta.svg"),
     },
   ],
   expertise: [
@@ -54,20 +60,20 @@ export const data = {
   ],
   certifications: [
     {
-      cert: "AWS Certified Solutions Architect – Professional",
-      href: "https://www.credly.com/badges/039ba124-fcf5-4fbf-b4b5-de7817f1d675/linked_in_profile",
+      "cert": "AWS Certified Solutions Architect – Professional",
+      "href": "https://www.credly.com/badges/039ba124-fcf5-4fbf-b4b5-de7817f1d675/linked_in_profile",
     },
     {
-      cert: "GCP Professional Cloud Architect",
-      href: "https://google.accredible.com/0bc42dee-895c-4e69-a924-8640cdfe01fd",
+      "cert": "GCP Professional Cloud Architect",
+      "href": "https://google.accredible.com/0bc42dee-895c-4e69-a924-8640cdfe01fd",
     },
     {
-      cert: "GCP Professional Data Engineer",
-      href: "https://google.accredible.com/0bc42dee-895c-4e69-a924-8640cdfe01fd",
+      "cert": "GCP Professional Data Engineer",
+      "href": "https://google.accredible.com/0bc42dee-895c-4e69-a924-8640cdfe01fd",
     },
     {
-      cert: "Certified Kubernetes Application Developer (CKAD)",
-      href: "https://www.credly.com/badges/7a9f3c8e-e867-4263-ba8a-533554a78ba0/linked_in?t=t03hsy",
+      "cert": "Certified Kubernetes Application Developer (CKAD)",
+      "href": "https://www.credly.com/badges/7a9f3c8e-e867-4263-ba8a-533554a78ba0/linked_in?t=t03hsy",
     },
   ],
   projects: [
@@ -76,57 +82,35 @@ export const data = {
       description:
         "Benchmarking Python (PyTorch) vs Rust (Candle) for ML inference.",
       tags: ["Rust", "PyTorch", "Candle"],
-      links: [
-        {
-          label: "Github Repo",
-          href: "https://github.com/korntewin/python-vs-rust-DL-inference",
-        },
-      ],
+      links: [{ label: "Github Repo", href: "https://github.com/korntewin/python-vs-rust-DL-inference" }],
     },
     {
       title: "Kafka → Delta Streaming",
       description:
         "High-throughput streaming into Delta Lake with Liquid Clustering.",
       tags: ["Kafka", "PySpark", "Delta Lake"],
-      links: [
-        {
-          label: "Medium Blog",
-          href: "https://medium.com/@korntewin-b/delta-table-liquid-clustering-for-real-time-event-streaming-b6f48d111aa6",
-        },
-      ],
+      links: [{ label: "Medium Blog", href: "https://medium.com/@korntewin-b/delta-table-liquid-clustering-for-real-time-event-streaming-b6f48d111aa6" }],
     },
     {
       title: "Rust Crypto Trading Bot",
       description:
         "Event-driven Rust bot with risk management and exchange adapters.",
       tags: ["Rust", "Binance API"],
-      links: [
-        {
-          label: "Medium Blog",
-          href: "https://medium.com/thinking-machines-thailand/crypto-trading-bots-with-rust-db754daf474e",
-        },
-      ],
+      links: [{ label: "Medium Blog", href: "https://medium.com/thinking-machines-thailand/crypto-trading-bots-with-rust-db754daf474e" }],
     },
     {
       title: "Real-time Object Detection (Rust + WASM)",
       description:
         "YOLO pipeline compiled to WASM for on-device inference in browser.",
       tags: ["Rust", "WASM", "YOLO"],
-      links: [
-        { label: "Demo", href: "https://yolo-yew.crypto-bot-gcp.trade/" },
-      ],
+      links: [{ label: "Demo", href: "https://yolo-yew.crypto-bot-gcp.trade/" }],
     },
     {
       title: "Full Stack Real-time Chatbot powered by LLMs",
       description:
         "Chatbot leveraging LLMs for dynamic conversations and context awareness.",
       tags: ["Python", "Next.js", "SQLAlchemy", "Alembic"],
-      links: [
-        {
-          label: "Github Repo",
-          href: "https://github.com/korntewin/fullstack-realtime-chatbot",
-        },
-      ],
+      links: [{ label: "Github Repo", href: "https://github.com/korntewin/fullstack-realtime-chatbot" }],
     },
   ],
   timeline: [
