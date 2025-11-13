@@ -6,6 +6,14 @@ import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
 import { ThemeProvider } from "@/components/ThemeToggle";
 import { themeHydrationScript } from "@/lib/theme-store";
+import { Roboto_Flex } from "next/font/google";
+
+const roboto = Roboto_Flex({
+  subsets: ["latin"],
+  display: "swap",
+  variable: "--font-roboto-flex",
+  axes: ["GRAD", "XOPQ", "XTRA", "YOPQ", "YTAS", "YTDE", "YTLC", "YTUC"],
+});
 
 export const metadata: Metadata = {
   title: "Korntewin Boonchuay — Portfolio",
@@ -15,7 +23,7 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: { children: ReactNode }) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <body>
+      <body className={`${roboto.variable} font-sans`}>
         <script dangerouslySetInnerHTML={{ __html: themeHydrationScript }} />
         <ThemeProvider>
           <Header />

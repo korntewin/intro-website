@@ -7,11 +7,11 @@ const config: Config = {
     extend: {
       fontFamily: {
         sans: [
-          "ui-sans-serif",
-          "system-ui",
+          "var(--font-roboto-flex)",
           "Inter",
           "Segoe UI",
           "Roboto",
+          "system-ui",
           "Arial",
           "sans-serif",
         ],
