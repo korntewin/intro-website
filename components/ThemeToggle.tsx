@@ -60,7 +60,7 @@ export function ThemeButton() {
   return (
     <button
       type="button"
-      className="btn btn-tonal min-w-[120px] justify-between px-4 py-2"
+      className="btn btn-tonal justify-between px-3 py-2 sm:min-w-[120px]"
       aria-label="Toggle theme"
       aria-pressed={isDark}
       onClick={() => setTheme(isDark ? "light" : "dark")}
@@ -71,11 +71,11 @@ export function ThemeButton() {
         ) : (
           <MoonIcon className="h-4 w-4 text-[var(--md-on-secondary-container)]" />
         )}
-        <span className="text-sm font-semibold tracking-tight">
+        <span className="hidden text-sm font-semibold tracking-tight sm:inline">
           {isDark ? "Light" : "Dark"} Mode
         </span>
       </span>
-      <span className="text-[10px] font-semibold uppercase tracking-[0.35em] text-muted">
+      <span className="hidden sm:inline text-[10px] font-semibold uppercase tracking-[0.35em] text-muted">
         Toggle
       </span>
     </button>

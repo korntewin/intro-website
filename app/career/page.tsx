@@ -18,12 +18,12 @@ export default function Career() {
         </div>
       </section>
 
-      <ol className="relative ps-10">
+      <ol className="relative ps-0 md:ps-10">
         <span className="pointer-events-none absolute left-4 top-8 hidden h-[calc(100%-4rem)] w-px bg-gradient-to-b from-[var(--md-primary)] via-[var(--md-tertiary)] to-transparent md:block" />
         {data.timeline.map((entry, index) => (
-          <li key={index} className="relative pl-6">
+          <li key={index} className="relative pl-0 md:pl-6">
             <span className="pointer-events-none absolute left-1.5 top-12 hidden h-4 w-4 -translate-x-1/2 rounded-full bg-[var(--md-primary)] shadow-[0_0_0_6px_rgba(76,110,245,0.1)] md:block" />
-            <article className="card mb-10 border border-[var(--md-outline-variant)] p-6">
+            <article className="card mb-10 border border-[var(--md-outline-variant)] p-6 mx-auto max-w-[680px]">
               <div className="flex flex-col gap-3 md:flex-row md:items-end md:justify-between">
                 <div>
                   <h3 className="text-2xl font-semibold text-[var(--md-on-surface)]">

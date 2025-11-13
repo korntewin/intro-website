@@ -2,41 +2,16 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useEffect, useState } from "react";
-
 import { ThemeButton } from "@/components/ThemeToggle";
-
-const navItems = [
-  {
-    href: "/projects",
-    label: "Projects",
-    isActive: (pathname: string | null) => pathname?.startsWith("/projects"),
-  },
-  {
-    href: "/career",
-    label: "Career",
-    isActive: (pathname: string | null) => pathname?.startsWith("/career"),
-  },
-  {
-    href: "/about",
-    label: "About",
-    isActive: (pathname: string | null) => pathname === "/about",
-  },
-];
 
 export function Header() {
   const pathname = usePathname();
-  const [isMenuOpen, setIsMenuOpen] = useState(false);
-
-  useEffect(() => {
-    setIsMenuOpen(false);
-  }, [pathname]);
 
   return (
     <header className="sticky top-4 z-50">
       <div className="container">
-        <div className="elevation-2 flex flex-wrap items-center justify-between gap-4 rounded-[var(--shape-xl)] border border-[var(--md-outline-variant)] bg-[var(--md-surface-container-high)] px-6 py-4 backdrop-blur">
-          <div className="flex items-center gap-3">
+        <div className="elevation-2 grid grid-cols-[auto_1fr_auto] items-center gap-3 rounded-[var(--shape-xl)] border border-[var(--md-outline-variant)] bg-[var(--md-surface-container-high)] px-4 py-3 sm:px-6 sm:py-4 backdrop-blur">
+          <div className="flex items-center gap-3 min-w-0">
             <span className="inline-flex h-10 w-10 items-center justify-center rounded-full bg-[var(--md-primary-container)] text-sm font-semibold text-[var(--md-on-primary-container)] shadow-sm">
               KB
             </span>
@@ -49,7 +24,11 @@ export function Header() {
               </span>
             </div>
           </div>
-          <nav className="flex items-center gap-2 text-sm">
+          <nav className="min-w-0 flex items-center justify-center gap-1 text-sm sm:gap-2 overflow-x-auto [scrollbar-width:none] [-ms-overflow-style:none]">
+            {/* hide native scrollbar in WebKit */}
+            <style jsx>{`
+              nav::-webkit-scrollbar { display: none; }
+            `}</style>
             <NavLink
               href="/projects"
               label="Projects"
@@ -65,8 +44,10 @@ export function Header() {
               label="About"
               isActive={pathname === "/about"}
             />
-            <ThemeButton />
           </nav>
+          <div className="justify-self-end">
+            <ThemeButton />
+          </div>
         </div>
       </div>
     </header>
