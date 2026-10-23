@@ -131,6 +131,16 @@ coverImageAlt: "ภาพประกอบจาก Go สู่ Rust สำห
 
 แน่นอนว่าไม่ใช่ทุก Arrow Column จะเรียง Value เป็น Array ตัวเลขก้อนเดียวเสมอ เช่น String ใช้ Offset Buffer กับ Values Buffer และ Polars ก็อาจมีหลาย Chunk แต่หลักสำคัญคือ **ลดการกระโดดของ Memory Access ที่ไม่จำเป็นสำหรับงานประมวลผลเป็นคอลัมน์**
 
+### Memory Efficiency: Arrow ใช้ Metadata น้อยกว่า Go Map อย่างไร? 💾
+
+นอกจาก Cache Locality แล้ว **Columnar Layout ยังช่วยลด Memory Footprint จาก Metadata ต่อ Record** ได้ด้วยครับ สมมติว่าเราเก็บ Feature ของแต่ละ Item ใน Go เป็น `[]map[string]any` แต่ละ Row จะมี Hash Map ของตัวเอง แม้จะใช้ Feature Names ชุดเดียวกัน ก็ยังต้องเก็บ Key/Value Slots และโครงสร้างของ Hash Table ซ้ำในแต่ละ Map
+
+ตรงนี้ต้องให้เครดิต Go ก่อนว่า **ตั้งแต่ Go 1.24 เป็นต้นมา Built-in Map ใช้ [Swiss Table](https://go.dev/blog/swisstable)** ซึ่งออกแบบมาให้ Cache-friendly กว่า Hash Table แบบเก่า โดยจัดข้อมูลเป็น **Group ละ 8 Slots** และมี **64-bit Control Word** (เฉลี่ย 1 Byte ต่อ Slot) เพื่อบอกสถานะของ Slot และเก็บส่วนหนึ่งของ Hash ช่วยให้ Lookup ตรวจหลาย Slots ได้พร้อมกัน ดังนั้นไม่ได้หมายความว่า Go Map ต้อง Allocate Heap Object แยกทุก Entry นะครับ แต่ Map ก็ยังมีต้นทุนของ Key/Value Slots, Capacity ที่เผื่อไว้, Control Metadata และโครงสร้างต่อ Map อยู่ดี โดยเฉพาะเมื่อสร้าง Map แยกกันเป็นพัน ๆ Rows ส่วน `any` ยังมี Type/Value Metadata ของ Interface และบางชนิดข้อมูลอาจมี Boxing/Allocation เพิ่มตามการใช้งานด้วย
+
+ในทางกลับกัน **Arrow เก็บ Feature Names ไว้ที่ Schema และเก็บค่าของแต่ละ Column เป็น Buffer ที่ต่อเนื่องกัน** สำหรับ Primitive อย่าง `float32` เราใช้เพียง **4 Bytes ต่อค่า** บวกกับ **Validity Bitmap สูงสุด 1 Bit ต่อค่าเมื่อจำเป็นต้องแทน Null** และ Metadata ของ Array/Buffer ที่แชร์กันทั้ง Column เช่น ถ้ามี 10,000 ค่า Data Buffer จะใช้ 40,000 Bytes และ Bitmap อีกประมาณ 1,250 Bytes หากต้องมี (ยังไม่รวม Alignment และ Buffer Metadata) แทนการสร้าง Hash Table สำหรับแต่ละ Item
+
+อย่างไรก็ตาม **1 Byte ของ Swiss Table กับ 1 Bit ของ Arrow ไม่ได้ทำหน้าที่เดียวกัน** นะครับ อันแรกใช้ช่วย Hash Lookup ส่วนอันหลังบอกว่า Value เป็น Null หรือไม่ และ Arrow เองก็มี Overhead อื่น เช่น Offsets ของ String/List รวมถึง Buffer Alignment ด้วย ที่สำคัญ ถ้า Go ใช้ `[]struct` หรือ `[]float32` แทน `[]map[string]any` ก็สามารถเก็บข้อมูลได้ Compact เช่นกัน **ข้อได้เปรียบในเคสนี้จึงมาจากการเปลี่ยน Data Representation ให้เหมาะกับงาน Column-wise Preprocessing ไม่ใช่แค่เพราะเปลี่ยนจาก Go เป็น Rust**
+
 
 ### Validity Bitmap: เก็บ Null ด้วย 1 Bit ต่อค่า
 
@@ -268,7 +278,7 @@ Optimization สำหรับ ML Prediction Service ต่างจากก�
 
 ## Learning Points: สิ่งที่ได้จาก RIIR รอบนี้ 💡
 
-1. **Memory Layout สำคัญไม่แพ้ภาษา** เราจึงเริ่มจากลด Pointer Chasing และการ Copy ที่ไม่จำเป็น ก่อนเพิ่มความซับซ้อนเรื่อง Threads
+1. **Memory Layout สำคัญไม่แพ้ภาษา** Columnar Buffers ช่วยลด Pointer Chasing, การ Copy และ Metadata ที่ต้องเก็บซ้ำต่อ Row เมื่อเทียบกับการแทน Features ด้วย Map แยกในแต่ละ Record
 2. **Concurrency ที่มากกว่าไม่ได้แปลว่าเร็วกว่า** เราใช้ 1D Data Parallelism ผ่าน Actor Pools และ Mini-batches โดยไม่ Parallel DAG Nodes เพิ่ม เพื่อเลี่ยง CPU Oversubscription
 3. **Compile สิ่งที่รู้ล่วงหน้าตั้งแต่ Startup** DAG ของ Preprocessing ควรถูกจัดลำดับ Dependency ไว้ก่อนรับ Request แรก
 4. **SIMD ต้องเข้าใจ Semantics** Algebraic FP เปิดโอกาสให้ Compiler Optimize ได้มากขึ้น แต่ต้องตรวจผลลัพธ์เชิงตัวเลขทุกครั้ง
@@ -287,4 +297,4 @@ Optimization สำหรับ ML Prediction Service ต่างจากก�
 
 ---
 
-**อ่านต่อ / References:** [บทความ Optimization รอบก่อน](https://life.lmwn.com/เบื้องหลังการลด-cost-ai-server-ลง-9-เท่า-และทำให้แอปเร็วขึ้น-4-เท่าที่-line-man-wongnai-da855335de5f) · [Rust 1.98 Release Notes](https://blog.rust-lang.org/2026/08/20/Rust-1.98.0/) · [Apache Arrow Columnar Format](https://arrow.apache.org/docs/format/Columnar.html) · [Medium image formats](https://help.medium.com/hc/en-us/articles/215679797-Using-images) · [Polars](https://pola.rs/) · [tikv/jemallocator](https://github.com/tikv/jemallocator)
+**อ่านต่อ / References:** [บทความ Optimization รอบก่อน](https://life.lmwn.com/เบื้องหลังการลด-cost-ai-server-ลง-9-เท่า-และทำให้แอปเร็วขึ้น-4-เท่าที่-line-man-wongnai-da855335de5f) · [Rust 1.98 Release Notes](https://blog.rust-lang.org/2026/08/20/Rust-1.98.0/) · [Apache Arrow Columnar Format](https://arrow.apache.org/docs/format/Columnar.html) · [Go Swiss Tables](https://go.dev/blog/swisstable) · [Medium image formats](https://help.medium.com/hc/en-us/articles/215679797-Using-images) · [Polars](https://pola.rs/) · [tikv/jemallocator](https://github.com/tikv/jemallocator)
