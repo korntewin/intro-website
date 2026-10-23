@@ -11,9 +11,9 @@ date: 2026-10-23
 
 ตอนนั้นเรา Optimize Service ที่เขียนด้วย **Go** จนใช้ทรัพยากรน้อยลงไปมาก และ Kubernetes Cluster ก็กลับมามีพื้นที่ให้หายใจอีกครั้ง 🎉
 
-แต่ความโล่งนั้นอยู่กับเราไม่นานครับ...
+แต่ความโล่งนั้นอยู่กับเราไม่นานครับ... 😅
 
-เมื่อมี **ML Use Case เพิ่มขึ้นเรื่อย ๆ** ทั้งจำนวนโมเดล ขนาดข้อมูล และ Traffic ที่ต้องรองรับ Cluster ที่เคยโล่งก็เริ่มกลับมาเกือบเต็มอีกครั้ง แต่ข้อจำกัดสำคัญของเราไม่ได้มีแค่เรื่อง Cost เพราะตอนนี้ **Private Cloud ของ LINE MAN Wongnai เองก็ใกล้เต็มแล้ว** การเพิ่มเครื่องเพื่อรองรับ Workload ใหม่จึงไม่ใช่ทางเลือกที่ทำได้ง่าย ๆ ครับ
+เมื่อมี **ML Use Case เพิ่มขึ้นเรื่อย ๆ** ทั้งจำนวนโมเดล ขนาดข้อมูล และ Traffic ที่ต้องรองรับ Cluster ที่เคยโล่งก็เริ่มกลับมาเกือบเต็มอีกครั้ง แต่ข้อจำกัดสำคัญของเราไม่ได้มีแค่เรื่อง Cost เพราะตอนนี้ **Private Cloud ของ LINE MAN Wongnai เองก็ใกล้เต็มแล้ว** การเพิ่มเครื่องเพื่อรองรับ Workload ใหม่จึงไม่ใช่ทางเลือกที่ทำได้ง่าย ๆ ครับ 😬
 
 โจทย์รอบนี้จึงเปลี่ยนจาก “จูน Runtime ให้ดีขึ้น” มาเป็น **เราจะทำให้ ML Prediction Service รองรับ Workload ที่เพิ่มขึ้นได้อย่างไร ภายใต้ Capacity ของ Private Cloud ที่เหลืออยู่อย่างจำกัด?**
 
@@ -21,7 +21,7 @@ date: 2026-10-23
 
 > บทความนี้เป็น Engineering Story ไม่ใช่การบอกว่า Rust เร็วกว่า Go ในทุกกรณี ผลลัพธ์เป็นการวัดของ Production Workload หนึ่งชุด และตัวเลขที่เปิดเผยเป็นภาพรวมเชิงประสิทธิภาพ ไม่ลงรายละเอียดชื่อ Use Case หรือข้อมูลภายในระบบ
 
-## ผลลัพธ์ก่อน: Go vs Rust บน Production
+## ผลลัพธ์ก่อน: Go vs Rust บน Production 📊
 
 เราเปรียบเทียบ Service ทั้งสองเวอร์ชันใน Production ภายใต้ **Traffic Split เท่ากัน** เก็บข้อมูลต่อเนื่อง **18 ชั่วโมง ในวันที่ 17–18 ตุลาคม 2026** และดูทั้ง P99 Latency, CPU และ Memory ในระดับ Pod
 
@@ -53,7 +53,7 @@ date: 2026-10-23
 
 แนวคิดหลักของ RIIR รอบนี้เลยมีอยู่สามอย่าง คือ **ให้ Data อยู่ถูกที่, ให้ Thread ทำงานถูกจังหวะ และให้ Dependency ถูกจัดการล่วงหน้า** ซึ่งนำไปสู่ Optimization ต่อไปนี้ครับ
 
-## 1. Apache Arrow + Polars: จัด Memory ให้ CPU อ่านง่ายขึ้น
+## 1. Apache Arrow + Polars: จัด Memory ให้ CPU อ่านง่ายขึ้น 📦
 
 ก่อนอื่นต้องเข้าใจว่า CPU ไม่ได้อ่านข้อมูลจาก RAM ทีละชิ้นแบบไม่มีต้นทุน ทุกครั้งที่ต้องตาม Pointer ไปยัง Memory Location ใหม่ เราเสี่ยงเจอ Cache Miss และต้องรอข้อมูลจาก Memory Hierarchy ชั้นที่ช้ากว่า
 
@@ -77,7 +77,7 @@ Arrow รองรับการ **Slice ที่แชร์ Buffer เดิ
 
 ข้อควรระวังคือ **Zero-copy ไม่ได้หมายความว่า Pipeline ทั้งเส้นไม่มี Allocation** การ Cast Type, Compute Feature, Rechunk หรือแปลง Input สำหรับ ONNX Runtime บางกรณีก็ยังสร้าง Buffer ใหม่ได้ เราจึงใช้ Zero-copy ในจุดที่รองรับจริง และวัด Allocation ในจุดที่ยังหลีกเลี่ยงไม่ได้
 
-## 2. Actor Model: ให้แต่ละ ML Model จัดการ Mini-batch ของตัวเอง
+## 2. Actor Model: ให้แต่ละ ML Model จัดการ Mini-batch ของตัวเอง 🧵
 
 ปัญหาคลาสสิกของระบบ CPU-bound คือเมื่อมีงานเข้ามามาก เราอาจเผลอเพิ่ม Concurrency มากกว่าที่ Hardware จะรับไหว เช่น Request หลายตัวต่าง Spawn งานประมวลผลพร้อมกัน และแต่ละโมเดลก็อาจมี Thread Pool ของ ONNX Runtime ของตัวเองอีก
 
@@ -93,7 +93,7 @@ Actor Model ไม่ได้ทำให้คำนวณเร็วขึ�
 
 และไม่จำเป็นต้องหมายถึง Dynamic Batching ข้าม Request เสมอไป ในที่นี้ Mini-batch คือการแบ่งข้อมูลใน Request ให้ Stage ต่าง ๆ ประมวลผลอย่างมีขนาดเหมาะสม
 
-## 3. Kahn's Algorithm: จัดลำดับ Preprocessing ก่อนรับ Traffic
+## 3. Kahn's Algorithm: จัดลำดับ Preprocessing ก่อนรับ Traffic 🧩
 
 Preprocessing ของ ML ไม่ใช่แค่ Loop Transform Feature ธรรมดา เพราะ Function หลายตัวมี Dependency ต่อกัน เช่น ต้อง Normalize ก่อนสร้าง Derived Feature หรือสร้าง Column A/B ก่อนนำไปประกอบเป็น Input ของโมเดล
 
@@ -107,7 +107,7 @@ Preprocessing ของ ML ไม่ใช่แค่ Loop Transform Feature �
 
 ทั้งนี้ Topological Sort ไม่ได้หมายความว่าแต่ละ Node จะ Parallel โดยอัตโนมัติ มันเพียงรับประกันลำดับ Dependency ที่ถูกต้อง หากต้องการ Run Nodes พร้อมกันต้องออกแบบ Scheduler เพิ่มเติมครับ
 
-## 4. Rust 1.98: Algebraic Floating Point เปิดทางให้ SIMD เพิ่มเติม
+## 4. Rust 1.98: Algebraic Floating Point เปิดทางให้ SIMD เพิ่มเติม ⚡
 
 หลายคนน่าจะเคยเจอว่าทำไม Code บวกเลขง่าย ๆ ถึง Auto-vectorize ไม่ได้ ทั้งที่ CPU มี SIMD Instructions อยู่แล้ว สาเหตุหนึ่งคือ **Floating Point ไม่ได้มี Associativity แบบเลขจริง** เช่น `(a + b) + c` อาจได้ค่าไม่เท่ากับ `a + (b + c)` เพราะมี Rounding ในแต่ละ Operation
 
@@ -131,7 +131,7 @@ let algebraic = a.algebraic_add(b)
 
 โดยเฉพาะ Production ML ที่ผล Predict ต้องมีความสอดคล้องกับเวอร์ชันเดิม เราจึงต้องมี **Parity Tests** และ Benchmark ก่อนเปิด Optimization ในจุดที่เหมาะสม ส่วนตัวเลข 2.4×/5.4×/1.9× ข้างต้นเป็นผลรวมของการออกแบบหลายส่วน **ไม่ใช่ Benchmark แยกเฉพาะ Algebraic Operations**
 
-## 5. Memory Allocator: ptmalloc, mimalloc หรือ jemalloc?
+## 5. Memory Allocator: ptmalloc, mimalloc หรือ jemalloc? 🧠
 
 อีกจุดที่หลายคนมองข้ามคือ **Memory Allocator** ครับ ต่อให้ DataFrame ถูกจัด Layout ดีขึ้น งาน Preprocessing ก็ยังต้องสร้าง Temporary Buffers, Intermediate Columns และ Objects ระหว่างทางอยู่ดี
 
@@ -163,7 +163,7 @@ static GLOBAL_ALLOCATOR: tikv_jemallocator::Jemalloc =
 
 เราเลยใช้ **Semgrep** เป็น Policy Check ใน CI เพื่อบังคับให้แต่ละ Application Layer มีการ Configure Global Allocator ตามมาตรฐานเดียวกัน วิธีนี้ช่วยไม่ให้เรื่อง Performance ที่ต้องทำซ้ำกลายเป็นสิ่งที่ขึ้นอยู่กับความจำของคนเขียน Code ครับ
 
-## 6. Workspace + Application Layer: รองรับหลาย Use Case โดยไม่ Copy Core
+## 6. Workspace + Application Layer: รองรับหลาย Use Case โดยไม่ Copy Core 🏗️
 
 เมื่อ Service ต้องรองรับมากกว่าหนึ่ง ML Model และมี Use Case ใหม่เพิ่มเรื่อย ๆ เราไม่อยากกลับไปสร้าง Service ใหม่โดย Copy Code จากตัวเก่าทุกครั้ง
 
@@ -183,7 +183,7 @@ Optimization สำหรับ ML Prediction Service ต่างจากก�
 
 การดู P99 เพียงอย่างเดียวอาจไม่พอ เพราะเราต้องเห็นว่า Service ใช้ CPU และ Memory เท่าไรเพื่อให้ได้ Latency นั้นด้วย โดยเฉพาะเมื่อเป้าหมายสุดท้ายคือการขยายระบบให้รองรับ ML Use Case ใหม่ได้ด้วยต้นทุนที่เหมาะสม
 
-## Learning Points: สิ่งที่ได้จาก RIIR รอบนี้
+## Learning Points: สิ่งที่ได้จาก RIIR รอบนี้ 💡
 
 1. **Memory Layout สำคัญไม่แพ้ภาษา** — ลด Pointer Chasing และการ Copy ที่ไม่จำเป็นก่อนเพิ่มความซับซ้อนเรื่อง Threads
 2. **Concurrency ที่มากกว่าไม่ได้แปลว่าเร็วกว่า** — Actor Pools และ Mini-batches ช่วยให้เรา Tune CPU-bound Stages ได้ชัดเจน
