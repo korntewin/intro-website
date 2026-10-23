@@ -3,6 +3,8 @@ layout: ../../layouts/BlogLayout.astro
 title: "จาก Go สู่ Rust: เมื่อ ML Prediction Service ต้องเร็วขึ้นอีกครั้ง"
 description: "เบื้องหลังการ Rewrite ML Prediction Service ด้วย Rust ตั้งแต่ Memory Layout, Arrow/Polars, Actor Model, SIMD ไปจนถึง Memory Allocator"
 date: 2026-10-23
+coverImage: https://korntewin.github.io/intro-website/blog/figures/riir-cover.png
+coverImageAlt: "ภาพประกอบจาก Go สู่ Rust สำหรับ ML Prediction Service"
 ---
 
 ![ภาพประกอบจาก Go สู่ Rust สำหรับ ML Prediction Service](https://korntewin.github.io/intro-website/blog/figures/riir-cover.png)
