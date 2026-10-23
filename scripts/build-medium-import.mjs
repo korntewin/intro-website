@@ -123,11 +123,20 @@ export async function buildMediumImportPages({ sourceRoot = resolve('src/pages/b
     if (!(await readFile(filename, 'utf8')).includes('BlogLayout.astro')) continue;
     const slug = relative(sourceRoot, filename).replaceAll('\\', '/').replace(/\.md$/, '').replace(/\/index$/, '');
     const source = await readFile(resolve(outputRoot, 'blog', slug, 'index.html'), 'utf8');
-    const destination = resolve(outputRoot, 'blog', slug, 'medium', 'index.html');
+    const language = slug.endsWith('/en') ? 'en' : 'th';
+    const articleSlug = language === 'en' ? slug.slice(0, -3) : slug;
+    const destination = resolve(outputRoot, 'blog', articleSlug, 'medium', language, 'index.html');
+    const html = createMediumImportHtml(source);
     await mkdir(dirname(destination), { recursive: true });
-    await writeFile(destination, createMediumImportHtml(source));
+    await writeFile(destination, html);
+    // Keep the original Thai import URL valid for previously shared links.
+    if (language === 'th') {
+      const legacy = resolve(outputRoot, 'blog', articleSlug, 'medium', 'index.html');
+      await mkdir(dirname(legacy), { recursive: true });
+      await writeFile(legacy, html);
+    }
     count += 1;
-    console.log(`Generated plain import view: /blog/${slug}/medium/`);
+    console.log('Generated plain ' + language.toUpperCase() + ' import view: /blog/' + articleSlug + '/medium/' + language + '/');
   }
   if (!count) throw new Error('No blog articles found for Medium import views.');
   return count;

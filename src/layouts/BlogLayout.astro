@@ -9,10 +9,17 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '');
 const canonical = new URL(Astro.url.pathname.replace(/\/?$/, '/'), Astro.site ?? Astro.url.origin).href;
 const publishedDate = new Date(frontmatter.date).toISOString().slice(0, 10);
 const coverImage = frontmatter.coverImage ? new URL(frontmatter.coverImage, canonical).href : undefined;
+const language = frontmatter.language === 'en' ? 'en' : 'th';
+const rootArticleUrl = language === 'en' ? canonical.replace(/en\/$/, '') : canonical;
+const thaiUrl = rootArticleUrl;
+const englishUrl = rootArticleUrl + 'en/';
+const mediumUrl = rootArticleUrl + 'medium/' + language + '/';
 ---
-<BaseLayout title={frontmatter.title + ' · Korntewin'} description={frontmatter.description} lang="th" portfolio={true}>
+<BaseLayout title={frontmatter.title + ' · Korntewin'} description={frontmatter.description} lang={language} portfolio={true}>
   <Fragment slot="head">
     <link rel="canonical" href={canonical} />
+    <link rel="alternate" hreflang="th" href={thaiUrl} />
+    <link rel="alternate" hreflang="en" href={englishUrl} />
     <meta property="og:type" content="article" />
     <meta property="og:title" content={frontmatter.title} />
     <meta property="og:description" content={frontmatter.description} />
@@ -23,10 +30,14 @@ const coverImage = frontmatter.coverImage ? new URL(frontmatter.coverImage, cano
   </Fragment>
   <ReadingProgress client:load />
   <div class="portfolio blog-article-page">
-    <p class="back blog-back blog-reader-utility">
-      <a href={base + '/blog/'}>← บทความทั้งหมด</a>
-      <a class="blog-medium-link" href={canonical + 'medium/'}>Medium import view ↗</a>
-    </p>
+    <div class="back blog-back blog-reader-utility">
+      <a href={base + '/blog/'}>{language === 'th' ? '← บทความทั้งหมด' : '← All articles'}</a>
+      <nav class="blog-language-switch" aria-label="Article language">
+        <a href={thaiUrl} lang="th" aria-current={language === 'th' ? 'page' : undefined}>TH</a>
+        <a href={englishUrl} lang="en" aria-current={language === 'en' ? 'page' : undefined}>EN</a>
+      </nav>
+      <a class="blog-medium-link" href={mediumUrl}>Medium export ({language.toUpperCase()}) ↗</a>
+    </div>
     <article class="reading prose article-prose h-entry" aria-labelledby="post-title" itemscope itemtype="https://schema.org/BlogPosting">
       <h1 id="post-title" class="p-name" itemprop="headline">{frontmatter.title}</h1>
       <p class="eyebrow">ENGINEERING NOTES · <time class="dt-published" datetime={publishedDate} itemprop="datePublished">{publishedDate}</time></p>
@@ -36,7 +47,7 @@ const coverImage = frontmatter.coverImage ? new URL(frontmatter.coverImage, cano
       </div>
     </article>
     <div class="blog-reader-end">
-      <a class="port-inline-link" href={base + '/blog/'}>← More engineering notes</a>
+      <a class="port-inline-link" href={base + '/blog/'}>{language === 'th' ? '← บทความอื่น ๆ' : '← More engineering notes'}</a>
     </div>
   </div>
 </BaseLayout>

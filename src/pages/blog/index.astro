@@ -9,10 +9,11 @@ const posts = [
     number: '001',
     category: 'RUST / PRODUCTION ML',
     date: '23 OCT 2026',
-    language: 'ภาษาไทย',
-    title: 'จาก Go สู่ Rust: เมื่อ ML Prediction Service ต้องเร็วขึ้นอีกครั้ง',
+    language: 'TH / EN',
+    title: 'จาก Go สู่ Rust: เมื่อ ML Prediction Service ต้องเร็วขึ้นอีกครั้ง และใช้ CPU น้อยลง 5.4 เท่า 🦀',
     description: 'The story behind rewriting a production ML prediction service in Rust: from CPU and memory constraints to Arrow, actor-based execution, and measurable results.',
     href: '/blog/riir-rust-prediction-service/',
+    hrefEn: '/blog/riir-rust-prediction-service/en/',
     cover: '/blog/figures/riir-cover.svg',
     tags: ['Rust', 'ML inference', 'Performance'],
   },
@@ -41,19 +42,22 @@ const posts = [
 
       <div class="blog-list">
         {posts.map((post) => (
-          <a class="blog-feature" href={base + post.href}>
-            <div class="blog-feature-cover">
+          <article class="blog-feature">
+            <a class="blog-feature-cover" href={base + post.href}>
               <div class="blog-cover-caption"><span>FIELD NOTE / {post.number}</span><span>RIIR → RUST</span></div>
               <img src={base + post.cover} alt="Illustration of migrating an ML prediction service from Go to Rust" width="1800" height="763" loading="lazy" />
-            </div>
+            </a>
             <div class="blog-feature-copy">
               <p class="project-kicker">{post.date} / {post.category} / {post.language}</p>
-              <h3>{post.title}</h3>
+              <h3><a href={base + post.href}>{post.title}</a></h3>
               <p>{post.description}</p>
               <div class="project-tags">{post.tags.map((tag) => <span>{tag}</span>)}</div>
-              <span class="blog-read-cta">Read the story <span aria-hidden="true">↗</span></span>
+              <nav class="blog-feature-languages" aria-label="Choose article language">
+                <a class="blog-lang-button" href={base + post.href} lang="th">TH <span aria-hidden="true">↗</span></a>
+                <a class="blog-lang-button" href={base + post.hrefEn} lang="en">EN <span aria-hidden="true">↗</span></a>
+              </nav>
             </div>
-          </a>
+          </article>
         ))}
       </div>
     </section>
