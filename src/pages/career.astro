@@ -1,5 +1,37 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
-const roles=[{role:'Machine Learning Engineer',company:'LINE MAN Wongnai',period:'2026',detail:'Production inference systems, performance engineering, Rust and Kubernetes.'},{role:'Software Engineer (ML)',company:'Zilo (UK)',period:'2025',detail:'LLM applications and Graph RAG.'},{role:'Software Engineer (Big Data & ML)',company:'Siam Commercial Bank',period:'2024–2025',detail:'Data and machine learning platforms.'},{role:'Software Engineer',company:'Thinking Machines',period:'2022–2024',detail:'NLP, cloud and ML delivery.'},{role:'Software Engineer (Big Data & ML)',company:'KASIKORN',period:'2021–2022',detail:'Large-scale analytics and PySpark.'}];
+import '../styles/portfolio.css';
+const base = import.meta.env.BASE_URL.replace(/\/$/, '');
+const roles = [
+  { role: 'Machine Learning Engineer', company: 'LINE MAN Wongnai', period: '2026', detail: 'Production inference systems, performance engineering, Rust and Kubernetes.' },
+  { role: 'Software Engineer (ML)', company: 'Zilo (UK)', period: '2025', detail: 'LLM applications and Graph RAG.' },
+  { role: 'Software Engineer (Big Data & ML)', company: 'Siam Commercial Bank', period: '2024–2025', detail: 'Data and machine learning platforms.' },
+  { role: 'Software Engineer', company: 'Thinking Machines', period: '2022–2024', detail: 'NLP, cloud and ML delivery.' },
+  { role: 'Software Engineer (Big Data & ML)', company: 'KASIKORN', period: '2021–2022', detail: 'Large-scale analytics and PySpark.' },
+];
 ---
-<BaseLayout title="Career · Korntewin"><section class="hero"><p class="eyebrow">EXPERIENCE</p><h1>Career timeline</h1><p>Building production ML and data systems across industries.</p></section><div class="cards">{roles.map(r=><article class="card"><p class="eyebrow">{r.period}</p><h2>{r.role}</h2><p>{r.company}</p><p>{r.detail}</p></article>)}</div></BaseLayout>
+<BaseLayout title="Career · Korntewin" description="Korntewin's engineering journey across machine learning, software systems, and data infrastructure." portfolio={true}>
+  <div class="portfolio interior-page">
+    <section class="page-lead">
+      <p class="kicker">CAREER / AN ONGOING CHANGELOG</p>
+      <h1>Different stacks.<br /><span class="headline-accent">Same curiosity.</span></h1>
+      <p>From data platforms to production ML systems, these are the places that have shaped how I think about building reliable software.</p>
+    </section>
+    <section class="career-layout" aria-labelledby="timeline-title">
+      <div class="career-sidebar"><p class="kicker">RELEASE HISTORY</p><h2 id="timeline-title">The journey,<br />so far<span class="headline-accent">.</span></h2><p>Always learning, always looking a layer deeper.</p><a class="port-inline-link" href={base + '/projects/'}>Related projects ↗</a></div>
+      <ol class="career-timeline">
+        {roles.map((entry, index) => (
+          <li class="career-entry">
+            <div class="timeline-marker" aria-hidden="true"><span>{String(index + 1).padStart(2, '0')}</span></div>
+            <article class="career-card">
+              <div class="career-topline"><span class="project-kicker">{entry.company}</span><span class="career-date">{entry.period}</span></div>
+              <h3>{entry.role}</h3>
+              <p>{entry.detail}</p>
+            </article>
+          </li>
+        ))}
+      </ol>
+    </section>
+    <section class="small-cta"><div><p class="kicker">ALSO DOCUMENTED IN CODE</p><h2>The work continues.</h2></div><a class="port-button port-button-primary" href="https://github.com/korntewin" target="_blank" rel="noopener noreferrer">Browse GitHub ↗</a></section>
+  </div>
+</BaseLayout>

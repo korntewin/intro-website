@@ -1,5 +1,35 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
-const projects=[['Python vs Rust ML inference','https://github.com/korntewin/python-vs-rust-DL-inference'],['Rust Crypto Trading Bot','https://medium.com/thinking-machines-thailand/crypto-trading-bots-with-rust-db754daf474e'],['Real-time Object Detection with Rust + WASM','https://github.com/korntewin/yolo-wasm'],['Kafka → Delta Lake','https://medium.com/@korntewin-b/delta-table-liquid-clustering-for-real-time-event-streaming-b6f48d111aa6']];
+import '../styles/portfolio.css';
+const base = import.meta.env.BASE_URL.replace(/\/$/, '');
+const projects = [
+  { id:'01', kind:'INFERENCE / BENCHMARKS', title:'Python vs Rust ML inference', description:'Exploring inference performance and language trade-offs for deep learning workloads.', href:'https://github.com/korntewin/python-vs-rust-DL-inference', image:'/visuals/benchmark.svg', tags:['Rust','Python','ML inference'] },
+  { id:'02', kind:'RUST / AUTOMATION', title:'Rust crypto trading bot', description:'An engineering write-up about building trading bots with Rust.', href:'https://medium.com/thinking-machines-thailand/crypto-trading-bots-with-rust-db754daf474e', image:'/visuals/rust-core.svg', tags:['Rust','Systems','Automation'] },
+  { id:'03', kind:'RUST / WEBASSEMBLY', title:'Real-time object detection', description:'An experiment bringing real-time object detection to Rust and WebAssembly.', href:'https://github.com/korntewin/yolo-wasm', image:'/visuals/benchmark.svg', tags:['Rust','WASM','Computer vision'] },
+  { id:'04', kind:'DATA / STREAMING', title:'Kafka → Delta Lake', description:'A look at real-time event streaming and Delta table liquid clustering.', href:'https://medium.com/@korntewin-b/delta-table-liquid-clustering-for-real-time-event-streaming-b6f48d111aa6', image:'/visuals/data-stream.svg', tags:['Kafka','Delta Lake','Streaming'] },
+];
 ---
-<BaseLayout title="Projects · Korntewin"><section class="hero"><p class="eyebrow">SELECTED WORK</p><h1>Projects & experiments</h1><p>Rust, ML platforms, data engineering and applied research.</p></section><div class="cards">{projects.map(([title,href])=><a class="card" href={href} target="_blank" rel="noreferrer"><h2>{title} ↗</h2><p>Explore the project and implementation.</p></a>)}</div></BaseLayout>
+<BaseLayout title="Projects · Korntewin" description="Selected Rust, ML inference, WebAssembly and data engineering projects by Korntewin." portfolio={true}>
+  <div class="portfolio interior-page">
+    <section class="page-lead">
+      <p class="kicker">PROJECTS / SELECTED EXPERIMENTS</p>
+      <h1>Build. Measure.<br /><span class="headline-accent">Learn. Repeat.</span></h1>
+      <p>A collection of side quests, implementations, and engineering write-ups spanning Rust, machine learning, and data systems.</p>
+    </section>
+    <section aria-label="Project collection" class="project-list">
+      {projects.map(project => (
+        <a class="project-row" href={project.href} target="_blank" rel="noopener noreferrer">
+          <div class="project-preview"><img src={base + project.image} alt="" width="460" height="220" loading="lazy" /></div>
+          <div class="project-row-content">
+            <span class="project-kicker">{project.id} / {project.kind}</span>
+            <h2>{project.title}</h2>
+            <p>{project.description}</p>
+            <div class="project-tags">{project.tags.map(tag => <span>{tag}</span>)}</div>
+          </div>
+          <span class="project-row-arrow" aria-hidden="true">↗</span>
+        </a>
+      ))}
+    </section>
+    <section class="small-cta"><div><p class="kicker">MORE UNDER THE HOOD</p><h2>Read the deeper dives.</h2></div><a class="port-button port-button-primary" href={base + '/blog/'}>Engineering blog ↗</a></section>
+  </div>
+</BaseLayout>

@@ -1,4 +1,44 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
+import '../styles/portfolio.css';
+const base = import.meta.env.BASE_URL.replace(/\/$/, '');
+const principles = [
+  { no: '01', title: 'Measure first.', detail: 'Start with profiles, traces, and reproducible benchmarks. Intuition is a hypothesis, not an answer.' },
+  { no: '02', title: 'Understand the machine.', detail: 'Threads, memory, scheduling, and data layout often matter just as much as the model.' },
+  { no: '03', title: 'Make it operable.', detail: 'Reliable deployments, clear boundaries, and useful observability are features too.' },
+];
 ---
-<BaseLayout title="About · Korntewin"><section class="hero"><p class="eyebrow">ABOUT</p><h1>Engineering practical ML systems.</h1><p>I’m an ML and software engineer focused on inference performance, Rust, data platforms, and production systems.</p></section><div class="cards"><div class="card"><h2>Technical interests</h2><p>Rust · Python · Arrow · Polars · Kubernetes · ML inference · Data platforms · LLMs</p></div><div class="card"><h2>Connect</h2><p><a href="https://github.com/korntewin">GitHub</a> · <a href="https://korntewin-b.medium.com">Medium</a> · <a href="https://www.linkedin.com/in/korntewin">LinkedIn</a></p></div></div></BaseLayout>
+<BaseLayout title="About · Korntewin" description="Meet Korntewin: ML and systems engineering, Rust, performance, and production infrastructure." portfolio={true}>
+  <div class="portfolio interior-page">
+    <div class="page-lead about-lead">
+      <p class="kicker">ABOUT / THE HUMAN BEHIND THE PROFILER</p>
+      <h1>I like hard problems<br />and <span class="headline-accent">simple systems.</span></h1>
+      <p>I'm Korn, a machine learning and software engineer drawn to the space where models meet infrastructure. I enjoy tracing a slow request all the way down to its actual cause, then making the fix understandable.</p>
+    </div>
+    <div class="about-grid">
+      <div class="about-terminal" aria-label="Illustrative terminal with engineering interests">
+        <div class="terminal-title"><span class="terminal-dots" aria-hidden="true"><i></i><i></i><i></i></span>korn@workstation:~</div>
+        <div class="terminal-body">
+          <p><span class="prompt">$</span> cat /interests.txt</p>
+          <p class="terminal-output">→ Rust & systems programming<br />→ Production ML inference<br />→ Distributed infrastructure<br />→ Data-oriented performance<br />→ Observability & tooling</p>
+          <p><span class="prompt">$</span> echo "measure, then optimize"</p>
+          <p class="terminal-output">measure, then optimize<span class="blink-cursor" aria-hidden="true">▋</span></p>
+        </div>
+        <span class="terminal-stamp">NO MAGIC. JUST ENGINEERING.</span>
+      </div>
+      <div class="about-aside">
+        <p class="kicker">THE TOOLBOX / A MOVING TARGET</p>
+        <h2>Tools are a means.<br /><span class="muted-heading">Curiosity is the job.</span></h2>
+        <p>Rust, Python, Arrow, Polars, Kubernetes, and ML runtimes are some of the tools I reach for. The interesting part is figuring out what matters for the workload in front of me.</p>
+        <a class="port-inline-link" href={base + '/projects/'}>See what I'm exploring <span aria-hidden="true">↗</span></a>
+      </div>
+    </div>
+    <section class="port-section" aria-labelledby="principles-title">
+      <div class="section-top"><div><p class="kicker">HOW I APPROACH ENGINEERING</p><h2 id="principles-title">A few working principles.</h2></div></div>
+      <div class="principles-grid">
+        {principles.map(p => <article class="principle"><span class="principle-no">{p.no} /</span><h3>{p.title}</h3><p>{p.detail}</p></article>)}
+      </div>
+    </section>
+    <section class="small-cta"><div><p class="kicker">FIND ME ELSEWHERE</p><h2>Let's talk shop.</h2></div><div class="small-cta-links"><a href="https://github.com/korntewin" target="_blank" rel="noopener noreferrer">GitHub ↗</a><a href="https://www.linkedin.com/in/korntewin" target="_blank" rel="noopener noreferrer">LinkedIn ↗</a><a href="https://korntewin-b.medium.com" target="_blank" rel="noopener noreferrer">Medium ↗</a></div></section>
+  </div>
+</BaseLayout>
