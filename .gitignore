@@ -41,3 +41,6 @@ yarn-error.log*
 next-env.d.ts
 
 out/
+
+# Rasterized blog figures generated from editable SVG sources
+public/blog/figures/*.png

@@ -5,7 +5,7 @@ Static portfolio and Thai engineering blog, powered by **Astro + Svelte** and de
 ## Start
 
 ```bash
-npm ci
+npm install
 npm run dev
 npm run build
 npm run preview
@@ -18,3 +18,7 @@ Routes: `/`, `/about/`, `/career/`, `/projects/`, `/blog/`, `/blog/riir-rust-pre
 Long-form content is Markdown under `src/pages/blog/`, with `BlogLayout.astro`. Svelte components live in `src/components/` and hydrate only as needed.
 
 The blog intentionally contains publicly shareable explanations, not internal RFC links, credentials, or production source code.
+
+## Blog images and Medium imports
+
+Article figures are stored as SVG sources in `public/blog/figures/`. Running `npm run dev` or `npm run build` automatically generates public PNG copies via `scripts/render-blog-images.mjs`. Article Markdown uses absolute HTTPS PNG URLs so Medium can retrieve the images when importing the deployed GitHub Pages article. Check `docs/medium-import.md` for troubleshooting and the manual fallback.
