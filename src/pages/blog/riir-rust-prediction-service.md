@@ -189,12 +189,12 @@ Optimization สำหรับ ML Prediction Service ต่างจากก�
 
 ## Learning Points: สิ่งที่ได้จาก RIIR รอบนี้ 💡
 
-1. **Memory Layout สำคัญไม่แพ้ภาษา** — ลด Pointer Chasing และการ Copy ที่ไม่จำเป็นก่อนเพิ่มความซับซ้อนเรื่อง Threads
-2. **Concurrency ที่มากกว่าไม่ได้แปลว่าเร็วกว่า** — ใช้ 1D Data Parallelism ผ่าน Actor Pools และ Mini-batches แต่ไม่ Parallel DAG Nodes เพิ่ม เพื่อเลี่ยง CPU Oversubscription
-3. **Compile สิ่งที่รู้ล่วงหน้าตั้งแต่ Startup** — DAG ของ Preprocessing ไม่ควรต้องมาคำนวณ Dependency ใหม่ทุก Request
-4. **SIMD ต้องเข้าใจ Semantics** — Algebraic FP ช่วยเปิดโอกาสให้ Compiler แต่ต้องตรวจผลลัพธ์เชิงตัวเลขเสมอ
-5. **Allocator เป็นส่วนหนึ่งของ Performance Design** — ใน Benchmark ของ Prediction Service เราพบว่า jemalloc ลด Memory Usage ได้ประมาณ 100–500 MB ช่วง Peak Load และใช้ CI Policy ไม่ให้ Application ไหน Config หลุด
-6. **Architecture ที่ดีช่วยให้ Optimization คุ้มในระยะยาว** — เมื่อ Core ถูกแชร์กัน การปรับปรุงหนึ่งครั้งก็มีโอกาสส่งผลให้หลาย Use Case
+1. **Memory Layout สำคัญไม่แพ้ภาษา** เราจึงเริ่มจากลด Pointer Chasing และการ Copy ที่ไม่จำเป็น ก่อนเพิ่มความซับซ้อนเรื่อง Threads
+2. **Concurrency ที่มากกว่าไม่ได้แปลว่าเร็วกว่า** เราใช้ 1D Data Parallelism ผ่าน Actor Pools และ Mini-batches โดยไม่ Parallel DAG Nodes เพิ่ม เพื่อเลี่ยง CPU Oversubscription
+3. **Compile สิ่งที่รู้ล่วงหน้าตั้งแต่ Startup** DAG ของ Preprocessing ควรถูกจัดลำดับ Dependency ไว้ก่อนรับ Request แรก
+4. **SIMD ต้องเข้าใจ Semantics** Algebraic FP เปิดโอกาสให้ Compiler Optimize ได้มากขึ้น แต่ต้องตรวจผลลัพธ์เชิงตัวเลขทุกครั้ง
+5. **Allocator เป็นส่วนหนึ่งของ Performance Design** Benchmark ของ Prediction Service แสดงว่า jemalloc ลด Memory Usage ได้ประมาณ 100–500 MB ช่วง Peak Load และเราใช้ CI Policy เพื่อไม่ให้ Application ไหนลืม Config
+6. **Architecture ที่ดีช่วยให้ Optimization คุ้มในระยะยาว** เมื่อ Core ถูกแชร์กัน การปรับปรุงครั้งเดียวก็มีโอกาสส่งผลให้หลาย Use Case
 
 ## Conclusions
 
