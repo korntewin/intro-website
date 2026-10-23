@@ -87,9 +87,9 @@ coverImageAlt: "ภาพประกอบจาก Go สู่ Rust สำห
 
 ข้อได้เปรียบคือเราสามารถใช้ Library เหล่านี้ใน Rust ได้โดยตรงและควบคุม **Ownership, Lifetime และ Memory Layout** ได้ละเอียด โดยไม่ต้องมี Garbage Collector ของภาษาเข้ามาทำงานบน Hot Path นี่ไม่ได้แปลว่า Rust เก่งกว่า Go ในทุกด้านนะครับ แต่สำหรับงาน Preprocessing ที่ต้องวิ่งผ่านข้อมูลจำนวนมาก ความพร้อมของ Ecosystem สำคัญไม่แพ้ตัวภาษาเลย
 
-ถ้าใช้ Go แล้วต้องเรียก Library ที่จัดการ Memory แบบ Native ผ่าน C/C++ อยู่บ่อย ๆ เราอาจเจอสิ่งที่เรียกกันติดปากว่า **"Double GC"** หรือมี Memory Management สองชุดซ้อนกัน อย่างไรก็ตาม ถ้าพูดให้ถูกทางเทคนิค Native Library หลายตัวไม่ได้มี GC ตัวที่สอง แต่ใช้ Native Allocator หรือ Reference Counting ของตัวเอง ขณะที่ Go ใช้ Garbage Collector กับ Go Heap ปัญหาจริงจึงอยู่ที่การดูแล **Memory Lifetime คนละฝั่ง, Native Allocations ที่ Go GC ไม่ได้ติดตามโดยตรง และต้นทุนของการข้าม Runtime Boundary** มากกว่าการมี GC สองตัวพร้อมกัน
+อีกเหตุผลสำคัญคือ **การทำงานร่วมกับ Python Ecosystem** ครับ เพราะเครื่องมือด้าน Data และ ML จำนวนมากยังอยู่บน Python ถ้า Service เขียนด้วย Go แล้วต้องเรียก Python Library ภายใน Process เดียวกัน ก็มักต้องเชื่อมผ่าน **cgo และ CPython C API** ทำให้ต้องดูแลทั้ง **Go Garbage Collector** และ **Python Reference Counting / Cyclic GC** รวมถึง GIL, Pointer และ Memory Lifetime ข้าม Runtime สิ่งที่บางคนเรียกกันว่า **"Double GC"** จึงไม่ได้หมายถึง GC สองตัวที่ทำงานซ้ำซ้อนบน Memory ชุดเดียวกัน แต่คือความซับซ้อนของการประสาน **สอง Runtime และสอง Memory Model** เข้าด้วยกัน
 
-Rust เองก็ยังต้องจัดการ Memory ที่อยู่ใน Native Library อย่างถูกต้องครับ แต่การไม่มี Tracing GC และการใช้ Ownership ช่วยให้เราออกแบบเส้นทาง Data Processing ให้ Predictable ได้ง่ายขึ้น
+ในฝั่ง Rust มี **[PyO3](https://pyo3.rs/)** ที่รองรับทั้งการเรียก Python จาก Rust และการสร้าง Python Extension ด้วย Rust รวมถึง **[maturin](https://www.maturin.rs/)** ที่ช่วย Build และ Package ให้ Python ใช้งานได้สะดวกกว่า เมื่อรวมกับ **Ownership และ Lifetime** ของ Rust ซึ่งไม่ต้องพึ่ง GC ของตัวภาษา จึงทำให้การเชื่อม Python กับ Native Code มีเครื่องมือและขอบเขตการจัดการ Memory ที่ชัดเจนขึ้น แน่นอนว่าถ้าเรียก Python ก็ยังต้องจัดการ Reference Counting, GIL (ใน Python ที่เปิดใช้ GIL) และต้นทุนการข้าม Runtime อยู่ดี แต่สำหรับงาน ML ผมมองว่า **Rust เป็นมิตรกับ Python Ecosystem มากกว่า Go** ครับ
 
 ## 1. Apache Arrow + Polars: จัด Memory ให้ CPU อ่านง่ายขึ้น 📦
 
