@@ -9,7 +9,7 @@ coverImageAlt: "ภาพประกอบจาก Go สู่ Rust สำห
 
 ![ภาพประกอบจาก Go สู่ Rust สำหรับ ML Prediction Service](https://korntewin.github.io/intro-website/blog/figures/riir-cover.png)
 
-ถ้าใครเคยอ่าน[บทความก่อนของผมเรื่องการลด Cost AI Server ลง 9 เท่า และทำให้แอปเร็วขึ้น 4 เท่า](https://medium.com/r/?url=https%3A%2F%2Flife.lmwn.com%2F%25E0%25B9%2580%25E0%25B8%259A%25E0%25B8%25B7%25E0%25B9%2589%25E0%25B8%25AD%25E0%25B8%2587%25E0%25B8%25AB%25E0%25B8%25A5%25E0%25B8%25B1%25E0%25B8%2587%25E0%25B8%2581%25E0%25B8%25B2%25E0%25B8%25A3%25E0%25B8%25A5%25E0%25B8%2594-cost-ai-server-%25E0%25B8%25A5%25E0%25B8%2587-9-%25E0%25B9%2580%25E0%25B8%2597%25E0%25B9%2588%25E0%25B8%25B2-%25E0%25B9%2581%25E0%25B8%25A5%25E0%25B8%25B0%25E0%25B8%2597%25E0%25B8%25B3%25E0%25B9%2583%25E0%25B8%25AB%25E0%25B9%2589%25E0%25B9%2581%25E0%25B8%25AD%25E0%25B8%259B%25E0%25B9%2580%25E0%25B8%25A3%25E0%25B9%2587%25E0%25B8%25A7%25E0%25B8%2582%25E0%25B8%25B6%25E0%25B9%2589%25E0%25B8%2599-4-%25E0%25B9%2580%25E0%25B8%2597%25E0%25B9%2588%25E0%25B8%25B2%25E0%25B8%2597%25E0%25B8%25B5%25E0%25B9%2588-line-man-wongnai-da855335de5f) น่าจะจำได้ว่า **ML Prediction Service เป็นงาน CPU-bound ที่ Optimize ยากกว่าการปรับ Web Server ทั่วไป** พอมีทั้ง Preprocessing, Model Inference, และ Data Querying ที่ 1 Request ต้องประมวลผลมหาศาลตามจำนวนสินค้า/ร้านค้าที่คาดว่า User จะชอบ เราจึงต้องคิดตั้งแต่ CPU Scheduler ไปจนถึงการทำงานของแต่ละ Thread
+ถ้าใครเคยอ่าน[บทความก่อนของผมเรื่องการลด Cost AI Server ลง 9 เท่า และทำให้แอปเร็วขึ้น 4 เท่า](https://life.lmwn.com/%E0%B9%80%E0%B8%9A%E0%B8%B7%E0%B9%89%E0%B8%AD%E0%B8%87%E0%B8%AB%E0%B8%A5%E0%B8%B1%E0%B8%87%E0%B8%81%E0%B8%B2%E0%B8%A3%E0%B8%A5%E0%B8%94-cost-ai-server-%E0%B8%A5%E0%B8%87-9-%E0%B9%80%E0%B8%97%E0%B9%88%E0%B8%B2-%E0%B9%81%E0%B8%A5%E0%B8%B0%E0%B8%97%E0%B8%B3%E0%B9%83%E0%B8%AB%E0%B9%89%E0%B9%81%E0%B8%AD%E0%B8%9B%E0%B9%80%E0%B8%A3%E0%B9%87%E0%B8%A7%E0%B8%82%E0%B8%B6%E0%B9%89%E0%B8%99-4-%E0%B9%80%E0%B8%97%E0%B9%88%E0%B8%B2%E0%B8%97%E0%B8%B5%E0%B9%88-line-man-wongnai-da855335de5f) น่าจะจำได้ว่า **ML Prediction Service เป็นงาน CPU-bound ที่ Optimize ยากกว่าการปรับ Web Server ทั่วไป** พอมีทั้ง Preprocessing, Model Inference, และ Data Querying ที่ 1 Request ต้องประมวลผลมหาศาลตามจำนวนสินค้า/ร้านค้าที่คาดว่า User จะชอบ เราจึงต้องคิดตั้งแต่ CPU Scheduler ไปจนถึงการทำงานของแต่ละ Thread
 
 ตอนนั้นเรา Optimize Service ที่เขียนด้วย Go จนใช้ทรัพยากรน้อยลงไปมาก และ Kubernetes Cluster ก็กลับมามีพื้นที่ให้หายใจอีกครั้ง 🎉
 
@@ -32,6 +32,12 @@ coverImageAlt: "ภาพประกอบจาก Go สู่ Rust สำห
 เราเปรียบเทียบ Service ทั้งสองเวอร์ชันใน Production ด้วย **A/B Testing** ภายใต้ **Traffic Split เท่ากัน** เก็บข้อมูลต่อเนื่อง 18 ชั่วโมง ในวันที่ 17–18 ตุลาคม 2026 และดูทั้ง P99 Latency, CPU และ Memory ในระดับ Pod
 
 ![กราฟเปรียบเทียบ P99 latency, CPU และ Memory ของ Go และ Rust](https://korntewin.github.io/intro-website/blog/figures/production-results.png)
+
+| Metric | Go (median / peak) | Rust (median / peak) | Improvement |
+| --- | ---: | ---: | ---: |
+| **P99 server latency** | 416 / 829 ms | 146 / 419 ms | **2.4×** |
+| **Max pod CPU usage** | 16.9% / 45.2% | 3.0% / 8.6% | **5.4×** |
+| **Max pod memory** | 2.68 / 3.56 GB | 1.43 / 1.70 GB | **1.9×** |
 
 หมายเหตุเล็กน้อย: ค่า Improvement ในรายงานคำนวณจาก median ของอัตราส่วน Go/Rust ที่วัดแต่ละนาที ไม่ใช่นำ median ของสองฝั่งมาหารกันตรง ๆ ส่วนกราฟแสดง median ของแต่ละฝั่งเพื่อให้เห็นขนาดความแตกต่าง อ่านตัวเลขสองแบบนี้แยกกันนะครับ
 
@@ -77,11 +83,11 @@ coverImageAlt: "ภาพประกอบจาก Go สู่ Rust สำห
 
 การขยับลงมาด้านล่างหมายถึงการเพิ่มความสามารถในการจัดการ Memory Layout, SIMD, Preprocessing และ Inference Execution ด้วยตัวเอง โดยยังเชื่อมกับ Workflow ฝั่ง Python และ Service ที่มีอยู่
 
-จริง ๆ แล้ว Go เป็นภาษาที่ดีมากสำหรับ Web Service, Networking และ Cloud Infrastructure ครับ แต่พอเป็นงาน Data Processing กับ ML Inference ผมมองว่า Rust มี Ecosystem ของ Library ที่ตอบโจทย์เรามากกว่า เช่น [Polars](https://medium.com/r/?url=https%3A%2F%2Fpola.rs%2F) , [nlpO3](https://medium.com/r/?url=https%3A%2F%2Fgithub.com%2FPyThaiNLP%2Fnlpo3) สำหรับ Thai NLP และ [Hugging Face Tokenizers](https://medium.com/r/?url=https%3A%2F%2Fgithub.com%2Fhuggingface%2Ftokenizers) สำหรับ Tokenization ซึ่งทั้งหมดมี Core Engine อยู่บน Rust
+จริง ๆ แล้ว Go เป็นภาษาที่ดีมากสำหรับ Web Service, Networking และ Cloud Infrastructure ครับ แต่พอเป็นงาน Data Processing กับ ML Inference ผมมองว่า Rust มี Ecosystem ของ Library ที่ตอบโจทย์เรามากกว่า เช่น [Polars](https://pola.rs/) , [nlpO3](https://github.com/PyThaiNLP/nlpo3) สำหรับ Thai NLP และ [Hugging Face Tokenizers](https://github.com/huggingface/tokenizers) สำหรับ Tokenization ซึ่งทั้งหมดมี Core Engine อยู่บน Rust
 
 ข้อได้เปรียบคือเราสามารถใช้ Library เหล่านี้ใน Rust ได้โดยตรงและควบคุม **Ownership, Lifetime และ Memory Layout** ได้ละเอียด โดยไม่ต้องมี Garbage Collector ของภาษาเข้ามาทำงานบน Hot Path นี่ไม่ได้แปลว่า Rust เก่งกว่า Go ในทุกด้านนะครับ แต่สำหรับงาน Preprocessing ที่ต้องวิ่งผ่านข้อมูลจำนวนมาก ความพร้อมของ Ecosystem สำคัญไม่แพ้ตัวภาษาเลย 🦀
 
-อีกเหตุผลสำคัญคือ การเชื่อมกับ Python Ecosystem ครับ ฝั่ง Go มี [cgo](https://medium.com/r/?url=https%3A%2F%2Fpkg.go.dev%2Fcmd%2Fcgo) ที่เป็นเครื่องมือ Mature สำหรับเรียก C API แต่ ไม่ได้ออกแบบมาเป็น Python Binding โดยตรง หากต้องเรียก Python ภายใน Process เดียวกัน ก็ต้องเชื่อมผ่าน CPython C API และดูแล Pointer, Object Lifetime และ GIL ข้าม Runtime เพิ่มขึ้น ขณะที่ฝั่ง Rust มี [PyO3](https://medium.com/r/?url=https%3A%2F%2Fpyo3.rs%2F) ซึ่งเป็น Python Binding ที่พัฒนามาสำหรับงานนี้โดยเฉพาะ ทั้งการเรียก Python จาก Rust และการสร้าง Python Extension ด้วย Rust พร้อม [maturin](https://medium.com/r/?url=https%3A%2F%2Fwww.maturin.rs%2F) สำหรับ Build และ Package ดังนั้น cgo และ PyO3 ต่างก็ Mature ในขอบเขตของตัวเอง แต่สำหรับ Python Integration ผมมองว่า Rust มี Abstraction และ Tooling ที่ตอบโจทย์กว่า
+อีกเหตุผลสำคัญคือ การเชื่อมกับ Python Ecosystem ครับ ฝั่ง Go มี [cgo](https://pkg.go.dev/cmd/cgo) ที่เป็นเครื่องมือ Mature สำหรับเรียก C API แต่ ไม่ได้ออกแบบมาเป็น Python Binding โดยตรง หากต้องเรียก Python ภายใน Process เดียวกัน ก็ต้องเชื่อมผ่าน CPython C API และดูแล Pointer, Object Lifetime และ GIL ข้าม Runtime เพิ่มขึ้น ขณะที่ฝั่ง Rust มี [PyO3](https://pyo3.rs/) ซึ่งเป็น Python Binding ที่พัฒนามาสำหรับงานนี้โดยเฉพาะ ทั้งการเรียก Python จาก Rust และการสร้าง Python Extension ด้วย Rust พร้อม [maturin](https://www.maturin.rs/) สำหรับ Build และ Package ดังนั้น cgo และ PyO3 ต่างก็ Mature ในขอบเขตของตัวเอง แต่สำหรับ Python Integration ผมมองว่า Rust มี Abstraction และ Tooling ที่ตอบโจทย์กว่า
 
 ## 1. Apache Arrow + Polars: จัด Memory ให้ CPU อ่านง่ายขึ้น 📦
 
@@ -101,7 +107,7 @@ coverImageAlt: "ภาพประกอบจาก Go สู่ Rust สำห
 
 เพื่อเปรียบเทียบให้เห็นภาพ สมมติ 1 Record มี Feature `score: f32` เพียงค่าเดียว และปัจจุบัน Go Service จะเก็บข้อมูลเป็น `[]map[string]any` (หนึ่ง Map ต่อ Record) เพื่อความยืดหยุ่นในการเก็บข้อมูลได้หลากหลายประเภทตามแต่ Feature ที่เราจะใช้ของโมเดล
 
-Go 1.24+ ใช้ [Swiss Table](https://medium.com/r/?url=https%3A%2F%2Fgo.dev%2Fblog%2Fswisstable) ซึ่งมี Map Header ~48 B และ Group ขนาด 8 Slots (Control 8 B + Key/Value 8 × (16 B string + 16 B any) = 264 B ปัดเป็น ~288 B ตาม Allocator) รวม Slice Pointer 8 B และค่า f32 ที่ถูก Box อีก ~8 B จึงประเมินเป็น **~352 B ต่อ Record** ส่วน Arrow แชร์ Schema และเก็บ f32 แบบ Contiguous เพียง **4 B ต่อ Record** (+ Validity Bitmap 1 Bit ต่อ Record หากต้องแทน Null)
+Go 1.24+ ใช้ [Swiss Table](https://go.dev/blog/swisstable) ซึ่งมี Map Header ~48 B และ Group ขนาด 8 Slots (Control 8 B + Key/Value 8 × (16 B string + 16 B any) = 264 B ปัดเป็น ~288 B ตาม Allocator) รวม Slice Pointer 8 B และค่า f32 ที่ถูก Box อีก ~8 B จึงประเมินเป็น **~352 B ต่อ Record** ส่วน Arrow แชร์ Schema และเก็บ f32 แบบ Contiguous เพียง **4 B ต่อ Record** (+ Validity Bitmap 1 Bit ต่อ Record หากต้องแทน Null)
 
 ![แผนภาพประมาณการหน่วยความจำ Go Swiss Table เทียบ Apache Arrow สำหรับ 1,000 และ 10,000 Records พร้อม Memory Breakdown และอัตราส่วน 85 เท่า](https://korntewin.github.io/intro-website/blog/figures/arrow-swiss-memory.png)
 
@@ -191,12 +197,6 @@ let algebraic = a.algebraic_add(b)
     .algebraic_add(d);
 ```
 
-```rust
-#[global_allocator]
-static GLOBAL_ALLOCATOR: tikv_jemallocator::Jemalloc =
-    tikv_jemallocator::Jemalloc;
-```
-
 นี่ไม่ได้แปลว่า Update Compiler เป็น Rust 1.98 แล้ว Code ทุกบรรทัดจะเร็วขึ้นทันทีนะครับ เราต้องเลือกใช้ Method เหล่านี้อย่างมีเหตุผล และระวังเรื่อง Numerical Accuracy, NaN, Infinity, Signed Zero ตลอดจนความแตกต่างของผลลัพธ์ระหว่าง Compiler/Architecture
 
 โดยเฉพาะ Production ML ที่ผล Predict ต้องมีความสอดคล้องกับเวอร์ชันเดิม เราจึงต้องมี **Parity Tests** และ Benchmark ก่อนเปิด Optimization ในจุดที่เหมาะสม ส่วนตัวเลข 2.4×/5.4×/1.9× ข้างต้นเป็นผลรวมของการออกแบบหลายส่วน ไม่ใช่ Benchmark แยกเฉพาะ Algebraic Operations 🚀
@@ -207,17 +207,21 @@ static GLOBAL_ALLOCATOR: tikv_jemallocator::Jemalloc =
 
 บน Linux ที่ใช้ glibc ตัว System Allocator ปกติคือ ptmalloc ซึ่งใช้งานทั่วไปได้ดี แต่ใน Workload ที่มี Allocation/Free จำนวนมากพร้อมกันหลาย Threads เราอาจต้องพิจารณาทางเลือกอื่น เช่น mimalloc และ jemalloc
 
+| Allocator | จุดเด่น | Trade-off ที่ควรดู |
+| --- | --- | --- |
+| **ptmalloc** (glibc default) | ไม่ต้องเพิ่ม Dependency และทำงานได้ดีในงานทั่วไป | Workload ที่ Allocate/Free พร้อมกันอาจเจอ Contention หรือ Fragmentation ตาม Pattern |
+| **mimalloc** | ออกแบบเรื่อง Fast Allocation, Thread-local Paths และ Low Contention | ผลลัพธ์ขึ้นอยู่กับขนาด Object, Allocation Pattern และ Memory Footprint |
+| **jemalloc ผ่าน tikv-jemallocator** | มี Arena / Thread Cache, ปรับจูนได้ และรองรับ Heap Profiling | ต้องดู Build, Configuration, RSS Behavior และความซับซ้อนด้าน Operations เพิ่มเติม |
+
 เราเลือก **tikv-jemallocator** เป็น Global Allocator ของ Application เพราะลอง Benchmark เทียบกับ ptmalloc และ mimalloc แล้วพบว่าสามารถลดได้ทั้ง Memory / CPU / latency ค่อนข้างเยอะเลยทีเดียว
 
-ถึงแม้ว่า [jemallocator](https://medium.com/r/?url=https%3A%2F%2Fgithub.com%2Ftikv%2Fjemallocator%2Fcommits) ที่ maintain โดย Meta จะเคยถูก Archive ไปแล้ว แต่ทาง Meta ได้กลับมา Unarchive อีกครั้งในช่วงต้นปี 2026 รวมถึงการอัปเดต jemalloc 5.3.1 ในเดือนเมษายน! ซึ่งการอัปเดตในครั้งนี้เป็นการอัดอั้น Improvement และ Optimization จาก Commit ที่ดองไว้กว่า 4 ปีเต็ม 😂
+ถึงแม้ว่า [jemallocator](https://github.com/tikv/jemallocator/commits) ที่ maintain โดย Meta จะเคยถูก Archive ไปแล้ว แต่ทาง Meta ได้กลับมา Unarchive อีกครั้งในช่วงต้นปี 2026 รวมถึงการอัปเดต jemalloc 5.3.1 ในเดือนเมษายน! ซึ่งการอัปเดตในครั้งนี้เป็นการอัดอั้น Improvement และ Optimization จาก Commit ที่ดองไว้กว่า 4 ปีเต็ม 😂
 
+```rust
 #[global_allocator]
-
 static GLOBAL_ALLOCATOR: tikv_jemallocator::Jemalloc =
-
-tikv_jemallocator::Jemalloc;
-
-Rust
+    tikv_jemallocator::Jemalloc;
+```
 
 แต่ผมอยากย้ำว่า ไม่มี Allocator ตัวไหนชนะทุก Workload โดยอัตโนมัติ การเปรียบเทียบที่แฟร์ควรใช้ Traffic, Model, Worker Count, Batch Size, Binary และ Environment เดียวกัน แล้ววัดทั้ง Throughput, P99, CPU และ RSS ครับ
 
