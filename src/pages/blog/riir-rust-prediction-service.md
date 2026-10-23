@@ -13,7 +13,9 @@ date: 2026-10-23
 
 แต่ความโล่งนั้นอยู่กับเราไม่นานครับ...
 
-เมื่อมี **ML Use Case เพิ่มขึ้นเรื่อย ๆ** ทั้งจำนวนโมเดล ขนาดข้อมูล และ Traffic ที่ต้องรองรับ Cluster ที่เคยโล่งก็เริ่มกลับมาเกือบเต็มอีกครั้ง รอบนี้โจทย์จึงเปลี่ยนจาก “จูน Runtime ให้ดีขึ้น” มาเป็น **เราจะออกแบบ Prediction Service อย่างไรให้ Scale ต่อไปได้ โดยไม่ต้องเพิ่มเครื่องเป็นคำตอบแรกทุกครั้ง?**
+เมื่อมี **ML Use Case เพิ่มขึ้นเรื่อย ๆ** ทั้งจำนวนโมเดล ขนาดข้อมูล และ Traffic ที่ต้องรองรับ Cluster ที่เคยโล่งก็เริ่มกลับมาเกือบเต็มอีกครั้ง แต่ข้อจำกัดสำคัญของเราไม่ได้มีแค่เรื่อง Cost เพราะตอนนี้ **Private Cloud ของ LINE MAN Wongnai เองก็ใกล้เต็มแล้ว** การเพิ่มเครื่องเพื่อรองรับ Workload ใหม่จึงไม่ใช่ทางเลือกที่ทำได้ง่าย ๆ ครับ
+
+โจทย์รอบนี้จึงเปลี่ยนจาก “จูน Runtime ให้ดีขึ้น” มาเป็น **เราจะทำให้ ML Prediction Service รองรับ Workload ที่เพิ่มขึ้นได้อย่างไร ภายใต้ Capacity ของ Private Cloud ที่เหลืออยู่อย่างจำกัด?**
 
 เราตัดสินใจทำ **RIIR (Rewrite It In Rust)** แต่ไม่ได้แค่แปลโค้ด Go เป็น Rust แบบหนึ่งต่อหนึ่ง เราใช้โอกาสนี้ออกแบบทั้ง **Memory Layout, Concurrency, Preprocessing Execution และ Code Structure** ใหม่ โดยเป้าหมายคือให้แต่ละ CPU Core ทำงานที่มีประโยชน์มากขึ้นครับ
 
@@ -151,7 +153,9 @@ static GLOBAL_ALLOCATOR: tikv_jemallocator::Jemalloc =
 
 แต่ผมอยากย้ำว่า **ไม่มี Allocator ตัวไหนชนะทุก Workload** โดยอัตโนมัติ การเปรียบเทียบที่แฟร์ควรใช้ Traffic, Model, Worker Count, Batch Size, Binary และ Environment เดียวกัน แล้ววัดทั้ง Throughput, P99, CPU และ RSS ไม่ใช่ดูแค่ Benchmark Allocation จิ๋ว ๆ
 
-สำหรับบทความนี้ **ยังไม่มีผล A/B Benchmark ที่แยกเฉพาะ ptmalloc vs mimalloc vs jemalloc** จึงไม่ควรตีความว่าตัวเลข Production Improvement ทั้งหมดมาจาก jemalloc เพียงตัวเดียว
+เราได้ **Benchmark Memory Allocator บน ML Prediction Service จริง** ไม่ได้อิงแค่ Microbenchmark ครับ และพบว่าในช่วง **Peak Load** การใช้ **jemalloc ช่วยลด Memory Usage ได้ประมาณ 100–500 MB** เมื่อเทียบกับ Allocator ทางเลือกที่นำมาทดสอบ ผลต่างขึ้นอยู่กับลักษณะ Workload และระดับ Load ในช่วงนั้น ซึ่งเป็นหนึ่งในเหตุผลเชิงตัวเลขที่เราเลือกใช้ **tikv-jemallocator**
+
+อย่างไรก็ตาม ตัวเลข **Production Improvement จากการย้าย Go มา Rust** ด้านบนเป็นผลรวมจากหลาย Optimization ที่ทำงานร่วมกัน ไม่ใช่ผลจากการเปลี่ยน Allocator เพียงอย่างเดียว
 
 ### ทำอย่างไรให้ทุก Application ใช้ Allocator เดียวกัน?
 
@@ -185,7 +189,7 @@ Optimization สำหรับ ML Prediction Service ต่างจากก�
 2. **Concurrency ที่มากกว่าไม่ได้แปลว่าเร็วกว่า** — Actor Pools และ Mini-batches ช่วยให้เรา Tune CPU-bound Stages ได้ชัดเจน
 3. **Compile สิ่งที่รู้ล่วงหน้าตั้งแต่ Startup** — DAG ของ Preprocessing ไม่ควรต้องมาคำนวณ Dependency ใหม่ทุก Request
 4. **SIMD ต้องเข้าใจ Semantics** — Algebraic FP ช่วยเปิดโอกาสให้ Compiler แต่ต้องตรวจผลลัพธ์เชิงตัวเลขเสมอ
-5. **Allocator เป็นส่วนหนึ่งของ Performance Design** — วัดกับ Workload จริง และใช้ CI Policy ไม่ให้ Application ไหน Config หลุด
+5. **Allocator เป็นส่วนหนึ่งของ Performance Design** — ใน Benchmark ของ Prediction Service เราพบว่า jemalloc ลด Memory Usage ได้ประมาณ 100–500 MB ช่วง Peak Load และใช้ CI Policy ไม่ให้ Application ไหน Config หลุด
 6. **Architecture ที่ดีช่วยให้ Optimization คุ้มในระยะยาว** — เมื่อ Core ถูกแชร์กัน การปรับปรุงหนึ่งครั้งก็มีโอกาสส่งผลให้หลาย Use Case
 
 ## Conclusions
@@ -194,7 +198,7 @@ Optimization สำหรับ ML Prediction Service ต่างจากก�
 
 ผลบน Production ของการเปรียบเทียบครั้งนี้คือ **P99 Latency ดีขึ้น 2.4 เท่า, CPU Usage ลดลง 5.4 เท่า และ Memory ลดลง 1.9 เท่า** ใน Traffic Split เท่ากัน ส่วนการคืน Cluster CPU **6.3 percentage points ยังเป็น Projection ของ Rollout**
 
-สุดท้ายสิ่งที่ผมได้เรียนรู้คือ Performance Engineering ไม่ใช่การหา Library ที่เร็วที่สุดเพียงตัวเดียว แต่เป็นการทำให้ **Data Flow, Memory Layout, Scheduling และ Architecture เข้ากันได้กับธรรมชาติของ Workload** มากที่สุดครับ 🚀
+สุดท้ายสิ่งที่ผมได้เรียนรู้คือ Performance Engineering ไม่ใช่การหา Library ที่เร็วที่สุดเพียงตัวเดียว แต่เป็นการทำให้ **Data Flow, Memory Layout, Scheduling และ Architecture เข้ากันได้กับธรรมชาติของ Workload** มากที่สุด โดยเฉพาะในวันที่ **Private Cloud มี Capacity เหลืออยู่อย่างจำกัด** และเราไม่สามารถแก้ปัญหาด้วยการเพิ่มเครื่องได้ง่าย ๆ ครับ 🚀
 
 ---
 
