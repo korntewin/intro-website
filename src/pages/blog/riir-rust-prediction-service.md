@@ -5,7 +5,7 @@ description: "เบื้องหลังการ Rewrite ML Prediction Serv
 date: 2026-10-23
 ---
 
-![ภาพประกอบจาก Go สู่ Rust สำหรับ ML Prediction Service](/intro-website/blog/figures/riir-cover.svg)
+![ภาพประกอบจาก Go สู่ Rust สำหรับ ML Prediction Service](https://korntewin.github.io/intro-website/blog/figures/riir-cover.png)
 
 ถ้าใครเคยอ่าน[บทความก่อนของผมเรื่องการลด Cost AI Server ลง 9 เท่า และทำให้แอปเร็วขึ้น 4 เท่า](https://life.lmwn.com/เบื้องหลังการลด-cost-ai-server-ลง-9-เท่า-และทำให้แอปเร็วขึ้น-4-เท่าที่-line-man-wongnai-da855335de5f) น่าจะจำได้ว่า **ML Prediction Service เป็นงาน CPU-bound ที่ Optimize ยากกว่าการปรับ Web Server ทั่วไป** พอมีทั้ง Preprocessing, Model Inference และ Request ที่บรรทุกข้อมูลจำนวนมากเข้ามาพร้อมกัน เราจึงต้องคิดตั้งแต่ CPU Scheduler ไปจนถึงการทำงานของแต่ละ Thread
 
@@ -27,7 +27,7 @@ date: 2026-10-23
 
 เราเปรียบเทียบ Service ทั้งสองเวอร์ชันใน Production ภายใต้ **Traffic Split เท่ากัน** เก็บข้อมูลต่อเนื่อง **18 ชั่วโมง ในวันที่ 17–18 ตุลาคม 2026** และดูทั้ง P99 Latency, CPU และ Memory ในระดับ Pod
 
-![กราฟเปรียบเทียบ P99 latency, CPU และ Memory ของ Go และ Rust](/intro-website/blog/figures/production-results.svg)
+![กราฟเปรียบเทียบ P99 latency, CPU และ Memory ของ Go และ Rust](https://korntewin.github.io/intro-website/blog/figures/production-results.png)
 
 | Metric | Go (median / peak) | Rust (median / peak) | Improvement |
 | --- | ---: | ---: | ---: |
@@ -37,13 +37,36 @@ date: 2026-10-23
 
 หมายเหตุเล็กน้อย: ค่า **Improvement** ในรายงานคำนวณจาก *median ของอัตราส่วน Go/Rust ที่วัดแต่ละนาที* ไม่ใช่นำ median ของสองฝั่งมาหารกันตรง ๆ ส่วนกราฟแสดง median ของแต่ละฝั่งเพื่อให้เห็นขนาดความแตกต่าง อ่านตัวเลขสองแบบนี้แยกกันนะครับ
 
+
+### ดูกราฟ Production จริงตลอด 18 ชั่วโมง 👀
+
+ตัวเลข Median ด้านบนทำให้เห็นขนาดของ Improvement แต่สำหรับสาย Performance Engineering สิ่งที่น่าดูกว่าคือ **เส้นกราฟในช่วง Traffic จริง** ครับ ผมจึงนำข้อมูลที่เก็บทุก 1 นาทีตลอด **1,081 Samples** มาวาดกราฟใหม่ โดยใช้ข้อมูลชุดเดียวกับที่สรุปผลด้านบน ไม่มีการสร้าง Time-series สมมติขึ้นมา
+
+![Production dashboard เปรียบเทียบ CPU, Memory และ P99 Latency ของ Go กับ Rust](https://korntewin.github.io/intro-website/blog/figures/production-timeseries-dashboard.png)
+
+กราฟสีเหลืองคือ **Go**, สีเขียวคือ **Rust** และเส้นประสีน้ำเงินคือ **Improvement Ratio** (อ่านค่าจากแกนขวา) จะเห็นว่าแม้ Load เปลี่ยนตลอดวัน แต่ Rust ยังคงใช้ CPU และ Memory ต่ำกว่าอย่างชัดเจน
+
+**CPU Usage:** จุดที่น่าสนใจคือแม้ Go จะมีการแกว่งตาม Traffic มาก แต่ Rust คุมการใช้ CPU ได้ในระดับต่ำกว่าเมื่อเทียบกับ Traffic Split เดียวกัน
+
+![กราฟ CPU Usage Go เทียบ Rust ตลอด 18 ชั่วโมง พร้อม Improvement Ratio](https://korntewin.github.io/intro-website/blog/figures/production-cpu-timeseries.png)
+
+**Memory Usage:** กราฟนี้ทำให้เห็นความแตกต่างของ Memory Footprint ได้ชัด โดยเฉพาะเมื่อดูช่วงที่ Go มี Spike ต่อเนื่อง
+
+![กราฟ Memory Usage Go เทียบ Rust ตลอด 18 ชั่วโมง พร้อม Improvement Ratio](https://korntewin.github.io/intro-website/blog/figures/production-memory-timeseries.png)
+
+**P99 Latency:** สิ่งที่ต้องดูไม่ใช่แค่ค่าเฉลี่ย แต่รวมถึง Tail Latency ว่าแต่ละ Service ตอบสนองอย่างไรเมื่อ Traffic แกว่ง
+
+![กราฟ P99 Latency Go เทียบ Rust ตลอด 18 ชั่วโมง พร้อม Improvement Ratio](https://korntewin.github.io/intro-website/blog/figures/production-p99-timeseries.png)
+
+*หมายเหตุ: Memory ในกราฟแปลงจาก Bytes เป็น GB ฐานสิบ (1 GB = 1,000,000,000 Bytes) เพื่อให้ตรงกับรายงาน ส่วนเส้น Ratio ใช้ค่าที่บันทึกไว้ใน CSV โดยตรง จึงไม่จำเป็นต้องเท่ากับการนำเส้น Go หาร Rust ในแต่ละจุด*
+
 ตัวเลขที่ผมชอบที่สุดไม่ใช่แค่ P99 ที่ลดลง แต่คือ CPU ที่ลดลงอย่างมาก เพราะสำหรับ ML Inference แบบ CPU-bound ทรัพยากรที่ใช้ไปกับ Thread Contention, Cache Miss หรือ Copy ข้อมูล **คือทรัพยากรที่เอาไป Predict ให้โมเดลอื่นไม่ได้**
 
 ### แล้ว Kubernetes Cluster จะโล่งขึ้นแค่ไหน?
 
 จาก Resource Planning เรา **คาดการณ์** ว่าเมื่อ Rollout การปรับปรุงชุดนี้ จะช่วยคืน CPU Request ให้คลัสเตอร์ได้ประมาณ **6.3 percentage points** จาก **77.7% เหลือ 71.4%**
 
-![กราฟประมาณการ CPU request ของ Kubernetes Cluster ก่อนและหลัง rollout](/intro-website/blog/figures/cluster-capacity.svg)
+![กราฟประมาณการ CPU request ของ Kubernetes Cluster ก่อนและหลัง rollout](https://korntewin.github.io/intro-website/blog/figures/cluster-capacity.png)
 
 ตรงนี้ต้องขีดเส้นใต้ว่า **เป็น Projection ไม่ใช่ผลหลัง Rollout ที่วัดได้แล้ว** และเมื่อมี Use Case ใหม่เข้ามาอีก Capacity ก็อาจถูกใช้อีกเช่นเดิม เป้าหมายของเราจึงเป็นการเพิ่ม *Efficiency ต่อ Request* และทำให้เพิ่มโมเดลใหม่ได้ง่ายขึ้น ไม่ใช่แค่ทำให้กราฟว่างช่วงหนึ่งเท่านั้น
 
@@ -55,6 +78,17 @@ date: 2026-10-23
 
 แนวคิดหลักของ RIIR รอบนี้เลยมีอยู่สามอย่าง คือ **ให้ Data อยู่ถูกที่, ให้ Thread ทำงานถูกจังหวะ และให้ Dependency ถูกจัดการล่วงหน้า** ซึ่งนำไปสู่ Optimization ต่อไปนี้ครับ
 
+
+### อีกเหตุผลที่เลือก Rust: Ecosystem ฝั่ง Data & ML 🦀
+
+จริง ๆ แล้ว Go เป็นภาษาที่ดีมากสำหรับ Web Service, Networking และ Cloud Infrastructure ครับ แต่พอเป็นงาน **Data Processing กับ ML Inference** ผมมองว่า Rust มี Ecosystem ของ Library ประสิทธิภาพสูงที่ตอบโจทย์เราได้ตรงกว่า เช่น **[Polars](https://pola.rs/)** ซึ่งมี Core อยู่บน Rust, **[nlpO3](https://github.com/PyThaiNLP/nlpo3)** สำหรับ Thai NLP และ **[Hugging Face Tokenizers](https://github.com/huggingface/tokenizers)** สำหรับ Tokenization
+
+ข้อได้เปรียบคือเราสามารถใช้ Library เหล่านี้ใน Rust ได้โดยตรงและควบคุม **Ownership, Lifetime และ Memory Layout** ได้ละเอียด โดยไม่ต้องมี Garbage Collector ของภาษาเข้ามาทำงานบน Hot Path นี่ไม่ได้แปลว่า Rust เก่งกว่า Go ในทุกด้านนะครับ แต่สำหรับงาน Preprocessing ที่ต้องวิ่งผ่านข้อมูลจำนวนมาก ความพร้อมของ Ecosystem สำคัญไม่แพ้ตัวภาษาเลย
+
+ถ้าใช้ Go แล้วต้องเรียก Library ที่จัดการ Memory แบบ Native ผ่าน C/C++ อยู่บ่อย ๆ เราอาจเจอสิ่งที่เรียกกันติดปากว่า **"Double GC"** หรือมี Memory Management สองชุดซ้อนกัน อย่างไรก็ตาม ถ้าพูดให้ถูกทางเทคนิค Native Library หลายตัวไม่ได้มี GC ตัวที่สอง แต่ใช้ Native Allocator หรือ Reference Counting ของตัวเอง ขณะที่ Go ใช้ Garbage Collector กับ Go Heap ปัญหาจริงจึงอยู่ที่การดูแล **Memory Lifetime คนละฝั่ง, Native Allocations ที่ Go GC ไม่ได้ติดตามโดยตรง และต้นทุนของการข้าม Runtime Boundary** มากกว่าการมี GC สองตัวพร้อมกัน
+
+Rust เองก็ยังต้องจัดการ Memory ที่อยู่ใน Native Library อย่างถูกต้องครับ แต่การไม่มี Tracing GC และการใช้ Ownership ช่วยให้เราออกแบบเส้นทาง Data Processing ให้ Predictable ได้ง่ายขึ้น
+
 ## 1. Apache Arrow + Polars: จัด Memory ให้ CPU อ่านง่ายขึ้น 📦
 
 ก่อนอื่นต้องเข้าใจว่า CPU ไม่ได้อ่านข้อมูลจาก RAM ทีละชิ้นแบบไม่มีต้นทุน ทุกครั้งที่ต้องตาม Pointer ไปยัง Memory Location ใหม่ เราเสี่ยงเจอ Cache Miss และต้องรอข้อมูลจาก Memory Hierarchy ชั้นที่ช้ากว่า
@@ -63,11 +97,28 @@ date: 2026-10-23
 
 แต่ Preprocessing ของ ML มักทำงาน “ทีละ Feature กับหลาย Records” มากกว่า “ทีละ Record กับทุก Feature” เราจึงเลือกใช้ **Apache Arrow** เป็นพื้นฐาน Columnar Memory Format และใช้ **Polars** ในการจัดการ DataFrame
 
-![ภาพอธิบาย Row-oriented และ Columnar Memory Layout](/intro-website/blog/figures/columnar-memory.svg)
+![ภาพอธิบาย Row-oriented และ Columnar Memory Layout](https://korntewin.github.io/intro-website/blog/figures/columnar-memory.png)
 
 ใน Columnar Layout ค่าประเภทเดียวกันจะถูกจัดเก็บใน Buffer ตาม Column ทำให้การ Scan Column ตัวเลขมี Memory Locality ดีกว่าโครงสร้างที่ต้อง Dereference Object หลายชั้น และเปิดโอกาสให้ Compiler หรือ Library ใช้ **SIMD / Vectorized Operations** ได้มีประสิทธิภาพขึ้น
 
 แน่นอนว่าไม่ใช่ทุก Arrow Column จะเรียง Value เป็น Array ตัวเลขก้อนเดียวเสมอ เช่น String ใช้ Offset Buffer กับ Values Buffer และ Polars ก็อาจมีหลาย Chunk แต่หลักสำคัญคือ **ลดการกระโดดของ Memory Access ที่ไม่จำเป็นสำหรับงานประมวลผลเป็นคอลัมน์**
+
+
+### Validity Bitmap: เก็บ Null ด้วย 1 Bit ต่อค่า
+
+อีกจุดที่ช่วยลด Memory Overhead คือ **Validity Bitmap** ของ Apache Arrow แทนที่จะห่อแต่ละค่าด้วย Object ที่มี Pointer หรือ Metadata แยกกัน Arrow ใช้ Bit เป็นตัวบอกว่าแต่ละ Slot มีค่าหรือเป็น Null โดย **1 = Valid** และ **0 = Null** ใช้เพียง 1 Bit ต่อ Slot (ยังไม่รวม Padding หรือ Metadata ของ Buffer) และถ้าทั้ง Column ไม่มี Null ก็สามารถ **ไม่ต้องสร้าง Validity Bitmap** เลยได้
+
+ลองนึกถึงคอลัมน์รายการสินค้าที่มีค่าเป็น `[10, 20, 30]`, `null`, `[]` และ `[40, 50]` จะเห็นว่า **Null List กับ Empty List ไม่เหมือนกัน** ถึงแม้ทั้งคู่จะไม่มี Item อยู่ในช่วง Child Values ก็ตาม Validity Bitmap จึงเป็นตัวช่วยบอกความแตกต่างตรงนี้
+
+### LargeList + Offsets: ทำ List ให้แชร์ Buffer เดียวกัน
+
+สำหรับข้อมูลแบบ Nested List เราไม่จำเป็นต้องสร้าง Heap Object แยกสำหรับทุก Row ครับ Arrow ใช้ **Offsets Buffer** เก็บจุดเริ่มและจุดสิ้นสุดของข้อมูลใน **Child Values Buffer เดียวกัน** เช่น `offsets = [0, 3, 3, 3, 5]` และ `values = [10, 20, 30, 40, 50]` โดย Row ที่ `i` จะเข้าถึงข้อมูลช่วง `values[offsets[i]..offsets[i+1]]`
+
+![แผนภาพ Apache Arrow Validity Bitmap และ LargeList Offsets ที่แชร์ Child Values Buffer](https://korntewin.github.io/intro-website/blog/figures/arrow-validity-large-list.png)
+
+สำหรับ `LargeList` จะใช้ **64-bit Offsets** แทน **32-bit Offsets** ของ `List` จึงรองรับ Child Arrays ที่มีจำนวน Elements มากได้ ส่วนสิ่งที่ช่วย Memory Locality จริง ๆ คือ **การเก็บ Values ต่อเนื่องและอ้างอิงด้วย Offsets แทนการกระโดดตาม Pointer ของแต่ละ Row** ไม่ใช่เพราะ 64-bit ประหยัดกว่า 32-bit เพราะจริง ๆ แล้ว Offsets ขนาด 64-bit ใช้พื้นที่มากกว่าด้วยซ้ำ
+
+เมื่อส่ง Mini-batch ไปที่ Actor Worker เราจึงสามารถส่ง **View/Slice ของ Buffer เดิม** ได้ในหลายกรณี โดยไม่ต้องสร้าง List Object ใหม่ทุก Row นี่เป็นจุดเชื่อมสำคัญระหว่าง Columnar Format, Zero-copy และ Data Parallelism ครับ
 
 ### Bonus: Zero-copy Slice ไม่ต้อง Copy ทุก Mini-batch
 
@@ -75,7 +126,7 @@ date: 2026-10-23
 
 Arrow รองรับการ **Slice ที่แชร์ Buffer เดิม** โดยเปลี่ยน Metadata เช่น Offset และ Length แทนการ Copy Payload ซึ่งเข้ากับการส่ง Mini-batch ให้ Worker มากครับ
 
-![แผนภาพ Arrow Zero-copy Slicing ที่แชร์ Underlying Buffer เดียวกัน](/intro-website/blog/figures/arrow-zero-copy.svg)
+![แผนภาพ Arrow Zero-copy Slicing ที่แชร์ Underlying Buffer เดียวกัน](https://korntewin.github.io/intro-website/blog/figures/arrow-zero-copy.png)
 
 ข้อควรระวังคือ **Zero-copy ไม่ได้หมายความว่า Pipeline ทั้งเส้นไม่มี Allocation** การ Cast Type, Compute Feature, Rechunk หรือแปลง Input สำหรับ ONNX Runtime บางกรณีก็ยังสร้าง Buffer ใหม่ได้ เราจึงใช้ Zero-copy ในจุดที่รองรับจริง และวัด Allocation ในจุดที่ยังหลีกเลี่ยงไม่ได้
 
@@ -87,7 +138,7 @@ Arrow รองรับการ **Slice ที่แชร์ Buffer เดิ
 
 ใน RIIR เราใช้ **Actor Model** โดยแยก **Preprocessing Actor Pool** และ **Inference Actor Pool** *สำหรับแต่ละ ML Model* แล้วแบ่ง Items ใน Request เป็น Mini-batch ให้ Worker ประมวลผล
 
-![แผนภาพ Actor Model แยก Preprocessing และ Inference Worker Pools พร้อม Mini-batches](/intro-website/blog/figures/actor-mini-batches.svg)
+![แผนภาพ Actor Model แยก Preprocessing และ Inference Worker Pools พร้อม Mini-batches](https://korntewin.github.io/intro-website/blog/figures/actor-mini-batches.png)
 
 สิ่งที่ได้คือเราสามารถปรับ **Worker Count, Batch Size และ ONNX Runtime Threads** แยกตามโมเดลได้ ไม่จำเป็นต้องใช้ค่าเดียวกันทั้ง Service เพราะแต่ละโมเดลมีลักษณะต่างกัน เช่น Preprocessing หนักแต่ Inference เบา หรือ Inference ใช้ Memory Bandwidth มากจนเพิ่ม Threads แล้วไม่ได้เร็วขึ้น
 
@@ -101,7 +152,7 @@ Preprocessing ของ ML ไม่ใช่แค่ Loop Transform Feature �
 
 ถ้าเราเรียก Function ผิดลำดับ อาจได้ผล Predict ผิดหรือเกิด Missing Column ตอน Runtime ดังนั้นเรา Represent Dependency เป็น **Directed Acyclic Graph (DAG)** แล้วใช้ **Kahn's Algorithm สำหรับ Topological Sort** เพื่อ Compile ลำดับการทำงานที่ถูกต้องตั้งแต่ Startup
 
-![แผนภาพ Dependency Graph และ Kahn Topological Sort ของ Preprocessing](/intro-website/blog/figures/kahn-dag.svg)
+![แผนภาพ Dependency Graph และ Kahn Topological Sort ของ Preprocessing](https://korntewin.github.io/intro-website/blog/figures/kahn-dag.png)
 
 หลักการของ Kahn's Algorithm เข้าใจง่ายมาก: นับจำนวน Dependency ที่เข้ามาในแต่ละ Node (*in-degree*) แล้วเริ่มจาก Node ที่มี in-degree เป็น 0 จากนั้นค่อยนำ Node ที่พร้อมออกมาประมวลผล ลด in-degree ของ Node ถัดไป และทำซ้ำจนจบ หากยังมี Node เหลือแต่ไม่มีตัวไหนพร้อม แปลว่ามี **Cycle** ที่ต้องแก้ก่อน Service Start
 
@@ -117,7 +168,7 @@ Preprocessing ของ ML ไม่ใช่แค่ Loop Transform Feature �
 
 Rust 1.98 เพิ่ม Method อย่าง `f32::algebraic_add` และ `f64::algebraic_mul` ที่เราเลือกใช้เป็นจุด ๆ ได้ เพื่อเปิดโอกาสให้ Compiler **Reassociate** หรือเปลี่ยนรูปสมการ และอาจทำให้ Loop Vectorization เกิดขึ้นได้มากขึ้น
 
-![ภาพอธิบายการจัดกลุ่ม Floating Point Operations ใหม่เพื่อเปิดทางให้ Vectorization](/intro-website/blog/figures/algebraic-floats.svg)
+![ภาพอธิบายการจัดกลุ่ม Floating Point Operations ใหม่เพื่อเปิดทางให้ Vectorization](https://korntewin.github.io/intro-website/blog/figures/algebraic-floats.png)
 
 ตัวอย่างเชิงแนวคิด:
 
@@ -173,7 +224,7 @@ static GLOBAL_ALLOCATOR: tikv_jemallocator::Jemalloc =
 
 ดังนั้นโค้ด Rust จึงถูกจัดเป็น **Monorepo แบบ Cargo Workspace** โดยแยก **Application Layer** (Configuration, Adapters, Use Case Composition) ออกจาก **Prediction Core** (Preprocessing DAG, Actor Pools, ONNX Inference, Shared Data Structures)
 
-![แผนภาพ Cargo Workspace ที่แยกหลาย Application ออกจาก Prediction Core และใช้ Semgrep บังคับ Global Allocator](/intro-website/blog/figures/workspace-semgrep.svg)
+![แผนภาพ Cargo Workspace ที่แยกหลาย Application ออกจาก Prediction Core และใช้ Semgrep บังคับ Global Allocator](https://korntewin.github.io/intro-website/blog/figures/workspace-semgrep.png)
 
 แต่ละ Application สามารถเลือกประกอบ Predictor ของตัวเองได้ เช่น มีหลายโมเดลที่ต้องทำงานต่อกันหรือมี Input/Output ต่างกัน โดยที่ Core ไม่ต้องรู้ว่าโมเดลกำลังทำนายอะไร และไม่ต้องรับ Business Logic ของแต่ละ Use Case เข้าไปปะปน
 
@@ -206,6 +257,6 @@ Optimization สำหรับ ML Prediction Service ต่างจากก�
 
 ---
 
-**อ่านต่อ / References:** [บทความ Optimization รอบก่อน](https://life.lmwn.com/เบื้องหลังการลด-cost-ai-server-ลง-9-เท่า-และทำให้แอปเร็วขึ้น-4-เท่าที่-line-man-wongnai-da855335de5f) · [Rust 1.98 Release Notes](https://blog.rust-lang.org/2026/08/20/Rust-1.98.0/) · [Apache Arrow Columnar Format](https://arrow.apache.org/docs/format/Columnar.html) · [Polars](https://pola.rs/) · [tikv/jemallocator](https://github.com/tikv/jemallocator)
+**อ่านต่อ / References:** [บทความ Optimization รอบก่อน](https://life.lmwn.com/เบื้องหลังการลด-cost-ai-server-ลง-9-เท่า-และทำให้แอปเร็วขึ้น-4-เท่าที่-line-man-wongnai-da855335de5f) · [Rust 1.98 Release Notes](https://blog.rust-lang.org/2026/08/20/Rust-1.98.0/) · [Apache Arrow Columnar Format](https://arrow.apache.org/docs/format/Columnar.html) · [Medium image formats](https://help.medium.com/hc/en-us/articles/215679797-Using-images) · [Polars](https://pola.rs/) · [tikv/jemallocator](https://github.com/tikv/jemallocator)
 
 *หมายเหตุสำหรับการเผยแพร่: ตัวเลข Performance และรายละเอียด Architecture ควรผ่านการตรวจอนุมัติตามนโยบายขององค์กรก่อนนำบทความขึ้นเว็บไซต์สาธารณะหรือ Medium*
