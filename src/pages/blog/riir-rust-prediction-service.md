@@ -1,7 +1,7 @@
 ---
 layout: ../../layouts/BlogLayout.astro
 title: "จาก Go สู่ Rust: เมื่อ ML Prediction Service ต้องเร็วขึ้นอีกครั้ง"
-description: "เบื้องหลังการ Rewrite ML Prediction Service ด้วย Rust ตั้งแต่ Memory Layout, Arrow/Polars, Actor Model, SIMD ไปจนถึง Memory Allocator"
+description: "เบื้องหลัง Rewrite ML Prediction Service จาก Go สู่ Rust ด้วย AI Agent ในหนึ่งสัปดาห์ พร้อมบทเรียน Quantization, Apache Arrow, Kahn’s Algorithm และ Actor Model"
 date: 2026-10-23
 coverImage: https://korntewin.github.io/intro-website/blog/figures/riir-cover.png
 coverImageAlt: "ภาพประกอบจาก Go สู่ Rust สำหรับ ML Prediction Service"
@@ -22,6 +22,8 @@ coverImageAlt: "ภาพประกอบจาก Go สู่ Rust สำห
 โจทย์รอบนี้จึงเปลี่ยนจาก “จูน Runtime ให้ดีขึ้น” มาเป็น **เราจะทำให้ ML Prediction Service รองรับ Workload ที่เพิ่มขึ้นได้อย่างไร ภายใต้ Capacity ของ Private Cloud ที่เหลืออยู่อย่างจำกัด?**
 
 เราตัดสินใจทำ **RIIR (Rewrite It In Rust)** แต่ไม่ได้แค่แปลโค้ด Go เป็น Rust แบบหนึ่งต่อหนึ่ง เราใช้โอกาสนี้ออกแบบทั้ง **Memory Layout, Concurrency, Preprocessing Execution และ Code Structure** ใหม่ โดยเป้าหมายคือให้แต่ละ CPU Core ทำงานที่มีประโยชน์มากขึ้นครับ
+
+อีกเรื่องที่น่าสนใจคือ **เราใช้เวลาประมาณ 1 สัปดาห์ในการ Port จาก Go มา Rust โดยมี AI Agent ช่วย** แต่สิ่งที่ทำให้ Agent ช่วยได้จริงไม่ใช่แค่การแปลง Syntax ครับ เราต้องกำหนด **Data Structure, Algorithm และ Concurrency Model** ให้ชัดเจนก่อน
 
 > บทความนี้เป็น Engineering Story ไม่ใช่การบอกว่า Rust เร็วกว่า Go ในทุกกรณี ผลลัพธ์เป็นการวัดของ Production Workload หนึ่งชุด และตัวเลขที่เปิดเผยเป็นภาพรวมเชิงประสิทธิภาพ ไม่ลงรายละเอียดชื่อ Use Case หรือข้อมูลภายในระบบ
 
@@ -78,8 +80,26 @@ coverImageAlt: "ภาพประกอบจาก Go สู่ Rust สำห
 
 สมมติเรายังเก็บ Feature เป็น Object หลายชั้น, Copy DataFrame ทุกครั้งที่แบ่ง Batch หรือปล่อยให้ ONNX Runtime ทุกตัวเปิด Thread แข่งกัน แม้เปลี่ยนเป็น Rust ก็อาจไม่ได้ผลอย่างที่หวัง ตรงกันข้าม หากจัด Layout และ Concurrency ให้ดี เราก็สามารถลดงานที่ CPU ไม่จำเป็นต้องทำลงไปได้มาก
 
+### Quick Win ที่ลองแล้ว: ทำไม Quantization ถึงไม่คุ้มในเคสนี้? ⚖️
+
+เราไม่ได้กระโดดไป Rewrite อย่างเดียวครับ อีกแนวทางที่เราลองเป็น Quick Win คือ **Model Quantization** เพื่อลดต้นทุนของ Inference แต่โมเดลที่ใช้ใน Use Case นี้ **มีขนาดเล็กอยู่แล้ว** ผลที่วัดได้คือ **Performance ดีขึ้นเพียงเล็กน้อย** ขณะที่ **Model Accuracy ลดลงมากเกินกว่าที่เรายอมรับได้** จึงไม่ใช่ Trade-off ที่เหมาะกับการนำขึ้น Production
+
+ไม่ได้แปลว่า Quantization ไม่มีประโยชน์นะครับ สำหรับโมเดลที่ใหญ่กว่านี้หรือ Hardware/Kernel ที่รองรับได้ดี ผลลัพธ์อาจต่างกันมาก แต่ใน Workload ของเรา การลด Precision ของโมเดลไม่ได้ช่วยลดต้นทุนของ Pipeline ทั้งเส้นได้มากพอ เราจึงหันมาให้ความสำคัญกับ **Data Movement, Preprocessing และ Concurrency** ซึ่งเป็นจุดที่ Optimize ได้โดยไม่ต้องแลก Model Accuracy
+
 แนวคิดหลักของ RIIR รอบนี้เลยมีอยู่สามอย่าง คือ **ให้ Data อยู่ถูกที่, ให้ Thread ทำงานถูกจังหวะ และให้ Dependency ถูกจัดการล่วงหน้า** ซึ่งนำไปสู่ Optimization ต่อไปนี้ครับ
 
+
+### Port ด้วย AI Agent ในประมาณ 1 สัปดาห์: ต้องกำหนด Algorithm ให้ชัดก่อน 🤖
+
+อีกเรื่องที่อยากแชร์คือ **งาน Port จาก Go มา Rust ใช้เวลาประมาณ 1 สัปดาห์ โดยมี AI Agent ช่วยในการ Implement และ Refactor** ครับ แต่ไม่ได้หมายความว่าแค่สั่งว่า “Rewrite Service นี้เป็น Rust แล้วทำให้เร็วขึ้น” ก็จะได้ Architecture ที่เหมาะกับ Production โดยอัตโนมัติ และก่อน Rollout ก็ยังต้อง Benchmark และ Validate ความถูกต้องของผลทำนายกับ Implementation เดิมด้วย
+
+สิ่งสำคัญคือ **เราต้องออกแบบแนวทางให้เป็นรูปธรรมก่อน แล้วให้ AI Agent ทำงานตามกรอบนั้น** โดยระบุให้ชัดว่าแต่ละส่วนจะใช้ Data Structure, Algorithm หรือ Execution Model แบบไหน เช่น
+
+- **Apache Arrow + Polars:** ใช้ Columnar Memory Layout, Validity Bitmap และการแชร์ Buffer ผ่าน Zero-copy Slice ในจุดที่ทำได้ แทนการย้าย Object และ Copy ข้อมูลโดยไม่จำเป็น
+- **Kahn's Algorithm:** สร้าง DAG ของ Preprocessing Dependencies แล้วทำ Topological Sort และ Validate ตั้งแต่ Startup แทนการหาลำดับใหม่ทุก Request
+- **Actor Model:** แยก Preprocessing/Inference Worker Pools ตามโมเดล กำหนด Mini-batch และขอบเขต Concurrency ให้ชัด โดย Parallel ตามแกนข้อมูลเพียงมิติเดียวเพื่อหลีกเลี่ยง CPU Oversubscription
+
+เมื่อ Spec ชัด Agent ก็ช่วยเร่งงาน Implement และ Refactor ได้มาก แต่คนทำ Engineering ยังต้องตัดสินใจ **Architecture, Correctness Constraints, Numerical Parity และ Performance Trade-offs** เองอยู่ดีครับ เพราะต่อให้ Agent เขียน Rust ที่ Compile ผ่านได้ ก็ไม่ได้แปลว่า Data Flow จะถูกต้องหรือ P99 Latency จะดีขึ้นโดยอัตโนมัติ
 
 ### อีกเหตุผลที่เลือก Rust: Ecosystem ฝั่ง Data & ML 🦀
 
@@ -254,6 +274,8 @@ Optimization สำหรับ ML Prediction Service ต่างจากก�
 4. **SIMD ต้องเข้าใจ Semantics** Algebraic FP เปิดโอกาสให้ Compiler Optimize ได้มากขึ้น แต่ต้องตรวจผลลัพธ์เชิงตัวเลขทุกครั้ง
 5. **Allocator เป็นส่วนหนึ่งของ Performance Design** Benchmark ของ Prediction Service แสดงว่า jemalloc ลด Memory Usage ได้ประมาณ 100–500 MB ช่วง Peak Load และเราใช้ CI Policy เพื่อไม่ให้ Application ไหนลืม Config
 6. **Architecture ที่ดีช่วยให้ Optimization คุ้มในระยะยาว** เมื่อ Core ถูกแชร์กัน การปรับปรุงครั้งเดียวก็มีโอกาสส่งผลให้หลาย Use Case
+7. **AI Agent เร่ง Implementation แต่ไม่ได้แทนการออกแบบระบบ** การ Port ใช้เวลาประมาณ 1 สัปดาห์ โดยเรากำหนด Apache Arrow, Kahn's Algorithm และ Actor Model เป็นโจทย์ที่ชัดเจนก่อนให้ Agent ช่วยลงมือ
+8. **Quick Win ต้องคุ้มทั้งความเร็วและความแม่นยำ** Quantization ให้ Performance Gain น้อยในโมเดลขนาดเล็กของเรา แต่ Accuracy ลดลงเกินรับได้ จึงไม่ใช่ทางเลือกสำหรับ Production
 
 ## Conclusions
 
