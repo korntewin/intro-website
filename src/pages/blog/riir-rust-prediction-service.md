@@ -258,5 +258,3 @@ Optimization สำหรับ ML Prediction Service ต่างจากก�
 ---
 
 **อ่านต่อ / References:** [บทความ Optimization รอบก่อน](https://life.lmwn.com/เบื้องหลังการลด-cost-ai-server-ลง-9-เท่า-และทำให้แอปเร็วขึ้น-4-เท่าที่-line-man-wongnai-da855335de5f) · [Rust 1.98 Release Notes](https://blog.rust-lang.org/2026/08/20/Rust-1.98.0/) · [Apache Arrow Columnar Format](https://arrow.apache.org/docs/format/Columnar.html) · [Medium image formats](https://help.medium.com/hc/en-us/articles/215679797-Using-images) · [Polars](https://pola.rs/) · [tikv/jemallocator](https://github.com/tikv/jemallocator)
-
-*หมายเหตุสำหรับการเผยแพร่: ตัวเลข Performance และรายละเอียด Architecture ควรผ่านการตรวจอนุมัติตามนโยบายขององค์กรก่อนนำบทความขึ้นเว็บไซต์สาธารณะหรือ Medium*
