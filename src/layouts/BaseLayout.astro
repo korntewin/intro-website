@@ -26,6 +26,7 @@ const nav = [
     <meta name="description" content={description} />
     <meta name="color-scheme" content="light dark" />
     <title>{title}</title>
+    <slot name="head" />
     <script is:inline>
       // Set the theme before paint to avoid a flash of the wrong theme.
       try {
