@@ -131,16 +131,13 @@ coverImageAlt: "ภาพประกอบจาก Go สู่ Rust สำห
 
 แน่นอนว่าไม่ใช่ทุก Arrow Column จะเรียง Value เป็น Array ตัวเลขก้อนเดียวเสมอ เช่น String ใช้ Offset Buffer กับ Values Buffer และ Polars ก็อาจมีหลาย Chunk แต่หลักสำคัญคือ **ลดการกระโดดของ Memory Access ที่ไม่จำเป็นสำหรับงานประมวลผลเป็นคอลัมน์**
 
-### Memory Efficiency: Arrow ใช้ Metadata น้อยกว่า Go Map อย่างไร? 💾
+### Memory Efficiency: Arrow vs Go Swiss Table 💾
 
-นอกจาก Cache Locality แล้ว **Columnar Layout ยังช่วยลด Memory Footprint จาก Metadata ต่อ Record** ได้ด้วยครับ สมมติว่าเราเก็บ Feature ของแต่ละ Item ใน Go เป็น `[]map[string]any` แต่ละ Row จะมี Hash Map ของตัวเอง แม้จะใช้ Feature Names ชุดเดียวกัน ก็ยังต้องเก็บ Key/Value Slots และโครงสร้างของ Hash Table ซ้ำในแต่ละ Map
+**Go 1.24+** ใช้ [Swiss Table](https://go.dev/blog/swisstable) ที่จัด **8 Slots ต่อ Group** พร้อม 64-bit Control Word เพื่อให้ Hash Lookup มี Cache Locality ที่ดีอยู่แล้ว แต่ถ้าเก็บ Features เป็น `[]map[string]any` จะต้องมี Key/Value Slots, Control Metadata และ Capacity ของ Map แยกซ้ำในแต่ละ Record ต่างจาก **Apache Arrow** ที่แชร์ Schema และเก็บ `Float32` ของ Feature เดียวกันเป็น **Contiguous Buffer** จึงช่วยลด Metadata ต่อ Record และ Pointer Chasing ได้ครับ
 
-ตรงนี้ต้องให้เครดิต Go ก่อนว่า **ตั้งแต่ Go 1.24 เป็นต้นมา Built-in Map ใช้ [Swiss Table](https://go.dev/blog/swisstable)** ซึ่งออกแบบมาให้ Cache-friendly กว่า Hash Table แบบเก่า โดยจัดข้อมูลเป็น **Group ละ 8 Slots** และมี **64-bit Control Word** (เฉลี่ย 1 Byte ต่อ Slot) เพื่อบอกสถานะของ Slot และเก็บส่วนหนึ่งของ Hash ช่วยให้ Lookup ตรวจหลาย Slots ได้พร้อมกัน ดังนั้นไม่ได้หมายความว่า Go Map ต้อง Allocate Heap Object แยกทุก Entry นะครับ แต่ Map ก็ยังมีต้นทุนของ Key/Value Slots, Capacity ที่เผื่อไว้, Control Metadata และโครงสร้างต่อ Map อยู่ดี โดยเฉพาะเมื่อสร้าง Map แยกกันเป็นพัน ๆ Rows ส่วน `any` ยังมี Type/Value Metadata ของ Interface และบางชนิดข้อมูลอาจมี Boxing/Allocation เพิ่มตามการใช้งานด้วย
+![แผนภาพเปรียบเทียบ Go Swiss Table ที่มี Metadata แยกตาม Record กับ Apache Arrow Float32 Column พร้อมตัวอย่าง Memory สำหรับ 1,000 และ 10,000 Records](https://korntewin.github.io/intro-website/blog/figures/arrow-swiss-memory.png)
 
-ในทางกลับกัน **Arrow เก็บ Feature Names ไว้ที่ Schema และเก็บค่าของแต่ละ Column เป็น Buffer ที่ต่อเนื่องกัน** สำหรับ Primitive อย่าง `float32` เราใช้เพียง **4 Bytes ต่อค่า** บวกกับ **Validity Bitmap สูงสุด 1 Bit ต่อค่าเมื่อจำเป็นต้องแทน Null** และ Metadata ของ Array/Buffer ที่แชร์กันทั้ง Column เช่น ถ้ามี 10,000 ค่า Data Buffer จะใช้ 40,000 Bytes และ Bitmap อีกประมาณ 1,250 Bytes หากต้องมี (ยังไม่รวม Alignment และ Buffer Metadata) แทนการสร้าง Hash Table สำหรับแต่ละ Item
-
-อย่างไรก็ตาม **1 Byte ของ Swiss Table กับ 1 Bit ของ Arrow ไม่ได้ทำหน้าที่เดียวกัน** นะครับ อันแรกใช้ช่วย Hash Lookup ส่วนอันหลังบอกว่า Value เป็น Null หรือไม่ และ Arrow เองก็มี Overhead อื่น เช่น Offsets ของ String/List รวมถึง Buffer Alignment ด้วย ที่สำคัญ ถ้า Go ใช้ `[]struct` หรือ `[]float32` แทน `[]map[string]any` ก็สามารถเก็บข้อมูลได้ Compact เช่นกัน **ข้อได้เปรียบในเคสนี้จึงมาจากการเปลี่ยน Data Representation ให้เหมาะกับงาน Column-wise Preprocessing ไม่ใช่แค่เพราะเปลี่ยนจาก Go เป็น Rust**
-
+**ตัวอย่าง 1 Feature แบบ `f32` ต่อ Record:** สำหรับ **1,000 Records** Arrow ใช้ Values Buffer **4,000 B** และถ้าต้องมี Validity Bitmap จะเพิ่ม **125 B** (รวม **4,125 B**); ส่วน **10,000 Records** ใช้ **40,000 B + 1,250 B = 41,250 B** โดยยังไม่รวม Alignment และ Array Metadata และถ้าไม่มี Null ก็ไม่จำเป็นต้องมี Bitmap ครับ ตัวเลขนี้ไม่ใช่การ Benchmark เทียบ Go Swiss Table แบบตรง ๆ เพราะ Memory ของ Map ขึ้นอยู่กับ Keys, Capacity และ Types ที่ใช้ อีกทั้งถ้า Go เก็บเป็น `[]float32` ก็ใช้ Payload เพียง 4 B ต่อค่าเช่นกัน
 
 ### Validity Bitmap: เก็บ Null ด้วย 1 Bit ต่อค่า
 

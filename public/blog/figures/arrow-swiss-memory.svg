@@ -1,0 +1,72 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1180" height="724" viewBox="0 0 1180 724" role="img" aria-label="Comparison of Go Swiss table row-based maps and Apache Arrow contiguous float32 arrays. One thousand float32 values occupy 4000 bytes, or 4125 with optional validity bitmap. Ten thousand values occupy 40000 bytes, or 41250 with optional validity bitmap. Go map metadata overhead varies by shape.">
+<rect x="0" y="0" width="1180" height="724" rx="20" fill="#F8FBFF" stroke="#DBE5F1" stroke-width="1.2"/>
+<text x="34" y="44" fill="#60758D" font-family="Inter,Arial,Helvetica,sans-serif" font-size="14" font-weight="800" text-anchor="start">MEMORY EFFICIENCY  /  1 FLOAT32 FEATURE PER RECORD</text>
+<text x="34" y="89" fill="#17283F" font-family="Inter,Arial,Helvetica,sans-serif" font-size="34" font-weight="800" text-anchor="start">Go Swiss Table vs Apache Arrow</text>
+<text x="34" y="121" fill="#61738C" font-family="Inter,Arial,Helvetica,sans-serif" font-size="17" font-weight="450" text-anchor="start">Same 4-byte values. Different metadata and memory layouts.</text>
+<rect x="32" y="150" width="541" height="252" rx="16" fill="#FFF9F5" stroke="#F3DFD1" stroke-width="1.2"/>
+<rect x="607" y="150" width="541" height="252" rx="16" fill="#F1FBF7" stroke="#CEE9DC" stroke-width="1.2"/>
+<text x="53" y="191" fill="#AC5F36" font-family="Inter,Arial,Helvetica,sans-serif" font-size="23" font-weight="800" text-anchor="start">Go · []map[string]any</text>
+<text x="628" y="191" fill="#147F62" font-family="Inter,Arial,Helvetica,sans-serif" font-size="23" font-weight="800" text-anchor="start">Apache Arrow · Float32 column</text>
+<text x="53" y="220" fill="#6D6B6B" font-family="Inter,Arial,Helvetica,sans-serif" font-size="16" font-weight="500" text-anchor="start">Swiss table per row → repeated bookkeeping</text>
+<text x="628" y="220" fill="#517A6E" font-family="Inter,Arial,Helvetica,sans-serif" font-size="16" font-weight="500" text-anchor="start">One schema → one contiguous values buffer</text>
+<rect x="53" y="241" width="153" height="115" rx="11" fill="#FFFFFF" stroke="#EBD3C3" stroke-width="1.2"/>
+<text x="66" y="263" fill="#334559" font-family="Inter,Arial,Helvetica,sans-serif" font-size="15" font-weight="700" text-anchor="start">Record 1</text>
+<rect x="64" y="275" width="131" height="30" rx="6" fill="#FFE9DD" stroke="none" stroke-width="1.2"/>
+<text x="129.5" y="295" fill="#9A5B39" font-family="Inter,Arial,Helvetica,sans-serif" font-size="13" font-weight="700" text-anchor="middle">ctrl / slots</text>
+<rect x="64" y="310" width="131" height="30" rx="6" fill="#EAF2FF" stroke="none" stroke-width="1.2"/>
+<text x="129.5" y="330" fill="#386AA6" font-family="Inter,Arial,Helvetica,sans-serif" font-size="13" font-weight="700" text-anchor="middle">key + any(f32)</text>
+<rect x="221" y="241" width="153" height="115" rx="11" fill="#FFFFFF" stroke="#EBD3C3" stroke-width="1.2"/>
+<text x="234" y="263" fill="#334559" font-family="Inter,Arial,Helvetica,sans-serif" font-size="15" font-weight="700" text-anchor="start">Record 2</text>
+<rect x="232" y="275" width="131" height="30" rx="6" fill="#FFE9DD" stroke="none" stroke-width="1.2"/>
+<text x="297.5" y="295" fill="#9A5B39" font-family="Inter,Arial,Helvetica,sans-serif" font-size="13" font-weight="700" text-anchor="middle">ctrl / slots</text>
+<rect x="232" y="310" width="131" height="30" rx="6" fill="#EAF2FF" stroke="none" stroke-width="1.2"/>
+<text x="297.5" y="330" fill="#386AA6" font-family="Inter,Arial,Helvetica,sans-serif" font-size="13" font-weight="700" text-anchor="middle">key + any(f32)</text>
+<rect x="389" y="241" width="153" height="115" rx="11" fill="#FFFFFF" stroke="#EBD3C3" stroke-width="1.2"/>
+<text x="402" y="263" fill="#334559" font-family="Inter,Arial,Helvetica,sans-serif" font-size="15" font-weight="700" text-anchor="start">Record N</text>
+<rect x="400" y="275" width="131" height="30" rx="6" fill="#FFE9DD" stroke="none" stroke-width="1.2"/>
+<text x="465.5" y="295" fill="#9A5B39" font-family="Inter,Arial,Helvetica,sans-serif" font-size="13" font-weight="700" text-anchor="middle">ctrl / slots</text>
+<rect x="400" y="310" width="131" height="30" rx="6" fill="#EAF2FF" stroke="none" stroke-width="1.2"/>
+<text x="465.5" y="330" fill="#386AA6" font-family="Inter,Arial,Helvetica,sans-serif" font-size="13" font-weight="700" text-anchor="middle">key + any(f32)</text>
+<text x="53" y="381" fill="#8C6956" font-family="Inter,Arial,Helvetica,sans-serif" font-size="15" font-weight="650" text-anchor="start">8 slots / group + 64-bit control word</text>
+<rect x="630" y="240" width="495" height="52" rx="10" fill="#FFFFFF" stroke="#C7E7D7" stroke-width="1.2"/>
+<text x="647" y="272" fill="#528A76" font-family="Inter,Arial,Helvetica,sans-serif" font-size="13" font-weight="800" text-anchor="start">SCHEMA</text>
+<text x="733" y="273" fill="#236B58" font-family="Inter,Arial,Helvetica,sans-serif" font-size="18" font-weight="750" text-anchor="start">score: Float32  (shared)</text>
+<rect x="631" y="310" width="62" height="48" rx="2" fill="#BDE6D2" stroke="#92CEB4" stroke-width="0.9"/>
+<text x="662" y="340" fill="#17684E" font-family="Inter,Arial,Helvetica,sans-serif" font-size="15" font-weight="750" text-anchor="middle">f32</text>
+<rect x="693" y="310" width="62" height="48" rx="2" fill="#C9ECDD" stroke="#92CEB4" stroke-width="0.9"/>
+<text x="724" y="340" fill="#17684E" font-family="Inter,Arial,Helvetica,sans-serif" font-size="15" font-weight="750" text-anchor="middle">f32</text>
+<rect x="755" y="310" width="62" height="48" rx="2" fill="#BDE6D2" stroke="#92CEB4" stroke-width="0.9"/>
+<text x="786" y="340" fill="#17684E" font-family="Inter,Arial,Helvetica,sans-serif" font-size="15" font-weight="750" text-anchor="middle">f32</text>
+<rect x="817" y="310" width="62" height="48" rx="2" fill="#C9ECDD" stroke="#92CEB4" stroke-width="0.9"/>
+<text x="848" y="340" fill="#17684E" font-family="Inter,Arial,Helvetica,sans-serif" font-size="15" font-weight="750" text-anchor="middle">f32</text>
+<rect x="879" y="310" width="62" height="48" rx="2" fill="#BDE6D2" stroke="#92CEB4" stroke-width="0.9"/>
+<text x="910" y="340" fill="#17684E" font-family="Inter,Arial,Helvetica,sans-serif" font-size="15" font-weight="750" text-anchor="middle">f32</text>
+<rect x="941" y="310" width="62" height="48" rx="2" fill="#C9ECDD" stroke="#92CEB4" stroke-width="0.9"/>
+<text x="972" y="340" fill="#17684E" font-family="Inter,Arial,Helvetica,sans-serif" font-size="15" font-weight="750" text-anchor="middle">f32</text>
+<rect x="1003" y="310" width="62" height="48" rx="2" fill="#BDE6D2" stroke="#92CEB4" stroke-width="0.9"/>
+<text x="1034" y="340" fill="#17684E" font-family="Inter,Arial,Helvetica,sans-serif" font-size="15" font-weight="750" text-anchor="middle">f32</text>
+<rect x="1065" y="310" width="62" height="48" rx="2" fill="#D8F1E7" stroke="#92CEB4" stroke-width="0.9"/>
+<text x="1096" y="340" fill="#17684E" font-family="Inter,Arial,Helvetica,sans-serif" font-size="15" font-weight="750" text-anchor="middle">···</text>
+<text x="630" y="381" fill="#39765F" font-family="Inter,Arial,Helvetica,sans-serif" font-size="15" font-weight="650" text-anchor="start">Values: 4 B × N   ·   optional bitmap: 1 bit / row</text>
+<text x="34" y="437" fill="#60758D" font-family="Inter,Arial,Helvetica,sans-serif" font-size="14" font-weight="800" text-anchor="start">CONCRETE SIZES</text>
+<rect x="32" y="456" width="541" height="179" rx="15" fill="#FFFFFF" stroke="#DCE6F2" stroke-width="1.2"/>
+<text x="53" y="491" fill="#1F3550" font-family="Inter,Arial,Helvetica,sans-serif" font-size="22" font-weight="800" text-anchor="start">1,000 records</text>
+<text x="53" y="517" fill="#62758D" font-family="Inter,Arial,Helvetica,sans-serif" font-size="14" font-weight="500" text-anchor="start">Arrow Float32 · optional null bitmap</text>
+<rect x="53" y="535" width="474" height="22" rx="6" fill="#E8EEF6" stroke="none" stroke-width="1.2"/>
+<rect x="53" y="535" width="459" height="22" rx="6" fill="#2EAC80" stroke="none" stroke-width="1.2"/>
+<rect x="512" y="535" width="15" height="22" rx="3" fill="#8E71CF" stroke="none" stroke-width="1.2"/>
+<text x="53" y="581" fill="#147F62" font-family="Inter,Arial,Helvetica,sans-serif" font-size="17" font-weight="750" text-anchor="start">Values: 4,000 B</text>
+<text x="297" y="581" fill="#8561B9" font-family="Inter,Arial,Helvetica,sans-serif" font-size="17" font-weight="750" text-anchor="start">Bitmap: +125 B</text>
+<text x="53" y="617" fill="#263F58" font-family="Inter,Arial,Helvetica,sans-serif" font-size="21" font-weight="800" text-anchor="start">Nullable total: 4,125 B</text>
+<rect x="607" y="456" width="541" height="179" rx="15" fill="#FFFFFF" stroke="#DCE6F2" stroke-width="1.2"/>
+<text x="628" y="491" fill="#1F3550" font-family="Inter,Arial,Helvetica,sans-serif" font-size="22" font-weight="800" text-anchor="start">10,000 records</text>
+<text x="628" y="517" fill="#62758D" font-family="Inter,Arial,Helvetica,sans-serif" font-size="14" font-weight="500" text-anchor="start">Arrow Float32 · optional null bitmap</text>
+<rect x="628" y="535" width="474" height="22" rx="6" fill="#E8EEF6" stroke="none" stroke-width="1.2"/>
+<rect x="628" y="535" width="459" height="22" rx="6" fill="#2EAC80" stroke="none" stroke-width="1.2"/>
+<rect x="1087" y="535" width="15" height="22" rx="3" fill="#8E71CF" stroke="none" stroke-width="1.2"/>
+<text x="628" y="581" fill="#147F62" font-family="Inter,Arial,Helvetica,sans-serif" font-size="17" font-weight="750" text-anchor="start">Values: 40,000 B</text>
+<text x="872" y="581" fill="#8561B9" font-family="Inter,Arial,Helvetica,sans-serif" font-size="17" font-weight="750" text-anchor="start">Bitmap: +1,250 B</text>
+<text x="628" y="617" fill="#263F58" font-family="Inter,Arial,Helvetica,sans-serif" font-size="21" font-weight="800" text-anchor="start">Nullable total: 41,250 B</text>
+<text x="34" y="668" fill="#556980" font-family="Inter,Arial,Helvetica,sans-serif" font-size="15" font-weight="550" text-anchor="start">Go map size varies with keys, capacity, value types and map count; no fixed per-record comparison.</text>
+<text x="34" y="692" fill="#556980" font-family="Inter,Arial,Helvetica,sans-serif" font-size="14" font-weight="500" text-anchor="start">Bytes shown are Arrow value + bitmap buffers only. No nulls → no bitmap. Alignment/array overhead excluded.</text>
+</svg>
