@@ -133,11 +133,11 @@ coverImageAlt: "ภาพประกอบจาก Go สู่ Rust สำห
 
 ### Memory Efficiency: Arrow vs Go Swiss Table 💾
 
-**Go 1.24+** ใช้ [Swiss Table](https://go.dev/blog/swisstable) ที่จัด **8 Slots ต่อ Group** พร้อม 64-bit Control Word เพื่อให้ Hash Lookup มี Cache Locality ที่ดีอยู่แล้ว แต่ถ้าเก็บ Features เป็น `[]map[string]any` จะต้องมี Key/Value Slots, Control Metadata และ Capacity ของ Map แยกซ้ำในแต่ละ Record ต่างจาก **Apache Arrow** ที่แชร์ Schema และเก็บ `Float32` ของ Feature เดียวกันเป็น **Contiguous Buffer** จึงช่วยลด Metadata ต่อ Record และ Pointer Chasing ได้ครับ
+เพื่อเปรียบเทียบให้เห็นภาพ สมมติ **1 Record มี Feature `score: f32` เพียงค่าเดียว** และ Go เก็บเป็น `[]map[string]any` (หนึ่ง Map ต่อ Record) บนระบบ 64-bit: Go 1.24+ ใช้ [Swiss Table](https://go.dev/blog/swisstable) ซึ่งมี **Map Header ~48 B** และ Group ขนาด 8 Slots (Control 8 B + Key/Value 8 × (16 B `string` + 16 B `any`) = 264 B ปัดเป็น ~288 B ตาม Allocator) รวม Slice Pointer 8 B และค่า `f32` ที่ถูก Box อีก ~8 B จึงประเมินเป็น **~352 B ต่อ Record** ส่วน **Arrow** แชร์ Schema และเก็บ `f32` แบบ Contiguous เพียง **4 B ต่อ Record** (+ Validity Bitmap 1 Bit ต่อ Record หากต้องแทน Null)
 
-![แผนภาพเปรียบเทียบ Go Swiss Table ที่มี Metadata แยกตาม Record กับ Apache Arrow Float32 Column พร้อมตัวอย่าง Memory สำหรับ 1,000 และ 10,000 Records](https://korntewin.github.io/intro-website/blog/figures/arrow-swiss-memory.png)
+![แผนภาพประมาณการหน่วยความจำ Go Swiss Table เทียบ Apache Arrow สำหรับ 1,000 และ 10,000 Records พร้อม Memory Breakdown และอัตราส่วน 85 เท่า](https://korntewin.github.io/intro-website/blog/figures/arrow-swiss-memory.png)
 
-**ตัวอย่าง 1 Feature แบบ `f32` ต่อ Record:** สำหรับ **1,000 Records** Arrow ใช้ Values Buffer **4,000 B** และถ้าต้องมี Validity Bitmap จะเพิ่ม **125 B** (รวม **4,125 B**); ส่วน **10,000 Records** ใช้ **40,000 B + 1,250 B = 41,250 B** โดยยังไม่รวม Alignment และ Array Metadata และถ้าไม่มี Null ก็ไม่จำเป็นต้องมี Bitmap ครับ ตัวเลขนี้ไม่ใช่การ Benchmark เทียบ Go Swiss Table แบบตรง ๆ เพราะ Memory ของ Map ขึ้นอยู่กับ Keys, Capacity และ Types ที่ใช้ อีกทั้งถ้า Go เก็บเป็น `[]float32` ก็ใช้ Payload เพียง 4 B ต่อค่าเช่นกัน
+สำหรับ **1,000 Records:** Go ประมาณ **352,000 B** เทียบกับ Arrow **4,125 B (~85×)** และ **10,000 Records:** Go ประมาณ **3,520,000 B** เทียบกับ Arrow **41,250 B (~85×)** โดยตัวเลข Arrow รวม Bitmap แต่ยังไม่รวม Alignment/Array Metadata ส่วนตัวเลข Go เป็น **Layout Estimate ไม่ใช่ Heap Benchmark** (สมมติ Map แยกบน Heap, Key String แชร์ Backing Bytes และ `f32` ต้อง Box) ถ้า Column ไม่มี Null ก็ไม่ต้องมี Bitmap และถ้า Go ใช้ `[]float32` แทน Map ก็ใช้ Payload แค่ 4 B ต่อค่าได้เช่นกันครับ
 
 ### Validity Bitmap: เก็บ Null ด้วย 1 Bit ต่อค่า
 
