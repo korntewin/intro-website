@@ -3,14 +3,33 @@ import BaseLayout from './BaseLayout.astro';
 import ReadingProgress from '../components/ReadingProgress.svelte';
 const { frontmatter } = Astro.props;
 const base = import.meta.env.BASE_URL.replace(/\/$/, '');
+const canonical = new URL(Astro.url.pathname.replace(/\/?$/, '/'), Astro.site ?? Astro.url.origin).href;
+const publishedDate = new Date(frontmatter.date).toISOString().slice(0, 10);
 ---
 <BaseLayout title={frontmatter.title + ' · Korntewin'} description={frontmatter.description} lang="th">
+  <Fragment slot="head">
+    <link rel="canonical" href={canonical} />
+    <meta property="og:type" content="article" />
+    <meta property="og:title" content={frontmatter.title} />
+    <meta property="og:description" content={frontmatter.description} />
+    <meta property="og:url" content={canonical} />
+  </Fragment>
   <ReadingProgress client:load />
-  <section class="reading">
-    <p class="back"><a href={base + '/blog/'}>← บทความทั้งหมด</a></p>
-    <p class="eyebrow">ENGINEERING NOTES · {frontmatter.date}</p>
-    <h1>{frontmatter.title}</h1>
-    <p class="intro">{frontmatter.description}</p>
-    <article class="prose article-prose"><slot /></article>
-  </section>
+  <p class="back blog-back"><a href={base + '/blog/'}>← บทความทั้งหมด</a></p>
+  <article class="reading prose article-prose h-entry" aria-labelledby="post-title" itemscope itemtype="https://schema.org/BlogPosting">
+    <h1 id="post-title" class="p-name" itemprop="headline">{frontmatter.title}</h1>
+    <p class="eyebrow">ENGINEERING NOTES · <time class="dt-published" datetime={publishedDate} itemprop="datePublished">{publishedDate}</time></p>
+    <p class="intro p-summary" itemprop="description">{frontmatter.description}</p>
+    <slot />
+  </article>
 </BaseLayout>
+
+<style is:global>
+  .blog-back { max-width: 790px; margin: 2rem auto 1rem; }
+  .reading.article-prose { max-width: 790px; margin-top: 1rem; }
+  .article-prose .eyebrow, .article-prose .intro { color: var(--theme-muted); }
+  .article-prose .article-figure { margin: 1.6rem 0 2rem; break-inside: avoid; }
+  .article-prose .article-figure > img { margin: 0; width: 100%; height: auto; }
+  .article-prose figcaption { margin-top: .65rem; color: var(--theme-muted); font-size: .85rem; line-height: 1.6; text-align: center; }
+  .article-prose .comparison-record { padding: 1rem 1.2rem; margin: 1.1rem 0; border: 1px solid var(--theme-border); border-left: 3px solid var(--theme-primary); border-radius: .65rem; background: var(--theme-surface-hover); }
+</style>
