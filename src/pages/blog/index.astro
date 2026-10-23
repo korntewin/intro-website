@@ -1,5 +1,66 @@
 ---
 import BaseLayout from '../../layouts/BaseLayout.astro';
-const base=import.meta.env.BASE_URL.replace(/\/$/,'');
+import '../../styles/portfolio.css';
+import '../../styles/blog.css';
+
+const base = import.meta.env.BASE_URL.replace(/\/$/, '');
+const posts = [
+  {
+    number: '001',
+    category: 'RUST / PRODUCTION ML',
+    date: '23 OCT 2026',
+    language: 'ภาษาไทย',
+    title: 'จาก Go สู่ Rust: เมื่อ ML Prediction Service ต้องเร็วขึ้นอีกครั้ง',
+    description: 'The story behind rewriting a production ML prediction service in Rust: from CPU and memory constraints to Arrow, actor-based execution, and measurable results.',
+    href: '/blog/riir-rust-prediction-service/',
+    cover: '/blog/figures/riir-cover.svg',
+    tags: ['Rust', 'ML inference', 'Performance'],
+  },
+];
 ---
-<BaseLayout title="Blog · Korntewin"><section class="hero"><p class="eyebrow">ENGINEERING NOTES</p><h1>Blog</h1><p>What I learn while making production systems faster and easier to maintain.</p></section><div class="cards"><a class="card" href={base+'/blog/riir-rust-prediction-service/'}><p class="eyebrow">23 OCTOBER 2026 · TH</p><h2>จาก Go สู่ Rust: เมื่อ ML Prediction Service ต้องเร็วขึ้นอีกครั้ง</h2><p>บทความฉบับเต็ม พร้อมกราฟ Production, Arrow/Polars, Actor Model, DAG, SIMD และ allocators.</p><span>Read article →</span></a></div></BaseLayout>
+<BaseLayout
+  title="Blog · Korntewin"
+  description="Engineering notes on Rust, production machine learning, latency, and the details that make systems faster."
+  portfolio={true}
+>
+  <div class="portfolio interior-page blog-index-page">
+    <section class="page-lead blog-lead" aria-labelledby="blog-title">
+      <p class="kicker">BLOG / NOTES FROM THE TERMINAL</p>
+      <h1 id="blog-title">Notes from<br /><span class="headline-accent">the hot path.</span></h1>
+      <p>What I learn while building production systems, chasing down bottlenecks, and figuring out which optimizations actually matter.</p>
+    </section>
+
+    <section class="blog-feed" aria-labelledby="blog-feed-title">
+      <div class="blog-feed-heading">
+        <div>
+          <p class="kicker">01 / ENGINEERING STORIES</p>
+          <h2 id="blog-feed-title">Latest writing<span class="headline-accent">.</span></h2>
+        </div>
+        <span class="blog-feed-count">{String(posts.length).padStart(3, '0')} ARTICLE{posts.length === 1 ? '' : 'S'} / 2026</span>
+      </div>
+
+      <div class="blog-list">
+        {posts.map((post) => (
+          <a class="blog-feature" href={base + post.href}>
+            <div class="blog-feature-cover">
+              <div class="blog-cover-caption"><span>FIELD NOTE / {post.number}</span><span>RIIR → RUST</span></div>
+              <img src={base + post.cover} alt="Illustration of migrating an ML prediction service from Go to Rust" width="1800" height="763" loading="lazy" />
+            </div>
+            <div class="blog-feature-copy">
+              <p class="project-kicker">{post.date} / {post.category} / {post.language}</p>
+              <h3>{post.title}</h3>
+              <p>{post.description}</p>
+              <div class="project-tags">{post.tags.map((tag) => <span>{tag}</span>)}</div>
+              <span class="blog-read-cta">Read the story <span aria-hidden="true">↗</span></span>
+            </div>
+          </a>
+        ))}
+      </div>
+    </section>
+
+    <section class="small-cta blog-bottom-cta">
+      <div><p class="kicker">MORE EXPERIMENTS / LESS GUESSWORK</p><h2>See the things I'm building.</h2></div>
+      <a class="port-button port-button-primary" href={base + '/projects/'}>Explore projects <span aria-hidden="true">↗</span></a>
+    </section>
+  </div>
+</BaseLayout>
