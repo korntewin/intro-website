@@ -123,6 +123,71 @@
   margin-top: 90px;
 }
 
+
+/* In-page language navigation is intentionally outside the semantic article body,
+   so Medium imports contain only the selected language. */
+.portfolio .blog-language-switch,
+.portfolio .blog-feature-languages {
+  display: inline-flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 7px;
+}
+.portfolio .blog-language-switch {
+  padding: 4px;
+  margin-inline: auto;
+  border: 1px solid var(--p-line);
+  border-radius: 999px;
+  background: var(--p-card);
+}
+.portfolio .blog-language-switch a {
+  display: inline-flex;
+  justify-content: center;
+  min-width: 45px;
+  padding: 7px 12px;
+  color: var(--p-muted);
+  border-radius: 999px;
+  font: 750 .78rem/1.4 ui-monospace, Menlo, Consolas, monospace;
+  letter-spacing: .05em;
+  text-decoration: none;
+}
+.portfolio .blog-language-switch a:hover,
+.portfolio .blog-language-switch a:focus-visible {
+  color: var(--p-accent-ink);
+}
+.portfolio .blog-language-switch a[aria-current="page"] {
+  color: var(--p-card);
+  background: var(--p-accent-ink);
+}
+.portfolio .blog-feature-copy h3 a {
+  color: inherit;
+  text-decoration: none;
+}
+.portfolio .blog-feature-copy h3 a:hover {
+  color: var(--p-accent-ink);
+}
+.portfolio .blog-feature-languages {
+  margin-top: auto;
+}
+.portfolio .blog-lang-button {
+  padding: 10px 21px;
+  border: 1px solid var(--p-line);
+  border-radius: 999px;
+  color: var(--p-ink);
+  background: var(--p-chip);
+  font: 750 .79rem/1.5 ui-monospace, Menlo, Consolas, monospace;
+  letter-spacing: .08em;
+  text-decoration: none;
+  transition: background .2s ease, border-color .2s ease, color .2s ease;
+}
+.portfolio .blog-lang-button:hover,
+.portfolio .blog-lang-button:focus-visible {
+  border-color: var(--p-accent);
+  background: var(--p-accent-ink);
+  color: var(--p-card);
+  text-decoration: none;
+}
+
 /* The readable site article gets portfolio styling; its semantic HTML is
    intentionally left intact for the separate Medium export. */
 .portfolio.blog-article-page {
