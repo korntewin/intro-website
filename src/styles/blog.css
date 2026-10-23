@@ -1,0 +1,297 @@
+/* Blog surfaces reuse the portfolio palette and type rhythm.
+   The standalone /medium/ import view is generated separately and never loads this CSS. */
+
+.portfolio .blog-lead {
+  max-width: 920px;
+}
+.portfolio .blog-feed {
+  padding-top: 66px;
+}
+.portfolio .blog-feed-heading {
+  display: flex;
+  justify-content: space-between;
+  align-items: end;
+  gap: 24px;
+  margin-bottom: 28px;
+}
+.portfolio .blog-feed-heading .kicker {
+  margin-bottom: 12px;
+}
+.portfolio .blog-feed-heading h2 {
+  font-size: clamp(2.1rem, 3.6vw, 3.2rem);
+  line-height: 1.16;
+  letter-spacing: -.06em;
+  margin: 0;
+}
+.portfolio .blog-feed-count {
+  color: var(--p-muted);
+  font: 700 .7rem/1.5 ui-monospace, Menlo, Consolas, monospace;
+  letter-spacing: .1em;
+  white-space: nowrap;
+  padding-bottom: 5px;
+}
+.portfolio .blog-feature {
+  display: grid;
+  grid-template-columns: minmax(0, .92fr) minmax(0, 1.08fr);
+  align-items: stretch;
+  background: var(--p-card);
+  border: 1px solid var(--p-line);
+  border-radius: 22px;
+  overflow: hidden;
+  transition: border-color .2s ease, transform .2s ease, box-shadow .2s ease;
+}
+.portfolio .blog-feature:hover {
+  border-color: var(--p-accent);
+  transform: translateY(-4px);
+  box-shadow: 0 22px 54px rgba(17, 43, 42, .09);
+  text-decoration: none;
+}
+.portfolio .blog-feature-cover {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 16px;
+  background: #14252b;
+  padding: 26px;
+  min-height: 360px;
+  overflow: hidden;
+}
+.portfolio .blog-cover-caption {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  color: #c8d7d5;
+  font: 700 .67rem/1.5 ui-monospace, Menlo, Consolas, monospace;
+  letter-spacing: .1em;
+}
+.portfolio .blog-cover-caption span:last-child {
+  color: #ffab85;
+}
+.portfolio .blog-feature-cover img {
+  width: 100%;
+  height: auto;
+  aspect-ratio: 2.36;
+  object-fit: contain;
+  border-radius: 9px;
+  transition: transform .3s ease;
+}
+.portfolio .blog-feature:hover .blog-feature-cover img {
+  transform: scale(1.035);
+}
+.portfolio .blog-feature-copy {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  padding: clamp(27px, 4vw, 48px);
+}
+.portfolio .blog-feature-copy .project-kicker {
+  margin: 0 0 20px;
+}
+.portfolio .blog-feature-copy h3 {
+  font-size: clamp(1.55rem, 2.3vw, 2.3rem);
+  line-height: 1.3;
+  letter-spacing: -.04em;
+  font-weight: 780;
+  margin: 0 0 17px;
+}
+.portfolio .blog-feature-copy > p:not(.project-kicker) {
+  color: var(--p-muted);
+  line-height: 1.8;
+  font-size: .96rem;
+  margin: 0 0 26px;
+}
+.portfolio .blog-feature-copy .project-tags {
+  margin-bottom: 32px;
+}
+.portfolio .blog-read-cta {
+  display: inline-flex;
+  align-items: center;
+  gap: 17px;
+  margin-top: auto;
+  padding-bottom: 5px;
+  border-bottom: 1px solid var(--p-accent);
+  font-weight: 750;
+  font-size: .9rem;
+}
+.portfolio .blog-read-cta span {
+  color: var(--p-accent);
+  font-size: 1.25rem;
+  line-height: 1;
+}
+.portfolio .blog-bottom-cta {
+  margin-top: 90px;
+}
+
+/* The readable site article gets portfolio styling; its semantic HTML is
+   intentionally left intact for the separate Medium export. */
+.portfolio.blog-article-page {
+  max-width: 900px;
+  margin: 0 auto;
+}
+.portfolio .blog-reader-utility {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 12px 24px;
+  padding: 29px 0 21px;
+  border-bottom: 1px solid var(--p-line);
+}
+.portfolio .blog-reader-utility a {
+  color: var(--p-muted);
+  font-size: .86rem;
+  font-weight: 700;
+  transition: color .2s ease;
+}
+.portfolio .blog-reader-utility a:hover {
+  color: var(--p-accent);
+}
+.portfolio .blog-reader-utility .blog-medium-link {
+  color: var(--p-accent-ink);
+}
+body.portfolio-mode .portfolio .reading.article-prose {
+  background: transparent !important;
+  border-color: var(--p-line) !important;
+  color: var(--p-ink) !important;
+  max-width: 790px;
+  margin: 55px auto 0;
+  font-size: 1.055rem;
+  line-height: 1.88;
+}
+.portfolio .article-prose h1 {
+  font-size: clamp(2.35rem, 4.45vw, 4.2rem);
+  font-weight: 800;
+  line-height: 1.18;
+  letter-spacing: -.05em;
+  margin: 0 0 24px;
+  text-wrap: balance;
+}
+.portfolio .article-prose .eyebrow {
+  color: var(--p-accent-ink);
+  font: 750 .72rem/1.6 ui-monospace, Menlo, Consolas, monospace;
+  letter-spacing: .11em;
+  margin: 0 0 17px;
+}
+.portfolio .article-prose .intro {
+  max-width: 100%;
+  color: var(--p-muted);
+  font-size: 1.12rem;
+  line-height: 1.83;
+  padding-bottom: 34px;
+  border-bottom: 1px solid var(--p-line);
+  margin: 0 0 40px;
+}
+.portfolio .article-prose h2 {
+  color: var(--p-ink);
+  border-color: var(--p-line);
+  font-size: clamp(1.55rem, 2.7vw, 2.05rem);
+  line-height: 1.4;
+  letter-spacing: -.035em;
+  padding-top: 27px;
+  margin-top: 58px;
+}
+.portfolio .article-prose h3 {
+  color: var(--p-ink);
+  letter-spacing: -.025em;
+}
+.portfolio .article-prose p,
+.portfolio .article-prose li,
+.portfolio .article-prose strong {
+  color: var(--p-ink);
+}
+.portfolio .article-prose .eyebrow,
+.portfolio .article-prose .intro {
+  color: var(--p-muted);
+}
+.portfolio .article-prose .eyebrow {
+  color: var(--p-accent-ink);
+}
+.portfolio .article-prose a {
+  color: var(--p-accent-ink);
+  text-decoration: underline;
+  text-decoration-color: var(--p-accent);
+  text-underline-offset: 3px;
+}
+.portfolio .article-prose a:hover {
+  color: var(--p-accent);
+}
+.portfolio .article-prose blockquote {
+  background: var(--p-chip);
+  color: var(--p-ink);
+  border-color: var(--p-accent);
+}
+.portfolio .article-prose .article-figure {
+  margin: 36px 0 42px;
+  break-inside: avoid;
+}
+.portfolio .article-prose .article-figure > img {
+  display: block;
+  width: 100%;
+  height: auto;
+  background: var(--p-card);
+  border: 1px solid var(--p-line);
+  border-radius: 15px;
+  margin: 0;
+}
+.portfolio .article-prose figcaption {
+  margin-top: 10px;
+  color: var(--p-muted);
+  font-size: .84rem;
+  line-height: 1.65;
+  text-align: center;
+}
+.portfolio .article-prose .comparison-record {
+  padding: 1.05rem 1.25rem;
+  margin: 1.15rem 0;
+  border: 1px solid var(--p-line);
+  border-left: 3px solid var(--p-accent);
+  border-radius: 11px;
+  background: var(--p-card);
+}
+.portfolio .article-prose :not(pre) > code {
+  color: var(--p-ink);
+  background: var(--p-chip);
+}
+.portfolio .article-prose pre {
+  border: 1px solid var(--p-line);
+  border-radius: 13px;
+}
+.portfolio .blog-reader-end {
+  display: flex;
+  justify-content: flex-start;
+  border-top: 1px solid var(--p-line);
+  margin: 54px 0 0;
+  padding: 34px 0 10px;
+}
+@media (max-width: 830px) {
+  .portfolio .blog-feature {
+    grid-template-columns: 1fr;
+  }
+  .portfolio .blog-feature-cover {
+    min-height: 0;
+  }
+  .portfolio .blog-feature-cover img {
+    max-height: 350px;
+  }
+}
+@media (max-width: 650px) {
+  .portfolio .blog-feed { padding-top: 45px; }
+  .portfolio .blog-feed-heading { align-items: start; flex-direction: column; gap: 10px; }
+  .portfolio .blog-feature-cover { padding: 18px; }
+  .portfolio .blog-feature-copy { padding: 24px 21px 28px; }
+  .portfolio .blog-feature-copy .project-tags { margin-bottom: 24px; }
+  .portfolio .blog-bottom-cta { margin-top: 70px; }
+  .portfolio .blog-reader-utility { padding: 20px 0 17px; }
+  body.portfolio-mode .portfolio .reading.article-prose { margin-top: 35px; }
+  .portfolio .article-prose h1 { font-size: clamp(2.1rem, 8.5vw, 3rem); }
+  .portfolio .article-prose .intro { font-size: 1.02rem; margin-bottom: 30px; }
+  .portfolio .article-prose h2 { margin-top: 43px; }
+  .portfolio .article-prose .comparison-record { padding: .85rem 1rem; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .portfolio .blog-feature,
+  .portfolio .blog-feature-cover img { transition: none; }
+  .portfolio .blog-feature:hover,
+  .portfolio .blog-feature:hover .blog-feature-cover img { transform: none; }
+}

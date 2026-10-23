@@ -1,13 +1,16 @@
 ---
 import BaseLayout from './BaseLayout.astro';
 import ReadingProgress from '../components/ReadingProgress.svelte';
+import '../styles/portfolio.css';
+import '../styles/blog.css';
+
 const { frontmatter } = Astro.props;
 const base = import.meta.env.BASE_URL.replace(/\/$/, '');
 const canonical = new URL(Astro.url.pathname.replace(/\/?$/, '/'), Astro.site ?? Astro.url.origin).href;
 const publishedDate = new Date(frontmatter.date).toISOString().slice(0, 10);
 const coverImage = frontmatter.coverImage ? new URL(frontmatter.coverImage, canonical).href : undefined;
 ---
-<BaseLayout title={frontmatter.title + ' · Korntewin'} description={frontmatter.description} lang="th">
+<BaseLayout title={frontmatter.title + ' · Korntewin'} description={frontmatter.description} lang="th" portfolio={true}>
   <Fragment slot="head">
     <link rel="canonical" href={canonical} />
     <meta property="og:type" content="article" />
@@ -19,26 +22,21 @@ const coverImage = frontmatter.coverImage ? new URL(frontmatter.coverImage, cano
     {coverImage && <meta property="og:image:alt" content={frontmatter.coverImageAlt ?? frontmatter.title} />}
   </Fragment>
   <ReadingProgress client:load />
-  <p class="back blog-back">
-    <a href={base + '/blog/'}>← บทความทั้งหมด</a>
-    <a href={canonical + 'medium/'}>Medium import view</a>
-  </p>
-  <article class="reading prose article-prose h-entry" aria-labelledby="post-title" itemscope itemtype="https://schema.org/BlogPosting">
-    <h1 id="post-title" class="p-name" itemprop="headline">{frontmatter.title}</h1>
-    <p class="eyebrow">ENGINEERING NOTES · <time class="dt-published" datetime={publishedDate} itemprop="datePublished">{publishedDate}</time></p>
-    <p class="intro p-summary" itemprop="description">{frontmatter.description}</p>
-    <div class="e-content entry-content" itemprop="articleBody">
-      <slot />
+  <div class="portfolio blog-article-page">
+    <p class="back blog-back blog-reader-utility">
+      <a href={base + '/blog/'}>← บทความทั้งหมด</a>
+      <a class="blog-medium-link" href={canonical + 'medium/'}>Medium import view ↗</a>
+    </p>
+    <article class="reading prose article-prose h-entry" aria-labelledby="post-title" itemscope itemtype="https://schema.org/BlogPosting">
+      <h1 id="post-title" class="p-name" itemprop="headline">{frontmatter.title}</h1>
+      <p class="eyebrow">ENGINEERING NOTES · <time class="dt-published" datetime={publishedDate} itemprop="datePublished">{publishedDate}</time></p>
+      <p class="intro p-summary" itemprop="description">{frontmatter.description}</p>
+      <div class="e-content entry-content" itemprop="articleBody">
+        <slot />
+      </div>
+    </article>
+    <div class="blog-reader-end">
+      <a class="port-inline-link" href={base + '/blog/'}>← More engineering notes</a>
     </div>
-  </article>
+  </div>
 </BaseLayout>
-
-<style is:global>
-  .blog-back { max-width: 790px; margin: 2rem auto 1rem; display: flex; justify-content: space-between; flex-wrap: wrap; gap: .5rem 1rem; }
-  .reading.article-prose { max-width: 790px; margin-top: 1rem; }
-  .article-prose .eyebrow, .article-prose .intro { color: var(--theme-muted); }
-  .article-prose .article-figure { margin: 1.6rem 0 2rem; break-inside: avoid; }
-  .article-prose .article-figure > img { margin: 0; width: 100%; height: auto; }
-  .article-prose figcaption { margin-top: .65rem; color: var(--theme-muted); font-size: .85rem; line-height: 1.6; text-align: center; }
-  .article-prose .comparison-record { padding: 1rem 1.2rem; margin: 1.1rem 0; border: 1px solid var(--theme-border); border-left: 3px solid var(--theme-primary); border-radius: .65rem; background: var(--theme-surface-hover); }
-</style>
