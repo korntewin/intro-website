@@ -64,11 +64,11 @@ date: 2026-10-23
 
 ### แล้ว Kubernetes Cluster จะโล่งขึ้นแค่ไหน?
 
-จาก Resource Planning เรา **คาดการณ์** ว่าเมื่อ Rollout การปรับปรุงชุดนี้ จะช่วยคืน CPU Request ให้คลัสเตอร์ได้ประมาณ **6.3 percentage points** จาก **77.7% เหลือ 71.4%**
+จาก Resource Planning เรา **คาดการณ์** ว่าเมื่อ Rollout การปรับปรุงชุดนี้ครบ **ทุก Use Case ที่ทีมดูแล** จะช่วยลดสัดส่วน **CPU Request ของ Kubernetes Cluster จาก 79% เหลือ 69%** หรือประมาณ **10 percentage points** ครับ ตัวเลขนี้เป็นการประเมินภาพรวมของการ Rollout ทั้งทีม ไม่ใช่ผลจาก Use Case เดียวที่ใช้เปรียบเทียบ Go กับ Rust
 
 ![กราฟประมาณการ CPU request ของ Kubernetes Cluster ก่อนและหลัง rollout](https://korntewin.github.io/intro-website/blog/figures/cluster-capacity.png)
 
-ตรงนี้ต้องขีดเส้นใต้ว่า **เป็น Projection ไม่ใช่ผลหลัง Rollout ที่วัดได้แล้ว** และเมื่อมี Use Case ใหม่เข้ามาอีก Capacity ก็อาจถูกใช้อีกเช่นเดิม เป้าหมายของเราจึงเป็นการเพิ่ม *Efficiency ต่อ Request* และทำให้เพิ่มโมเดลใหม่ได้ง่ายขึ้น ไม่ใช่แค่ทำให้กราฟว่างช่วงหนึ่งเท่านั้น
+ตรงนี้ต้องขีดเส้นใต้ว่า **เป็น Projection สำหรับการ Rollout ครบทุก Use Case ของทีม ไม่ใช่ผลหลัง Rollout ที่วัดได้แล้ว** และเมื่อมี Use Case ใหม่เข้ามาอีก Capacity ก็อาจถูกใช้อีกเช่นเดิม เป้าหมายของเราจึงเป็นการเพิ่ม *Efficiency ต่อ Request* และทำให้เพิ่มโมเดลใหม่ได้ง่ายขึ้น ไม่ใช่แค่ทำให้กราฟว่างช่วงหนึ่งเท่านั้น
 
 ## ทำไมไม่แค่เปลี่ยนภาษา?
 
@@ -251,7 +251,7 @@ Optimization สำหรับ ML Prediction Service ต่างจากก�
 
 ถ้ารอบก่อนคือการ **Optimize Go Runtime** รอบนี้ก็คือการ **Re-think ว่า ML Prediction Service ควรจัด Data, CPU Threads และ Model Execution อย่างไรตั้งแต่แรก** ผ่าน Rust, Apache Arrow, Polars, Actor Model และกลไกอื่น ๆ ที่ทำงานร่วมกัน
 
-ผลบน Production ของการเปรียบเทียบครั้งนี้คือ **P99 Latency ดีขึ้น 2.4 เท่า, CPU Usage ลดลง 5.4 เท่า และ Memory ลดลง 1.9 เท่า** ใน Traffic Split เท่ากัน ส่วนการคืน Cluster CPU **6.3 percentage points ยังเป็น Projection ของ Rollout**
+ผลบน Production ของการเปรียบเทียบครั้งนี้คือ **P99 Latency ดีขึ้น 2.4 เท่า, CPU Usage ลดลง 5.4 เท่า และ Memory ลดลง 1.9 เท่า** ใน Traffic Split เท่ากัน ส่วนเมื่อ Rollout การปรับปรุงให้ครบ **ทุก Use Case ของทีม** เราคาดว่า **Cluster CPU Request จะลดจาก 79% เหลือ 69% (10 percentage points)** ซึ่งยังเป็น Projection ไม่ใช่ผลที่วัดได้หลัง Rollout
 
 สุดท้ายสิ่งที่ผมได้เรียนรู้คือ Performance Engineering ไม่ใช่การหา Library ที่เร็วที่สุดเพียงตัวเดียว แต่เป็นการทำให้ **Data Flow, Memory Layout, Scheduling และ Architecture เข้ากันได้กับธรรมชาติของ Workload** มากที่สุด โดยเฉพาะในวันที่ **Private Cloud มี Capacity เหลืออยู่อย่างจำกัด** และเราไม่สามารถแก้ปัญหาด้วยการเพิ่มเครื่องได้ง่าย ๆ ครับ 🚀
 
