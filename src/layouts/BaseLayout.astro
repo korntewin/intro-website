@@ -1,0 +1,7 @@
+---
+import '../styles/global.css';
+const { title = 'Korntewin · ML Engineering', description = 'Korntewin portfolio and engineering notes' } = Astro.props;
+const base = import.meta.env.BASE_URL.replace(/\/$/, '');
+const nav = [{href:'/',label:'Home'},{href:'/about/',label:'About'},{href:'/career/',label:'Career'},{href:'/projects/',label:'Projects'},{href:'/blog/',label:'Blog'}];
+---
+<!doctype html><html lang="en"><head><meta charset="utf-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/><meta name="description" content={description}/><title>{title}</title></head><body><header class="site-header"><nav class="nav wrap" aria-label="Main navigation"><a class="brand" href={base+'/'}>Korntewin<span class="accent">.</span></a><div class="navlinks">{nav.map(item=><a href={base+item.href}>{item.label}</a>)}</div><slot name="nav-action"/></nav></header><main class="wrap"><slot /></main><footer class="wrap footer">© 2026 Korntewin · Built with Astro & Svelte · <a href="https://github.com/korntewin">GitHub</a></footer></body></html>

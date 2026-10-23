@@ -1,0 +1,5 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+const base=import.meta.env.BASE_URL.replace(/\/$/,'');
+---
+<BaseLayout title="Korntewin · ML & Systems Engineering"><section class="hero"><p class="eyebrow">RUST · MACHINE LEARNING · DISTRIBUTED SYSTEMS</p><h1>Building ML systems that scale — without wasting compute.</h1><p>Hi, I’m Korn. I work on production ML platforms, high-performance inference, and reliable engineering tooling. Explore projects, career notes, and engineering stories.</p><a class="button" href={base+'/blog/'}>Read my blog →</a><a class="button secondary" href={base+'/projects/'}>Explore projects</a></section><h2 class="section-heading">Latest writing</h2><div class="cards"><a class="card" href={base+'/blog/riir-rust-prediction-service/'}><p class="eyebrow">OCT 2026 · THAI</p><h2>จาก Go สู่ Rust: เมื่อ ML Prediction Service ต้องเร็วขึ้นอีก</h2><p>Arrow, Polars, Actor Model, DAG และ Memory Allocator</p></a><a class="card" href="https://medium.com/@korntewin-b"><p class="eyebrow">MEDIUM</p><h2>More engineering articles</h2><p>Read earlier performance optimization stories on Medium ↗</p></a></div></BaseLayout>

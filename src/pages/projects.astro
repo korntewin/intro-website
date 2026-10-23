@@ -1,0 +1,5 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+const projects=[['Python vs Rust ML inference','https://github.com/korntewin/python-vs-rust-DL-inference'],['Rust Crypto Trading Bot','https://medium.com/thinking-machines-thailand/crypto-trading-bots-with-rust-db754daf474e'],['Real-time Object Detection with Rust + WASM','https://github.com/korntewin/yolo-wasm'],['Kafka → Delta Lake','https://medium.com/@korntewin-b/delta-table-liquid-clustering-for-real-time-event-streaming-b6f48d111aa6']];
+---
+<BaseLayout title="Projects · Korntewin"><section class="hero"><p class="eyebrow">SELECTED WORK</p><h1>Projects & experiments</h1><p>Rust, ML platforms, data engineering and applied research.</p></section><div class="cards">{projects.map(([title,href])=><a class="card" href={href} target="_blank" rel="noreferrer"><h2>{title} ↗</h2><p>Explore the project and implementation.</p></a>)}</div></BaseLayout>

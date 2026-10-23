@@ -1,0 +1,5 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+const roles=[{role:'Machine Learning Engineer',company:'LINE MAN Wongnai',period:'2026',detail:'Production inference systems, performance engineering, Rust and Kubernetes.'},{role:'Software Engineer (ML)',company:'Zilo (UK)',period:'2025',detail:'LLM applications and Graph RAG.'},{role:'Software Engineer (Big Data & ML)',company:'Siam Commercial Bank',period:'2024–2025',detail:'Data and machine learning platforms.'},{role:'Software Engineer',company:'Thinking Machines',period:'2022–2024',detail:'NLP, cloud and ML delivery.'},{role:'Software Engineer (Big Data & ML)',company:'KASIKORN',period:'2021–2022',detail:'Large-scale analytics and PySpark.'}];
+---
+<BaseLayout title="Career · Korntewin"><section class="hero"><p class="eyebrow">EXPERIENCE</p><h1>Career timeline</h1><p>Building production ML and data systems across industries.</p></section><div class="cards">{roles.map(r=><article class="card"><p class="eyebrow">{r.period}</p><h2>{r.role}</h2><p>{r.company}</p><p>{r.detail}</p></article>)}</div></BaseLayout>

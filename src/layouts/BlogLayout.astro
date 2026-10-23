@@ -1,0 +1,7 @@
+---
+import BaseLayout from './BaseLayout.astro';
+import ReadingProgress from '../components/ReadingProgress.svelte';
+const {frontmatter} = Astro.props;
+const base=import.meta.env.BASE_URL.replace(/\/$/,'');
+---
+<BaseLayout title={frontmatter.title+' · Korntewin'} description={frontmatter.description}><ReadingProgress client:load /><section class="reading"><p class="back"><a href={base+'/blog/'}>← All articles</a></p><p class="eyebrow">ENGINEERING NOTES · {frontmatter.date}</p><h1>{frontmatter.title}</h1><p class="intro">{frontmatter.description}</p><article class="prose"><slot /></article></section></BaseLayout>
