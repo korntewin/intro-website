@@ -42,9 +42,22 @@ for (const filename of await markdownFiles(sourceRoot)) {
   const markdown = await readFile(filename, 'utf8');
   if (!markdown.includes('BlogLayout.astro')) continue;
   const slug = relative(sourceRoot, filename).replaceAll('\\', '/').replace(/\.md$/, '').replace(/\/index$/, '');
+  const language = slug.endsWith('/en') ? 'en' : 'th';
+  const articleSlug = language === 'en' ? slug.slice(0, -3) : slug;
+  const localeImportUrl = site + base + '/blog/' + articleSlug + '/medium/' + language + '/';
   const canonical = `${site}${base}/blog/${slug}/`;
   const html = await readFile(resolve(outputRoot, 'blog', slug, 'index.html'), 'utf8');
   const dom = parse(html), nodes = all(dom);
+  assert.equal(attr(nodes.find((n) => n.tagName === 'html'), 'lang'), language, slug + ': correct html language');
+  const languageLinks = nodes.filter((n) => n.tagName === 'nav' && hasClass(n, 'blog-language-switch'));
+  assert.equal(languageLinks.length, 1, slug + ': article has exactly one TH/EN switch');
+  const languageAnchors = all(languageLinks[0]).filter((n) => n.tagName === 'a');
+  assert.deepEqual(languageAnchors.map((n) => attr(n, 'lang')), ['th', 'en'], slug + ': language links are TH and EN');
+  assert.deepEqual(languageAnchors.map((n) => attr(n, 'href')), [
+    site + base + '/blog/' + articleSlug + '/',
+    site + base + '/blog/' + articleSlug + '/en/',
+  ], slug + ': language links target distinct articles');
+  assert.equal(languageAnchors.filter((n) => attr(n, 'aria-current') === 'page').length, 1, slug + ': one active language');
   const articleNodes = nodes.filter((n) => n.tagName === 'article');
   assert.equal(articleNodes.length, 1, `${slug}: exactly one article`);
   const article = articleNodes[0], descendants = all(article);
@@ -103,8 +116,9 @@ for (const filename of await markdownFiles(sourceRoot)) {
     for (const cell of cells) assert(normalize(text(records[index])).includes(cell), `${slug}: missing cell ${cell}`);
   });
 
-  const importHtml = await readFile(resolve(outputRoot, 'blog', slug, 'medium', 'index.html'), 'utf8');
+  const importHtml = await readFile(resolve(outputRoot, 'blog', articleSlug, 'medium', language, 'index.html'), 'utf8');
   const importNodes = all(parse(importHtml));
+  assert.equal(attr(importNodes.find((n) => n.tagName === 'html'), 'lang'), language, slug + ': import language matches article');
   const importEntries = importNodes.filter((n) => hasClass(n, 'h-entry'));
   assert.equal(importEntries.length, 1, `${slug}: one import entry`);
   const importEntry = importEntries[0], importDescendants = all(importEntry);
@@ -126,7 +140,11 @@ for (const filename of await markdownFiles(sourceRoot)) {
   assert.equal(importCanonicals.length, 1);
   assert.equal(attr(importCanonicals[0], 'href'), canonical, `${slug}: original URL stays canonical`);
   assert(importNodes.some((n) => n.tagName === 'meta' && attr(n, 'name') === 'robots' && attr(n, 'content').includes('noindex')), `${slug}: export is not indexed separately`);
-  assert(nodes.some((n) => n.tagName === 'a' && attr(n, 'href') === canonical + 'medium/'), `${slug}: original article links to the import view`);
+  assert(nodes.some((n) => n.tagName === 'a' && attr(n, 'href') === localeImportUrl), `${slug}: original article links to the import view`);
+  if (language === 'th') {
+    const legacyImport = await readFile(resolve(outputRoot, 'blog', articleSlug, 'medium', 'index.html'), 'utf8');
+    assert.equal(legacyImport, importHtml, slug + ': legacy Thai import URL remains compatible');
+  }
   articles += 1;
   console.log(`Verified ${slug}: complete e-content, ${images.length} figures, ${rows.length} comparison records, matching plain import view and canonical metadata.`);
 }
