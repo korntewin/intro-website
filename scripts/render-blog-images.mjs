@@ -5,7 +5,10 @@ import sharp from 'sharp';
 import { zipSync, strToU8 } from 'fflate';
 
 const folder = fileURLToPath(new URL('../public/blog/figures/', import.meta.url));
-const articleFile = fileURLToPath(new URL('../src/pages/blog/riir-rust-prediction-service.md', import.meta.url));
+const articleFiles = [
+  fileURLToPath(new URL('../src/pages/blog/riir-rust-prediction-service.md', import.meta.url)),
+  fileURLToPath(new URL('../src/pages/blog/riir-rust-prediction-service/en.md', import.meta.url)),
+];
 const baseUrl = 'https://korntewin.github.io/intro-website/blog/figures/';
 const files = (await readdir(folder)).filter((f) => f.endsWith('.svg')).sort();
 if (!files.length) throw new Error('No SVG blog figures found');
@@ -20,16 +23,23 @@ for (const file of files) {
   console.log('PNG generated:', basename(png));
 }
 
-const article = await readFile(articleFile, 'utf8');
-const allImages = [...article.matchAll(/!\[[^\]]*]\(([^)]+)\)/g)].map((m) => m[1]);
-const blogImages = allImages.filter((url) => url.includes('/blog/figures/'));
+const imageLists = await Promise.all(articleFiles.map(async (file) => {
+  const article = await readFile(file, 'utf8');
+  return [...article.matchAll(/!\[[^\]]*]\(([^)]+)\)/g)]
+    .map((m) => m[1])
+    .filter((url) => url.includes('/blog/figures/'));
+}));
+const [blogImages, englishImages] = imageLists;
+if (!blogImages.length || JSON.stringify(blogImages) !== JSON.stringify(englishImages)) {
+  throw new Error('TH and EN versions must reference the same figures in the same order.');
+}
 for (const url of blogImages) {
   if (!url.startsWith(baseUrl) || !url.endsWith('.png')) {
     throw new Error('For Medium import, blog images must use absolute HTTPS PNG URLs: ' + url);
   }
   await stat(join(folder, basename(new URL(url).pathname)));
 }
-console.log('Verified', blogImages.length, 'Medium-ready blog image references.');
+console.log('Verified', blogImages.length, 'Medium-ready figure references in both TH and EN.');
 
 const signature = Buffer.from([137, 80, 78, 71, 13, 10, 26, 10]);
 const zipEntries = {
