@@ -15,6 +15,8 @@ date: 2026-10-23
 
 เมื่อมี **ML Use Case เพิ่มขึ้นเรื่อย ๆ** ทั้งจำนวนโมเดล ขนาดข้อมูล และ Traffic ที่ต้องรองรับ Cluster ที่เคยโล่งก็เริ่มกลับมาเกือบเต็มอีกครั้ง แต่ข้อจำกัดสำคัญของเราไม่ได้มีแค่เรื่อง Cost เพราะตอนนี้ **Private Cloud ของ LINE MAN Wongnai เองก็ใกล้เต็มแล้ว** การเพิ่มเครื่องเพื่อรองรับ Workload ใหม่จึงไม่ใช่ทางเลือกที่ทำได้ง่าย ๆ ครับ 😬
 
+ที่ท้าทายกว่านั้นคือ **หนึ่ง Request ไม่ได้ Rank แค่ Item เดียว** แต่ต้องจัดอันดับ **ประมาณ 500–10,000 Items ต่อ Request** เมื่อ Traffic หลาย Request เข้ามาพร้อมกันในช่วง Peak งานที่ต้อง Predict จึงพุ่งไปถึง **ระดับหลายแสน Items ต่อวินาที** 😵‍💫 นี่คือเหตุผลว่าทำไมทุกการ Copy ข้อมูล, Cache Miss และ CPU Thread ที่แย่งกันทำงานจึงมีผลต่อ Capacity ของระบบอย่างมาก
+
 โจทย์รอบนี้จึงเปลี่ยนจาก “จูน Runtime ให้ดีขึ้น” มาเป็น **เราจะทำให้ ML Prediction Service รองรับ Workload ที่เพิ่มขึ้นได้อย่างไร ภายใต้ Capacity ของ Private Cloud ที่เหลืออยู่อย่างจำกัด?**
 
 เราตัดสินใจทำ **RIIR (Rewrite It In Rust)** แต่ไม่ได้แค่แปลโค้ด Go เป็น Rust แบบหนึ่งต่อหนึ่ง เราใช้โอกาสนี้ออกแบบทั้ง **Memory Layout, Concurrency, Preprocessing Execution และ Code Structure** ใหม่ โดยเป้าหมายคือให้แต่ละ CPU Core ทำงานที่มีประโยชน์มากขึ้นครับ
@@ -105,7 +107,9 @@ Preprocessing ของ ML ไม่ใช่แค่ Loop Transform Feature �
 
 ข้อดีสำหรับ Production Service คือเราเปลี่ยนงานจาก **“ค้นหาลำดับ Preprocessing ทุก Request”** เป็น **“Validate และ Compile ครั้งเดียวตอน Boot”** เมื่อ Request เข้ามาก็ Execute แผนที่เตรียมไว้ได้เลย
 
-ทั้งนี้ Topological Sort ไม่ได้หมายความว่าแต่ละ Node จะ Parallel โดยอัตโนมัติ มันเพียงรับประกันลำดับ Dependency ที่ถูกต้อง หากต้องการ Run Nodes พร้อมกันต้องออกแบบ Scheduler เพิ่มเติมครับ
+สำหรับ RIIR รอบนี้เราเลือกทำ **1D Parallelism หรือ Data Parallelism เพียงมิติเดียว** คือแบ่ง Items ในแต่ละ Request เป็น Mini-batches แล้วให้ Workers ประมวลผลข้อมูลแต่ละ Batch พร้อมกัน แต่ **ภายในแต่ละ Mini-batch เรา Execute Preprocessing Nodes ตามลำดับ Topological Sort** ไม่ได้ Parallel แยกตาม Nodes แม้ว่าบาง Nodes จะไม่มี Dependency ต่อกันก็ตาม
+
+เหตุผลคือเรามีทั้ง Actor Workers และ ONNX Runtime Threads ที่ใช้ CPU อยู่แล้ว ถ้าทำ Parallel ทั้งตาม Items และตาม DAG Nodes เพิ่มอีกชั้น อาจเกิด **CPU Oversubscription** ทำให้ Threads แย่ง CPU กันมากขึ้น เกิด Context Switching และส่งผลเสียต่อ P99 Latency สรุปคือเราไม่ได้พยายาม Parallel ทุกอย่างที่ Parallel ได้ แต่เลือก Parallel เฉพาะ **แกนข้อมูล (Data)** เพื่อคุมจำนวนงานที่วิ่งพร้อมกันให้เหมาะกับ CPU ครับ 🧵
 
 ## 4. Rust 1.98: Algebraic Floating Point เปิดทางให้ SIMD เพิ่มเติม ⚡
 
@@ -186,7 +190,7 @@ Optimization สำหรับ ML Prediction Service ต่างจากก�
 ## Learning Points: สิ่งที่ได้จาก RIIR รอบนี้ 💡
 
 1. **Memory Layout สำคัญไม่แพ้ภาษา** — ลด Pointer Chasing และการ Copy ที่ไม่จำเป็นก่อนเพิ่มความซับซ้อนเรื่อง Threads
-2. **Concurrency ที่มากกว่าไม่ได้แปลว่าเร็วกว่า** — Actor Pools และ Mini-batches ช่วยให้เรา Tune CPU-bound Stages ได้ชัดเจน
+2. **Concurrency ที่มากกว่าไม่ได้แปลว่าเร็วกว่า** — ใช้ 1D Data Parallelism ผ่าน Actor Pools และ Mini-batches แต่ไม่ Parallel DAG Nodes เพิ่ม เพื่อเลี่ยง CPU Oversubscription
 3. **Compile สิ่งที่รู้ล่วงหน้าตั้งแต่ Startup** — DAG ของ Preprocessing ไม่ควรต้องมาคำนวณ Dependency ใหม่ทุก Request
 4. **SIMD ต้องเข้าใจ Semantics** — Algebraic FP ช่วยเปิดโอกาสให้ Compiler แต่ต้องตรวจผลลัพธ์เชิงตัวเลขเสมอ
 5. **Allocator เป็นส่วนหนึ่งของ Performance Design** — ใน Benchmark ของ Prediction Service เราพบว่า jemalloc ลด Memory Usage ได้ประมาณ 100–500 MB ช่วง Peak Load และใช้ CI Policy ไม่ให้ Application ไหน Config หลุด
