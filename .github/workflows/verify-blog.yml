@@ -27,9 +27,12 @@ jobs:
           test -s dist/blog/figures/production-memory-timeseries.png
           test -s dist/blog/figures/production-p99-timeseries.png
           test -s dist/blog/figures/arrow-validity-large-list.png
+          test -s dist/blog/figures/lmwn-ml-web-landscape.png
+          test -s dist/blog/figures/riir-ecosystem-counts.png
+          test -s dist/blog/data/riir-ecosystem-2026-10-23.json
           test -s dist/blog/riir-rust-prediction-service/index.html
-          test "$(find dist/blog/figures -maxdepth 1 -name '*.png' | wc -l | tr -d ' ')" -eq 14
+          test "$(find dist/blog/figures -maxdepth 1 -name '*.png' | wc -l | tr -d ' ')" -eq 16
           test -s dist/blog/medium-images.zip
           unzip -tqq dist/blog/medium-images.zip
           png_count="$(unzip -Z -1 dist/blog/medium-images.zip | grep -c '[.]png$')"
-          test "$png_count" -eq 14
+          test "$png_count" -eq 16

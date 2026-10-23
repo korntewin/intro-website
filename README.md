@@ -23,6 +23,8 @@ The blog intentionally contains publicly shareable explanations, not internal RF
 
 Article figures are stored as SVG sources in `public/blog/figures/`. Running `npm run dev` or `npm run build` automatically generates public PNG copies via `scripts/render-blog-images.mjs`. Article Markdown uses absolute HTTPS PNG URLs, and the layout exposes the complete body as `e-content` for article extractors.
 
-`npm run build` also generates a [plain Medium import view](https://korntewin.github.io/intro-website/blog/riir-rust-prediction-service/medium/) from the finished article HTML. Use that URL in Medium's **Import a story**. It contains the same text and 14 images using simple image paragraphs, with the original article as its canonical URL. The import view is generated after the production build, so use `npm run preview` to inspect it locally.
+`npm run build` also generates a [plain Medium import view](https://korntewin.github.io/intro-website/blog/riir-rust-prediction-service/medium/) from the finished article HTML. Use that URL in Medium's **Import a story**. It contains the same text and 16 images using simple image paragraphs, with the original article as its canonical URL. The import view is generated after the production build, so use `npm run preview` to inspect it locally.
 
-The [14-image ZIP](https://korntewin.github.io/intro-website/blog/medium-images.zip) remains available for direct uploads if Medium's third-party importer still drops an image. See `docs/medium-import.md` for the verified diagnosis, checks, and import instructions.
+The [16-image ZIP](https://korntewin.github.io/intro-website/blog/medium-images.zip) remains available for direct uploads if Medium's third-party importer still drops an image. See `docs/medium-import.md` for the verified diagnosis, checks, and import instructions.
+
+The “Why Rust” section includes an LMWN ML/web landscape and a dated GitHub topic-count snapshot. Sources, query definitions, and interpretation limits are documented in `docs/riir-ecosystem-evidence.md`; the published data is in `public/blog/data/riir-ecosystem-2026-10-23.json`.

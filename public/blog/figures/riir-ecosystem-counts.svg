@@ -1,0 +1,44 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1120" height="820" viewBox="0 0 1120 820" role="img" aria-labelledby="counts-title counts-desc">
+<title id="counts-title">Public GitHub repositories tagged by domain</title>
+<desc id="counts-desc">Snapshot on 23 October 2026. Counts for the machine-learning and web-development topics respectively: Python 88,929 and 1,495; Rust 1,224 and 104; Go 739 and 110; C 920 and 57; C++ 2,640 and 67. Public repositories only, excluding forks and archived repositories. These are self-assigned topics and GitHub language filters, not all projects or market share.</desc>
+<rect width="1120" height="820" rx="22" fill="#fcfcfa"/>
+<g font-family="Inter,Arial,sans-serif">
+<text x="40" y="46" font-size="17" font-weight="700" letter-spacing="2" fill="#65718a">ECOSYSTEM EVIDENCE / 23 OCT 2026</text>
+<text x="40" y="100" font-size="34" font-weight="800" fill="#17233b">Public GitHub repositories tagged by domain</text>
+<text x="40" y="140" font-size="23" fill="#5d6980">An exact-topic snapshot across five selected languages</text>
+<rect x="40" y="178" width="1040" height="80" rx="12" fill="#edf2f8"/>
+<text x="66" y="224" font-size="24" font-weight="700" fill="#17233b">Language filter</text>
+<text x="639" y="211" font-size="21" font-weight="700" fill="#335e98" text-anchor="end">machine-learning</text>
+<text x="1032" y="211" font-size="21" font-weight="700" fill="#08758b" text-anchor="end">web-development</text>
+<text x="639" y="239" font-size="18" fill="#5d6980" text-anchor="end">repositories with this topic</text>
+<text x="1032" y="239" font-size="18" fill="#5d6980" text-anchor="end">repositories with this topic</text>
+<rect x="40" y="258" width="1040" height="74" fill="#f5f7fa"/>
+<circle cx="72" cy="295" r="6" fill="#335e98"/>
+<text x="94" y="305" font-size="29" font-weight="700" fill="#335e98">Python</text>
+<text x="639" y="305" font-size="30" font-weight="700" fill="#17233b" text-anchor="end">88,929</text>
+<text x="1032" y="305" font-size="30" font-weight="700" fill="#17233b" text-anchor="end">1,495</text>
+<circle cx="72" cy="369" r="6" fill="#b84e1c"/>
+<text x="94" y="379" font-size="29" font-weight="700" fill="#b84e1c">Rust</text>
+<text x="639" y="379" font-size="30" font-weight="700" fill="#17233b" text-anchor="end">1,224</text>
+<text x="1032" y="379" font-size="30" font-weight="700" fill="#17233b" text-anchor="end">104</text>
+<rect x="40" y="406" width="1040" height="74" fill="#f5f7fa"/>
+<circle cx="72" cy="443" r="6" fill="#08758b"/>
+<text x="94" y="453" font-size="29" font-weight="700" fill="#08758b">Go</text>
+<text x="639" y="453" font-size="30" font-weight="700" fill="#17233b" text-anchor="end">739</text>
+<text x="1032" y="453" font-size="30" font-weight="700" fill="#17233b" text-anchor="end">110</text>
+<circle cx="72" cy="517" r="6" fill="#57627b"/>
+<text x="94" y="527" font-size="29" font-weight="700" fill="#57627b">C</text>
+<text x="639" y="527" font-size="30" font-weight="700" fill="#17233b" text-anchor="end">920</text>
+<text x="1032" y="527" font-size="30" font-weight="700" fill="#17233b" text-anchor="end">57</text>
+<rect x="40" y="554" width="1040" height="74" fill="#f5f7fa"/>
+<circle cx="72" cy="591" r="6" fill="#57627b"/>
+<text x="94" y="601" font-size="29" font-weight="700" fill="#57627b">C++</text>
+<text x="639" y="601" font-size="30" font-weight="700" fill="#17233b" text-anchor="end">2,640</text>
+<text x="1032" y="601" font-size="30" font-weight="700" fill="#17233b" text-anchor="end">67</text>
+<path d="M40 628H1080" stroke="#d7dfe9" stroke-width="2"/>
+<text x="40" y="673" font-size="22" font-weight="600" fill="#425b7d">Same filters: public · non-fork · not archived</text>
+<text x="40" y="714" font-size="21" fill="#5d6980">Self-assigned topics and repository language filters; not all ML or web projects.</text>
+<text x="40" y="751" font-size="21" fill="#5d6980">Not market share. Topics overlap and do not identify native vs applied ML.</text>
+<text x="40" y="790" font-size="18" fill="#5d6980">Source: GitHub Repository Search API · saved queries, counts and timestamps linked in the article</text>
+</g>
+</svg>
