@@ -1,5 +1,113 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
-const base=import.meta.env.BASE_URL.replace(/\/$/,'');
+import LatencyLab from '../components/LatencyLab.svelte';
+import '../styles/portfolio.css';
+
+const base = import.meta.env.BASE_URL.replace(/\/$/, '');
 ---
-<BaseLayout title="Korntewin · ML & Systems Engineering"><section class="hero"><p class="eyebrow">RUST · MACHINE LEARNING · DISTRIBUTED SYSTEMS</p><h1>Building ML systems that scale without wasting compute.</h1><p>Hi, I’m Korn. I work on production ML platforms, high-performance inference, and reliable engineering tooling. Explore projects, career notes, and engineering stories.</p><a class="button" href={base+'/blog/'}>Read my blog →</a><a class="button secondary" href={base+'/projects/'}>Explore projects</a></section><h2 class="section-heading">Latest writing</h2><div class="cards"><a class="card" href={base+'/blog/riir-rust-prediction-service/'}><p class="eyebrow">OCT 2026 · THAI</p><h2>จาก Go สู่ Rust: เมื่อ ML Prediction Service ต้องเร็วขึ้นอีกครั้ง</h2><p>Arrow, Polars, Actor Model, DAG และ Memory Allocator</p></a><a class="card" href="https://medium.com/@korntewin-b"><p class="eyebrow">MEDIUM</p><h2>More engineering articles</h2><p>Read earlier performance optimization stories on Medium ↗</p></a></div></BaseLayout>
+<BaseLayout
+  title="Korntewin · Rust, ML & Systems Engineering"
+  description="Korntewin (Korn) builds high-performance machine learning systems with Rust, thoughtful infrastructure, and an obsession with the hot path."
+  portfolio={true}
+>
+  <div class="portfolio home-page">
+    <section class="port-hero" aria-labelledby="intro-title">
+      <div class="hero-copy">
+        <p class="kicker"><span class="status-dot" aria-hidden="true"></span> HELLO, I'M KORN <span class="kicker-divider">/</span> ML + SYSTEMS ENGINEER</p>
+        <h1 id="intro-title">Making the<br />complex feel<br /><span class="headline-accent">effortlessly fast<span class="period">.</span></span></h1>
+        <p class="hero-description">
+          I build production ML and distributed systems, with a soft spot for Rust,
+          low-latency inference, and the tiny details that make software fly.
+        </p>
+        <div class="hero-actions">
+          <a class="port-button port-button-primary" href={base + '/projects/'}>Explore my work <span aria-hidden="true">↗</span></a>
+          <a class="port-button port-button-ghost" href={base + '/blog/'}>Engineering notes <span aria-hidden="true">→</span></a>
+        </div>
+        <div class="hero-footnote"><span class="micro-rule" aria-hidden="true"></span> PROFILE. MEASURE. OPTIMIZE. REPEAT.</div>
+      </div>
+      <div class="hero-art">
+        <div class="art-orbit art-orbit-one" aria-hidden="true"></div>
+        <div class="art-orbit art-orbit-two" aria-hidden="true"></div>
+        <img
+          src={base + '/visuals/rust-core.svg'}
+          width="600"
+          height="580"
+          alt="Animated vector system diagram: requests pass through a Rust-inspired processing core to produce predictions."
+          fetchpriority="high"
+        />
+        <div class="art-caption"><span class="caption-square" aria-hidden="true"></span> FIG 01. THE HOT PATH, VISUALIZED</div>
+      </div>
+    </section>
+
+    <div class="tech-ribbon" aria-label="Areas I work on">
+      <span>RUST / SYSTEMS</span><span aria-hidden="true" class="ribbon-star">✳</span>
+      <span>ML INFERENCE</span><span aria-hidden="true" class="ribbon-star">✳</span>
+      <span>DISTRIBUTED COMPUTE</span><span aria-hidden="true" class="ribbon-star">✳</span>
+      <span>PERFORMANCE ENGINEERING</span>
+    </div>
+
+    <section class="port-section" aria-labelledby="work-title">
+      <div class="section-top">
+        <div>
+          <p class="kicker">01 / THINGS I LIKE BUILDING</p>
+          <h2 id="work-title">Less overhead.<br /><span class="muted-heading">More interesting problems.</span></h2>
+        </div>
+        <a class="port-inline-link" href={base + '/projects/'}>All projects <span aria-hidden="true">↗</span></a>
+      </div>
+      <div class="featured-grid">
+        <a class="feature-project feature-rust" href="https://github.com/korntewin/python-vs-rust-DL-inference" target="_blank" rel="noopener noreferrer">
+          <div class="feature-head"><span class="feature-label">01 / INFERENCE</span><span class="feature-arrow" aria-hidden="true">↗</span></div>
+          <div class="feature-visual"><img src={base + '/visuals/benchmark.svg'} alt="" width="460" height="220" loading="lazy" /></div>
+          <div class="feature-text"><p class="project-kicker">RUST × MACHINE LEARNING</p><h3>Finding the fast path.</h3><p>Exploring the engineering trade-offs of Python and Rust in deep-learning inference.</p></div>
+          <div class="project-tags"><span>RUST</span><span>INFERENCE</span><span>PERFORMANCE</span></div>
+        </a>
+        <a class="feature-project feature-data" href="https://medium.com/@korntewin-b/delta-table-liquid-clustering-for-real-time-event-streaming-b6f48d111aa6" target="_blank" rel="noopener noreferrer">
+          <div class="feature-head"><span class="feature-label">02 / DATA SYSTEMS</span><span class="feature-arrow" aria-hidden="true">↗</span></div>
+          <div class="feature-visual"><img src={base + '/visuals/data-stream.svg'} alt="" width="460" height="220" loading="lazy" /></div>
+          <div class="feature-text"><p class="project-kicker">STREAMS × LAKEHOUSE</p><h3>Data in motion.</h3><p>Thinking about real-time event streaming, Delta tables, and systems that keep up.</p></div>
+          <div class="project-tags"><span>KAFKA</span><span>DELTA LAKE</span><span>STREAMING</span></div>
+        </a>
+      </div>
+    </section>
+
+    <section class="port-section lab-section" aria-labelledby="lab-title">
+      <div class="section-top">
+        <div>
+          <p class="kicker">02 / A LITTLE ENGINEERING PLAYGROUND</p>
+          <h2 id="lab-title">Don't guess.<br /><span class="muted-heading">Move the sliders.</span></h2>
+        </div>
+        <p class="section-aside">A small interactive thought experiment in CPU capacity planning. Try a higher request rate.</p>
+      </div>
+      <LatencyLab client:visible />
+    </section>
+
+    <section class="port-section writing-section" aria-labelledby="writing-title">
+      <div class="section-top">
+        <div><p class="kicker">03 / NOTES FROM THE TERMINAL</p><h2 id="writing-title">Things worth<br /><span class="muted-heading">writing down.</span></h2></div>
+        <a class="port-inline-link" href={base + '/blog/'}>Visit the blog <span aria-hidden="true">↗</span></a>
+      </div>
+      <a class="writing-feature" href={base + '/blog/riir-rust-prediction-service/'}>
+        <div class="writing-icon" aria-hidden="true"><span>fn</span><span class="writing-caret">_</span></div>
+        <div class="writing-copy">
+          <p class="project-kicker">LATEST / OCT 2026 / ภาษาไทย</p>
+          <h3>จาก Go สู่ Rust: เมื่อ ML Prediction Service ต้องเร็วขึ้นอีกครั้ง</h3>
+          <p>Inside a real engineering journey with Arrow, Polars, actors, DAGs, and memory allocators.</p>
+        </div>
+        <span class="writing-arrow" aria-hidden="true">↗</span>
+      </a>
+    </section>
+
+    <section class="closing-panel" aria-labelledby="closing-title">
+      <div>
+        <p class="kicker">END OF TRANSMISSION / NOT REALLY</p>
+        <h2 id="closing-title">Curious minds build<br /><span>better systems.</span></h2>
+        <p>More experiments, benchmarks, and occasional rabbit holes live on my other corners of the internet.</p>
+      </div>
+      <div class="closing-links">
+        <a href="https://github.com/korntewin" target="_blank" rel="noopener noreferrer">GitHub <span aria-hidden="true">↗</span></a>
+        <a href="https://korntewin-b.medium.com" target="_blank" rel="noopener noreferrer">Medium <span aria-hidden="true">↗</span></a>
+        <a href="https://www.linkedin.com/in/korntewin" target="_blank" rel="noopener noreferrer">LinkedIn <span aria-hidden="true">↗</span></a>
+      </div>
+    </section>
+  </div>
+</BaseLayout>
