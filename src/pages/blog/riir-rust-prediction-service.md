@@ -23,7 +23,7 @@ coverImageAlt: "ภาพประกอบจาก Go สู่ Rust สำห
 
 เราตัดสินใจทำ **RIIR (Rewrite It In Rust)** แต่ไม่ได้แค่แปลงโค้ด Go เป็น Rust แบบหนึ่งต่อหนึ่ง เราใช้โอกาสนี้ Re-Architect ใหม่ทั้งหมด รวมไปถึง Memory Layout, Concurrency, Preprocessing Execution และ Code Structure ใหม่ โดยเป้าหมายคือให้แต่ละ CPU Core ทำงานที่มีประโยชน์มากขึ้นครับ
 
-อีกเรื่องที่น่าสนใจคือ เราใช้เวลา**ประมาณ 1 สัปดาห์ในการ Port จาก Go มา Rust โดยมี AI Agent ช่วย** แต่สิ่งที่ทำให้ Agent ช่วยได้จริงไม่ใช่แค่การแปลง Syntax ครับ เราต้องกำหนด Software Engineering Practice ให้ชัดเจนก่อน ว่าให้ใช้ Data Structure, Algorithm และ Concurrency Model แบบไหน (เพื่อไม่ให้พลาดซ้ำรอยเดิม 😅)
+อีกเรื่องที่น่าสนใจคือ เราใช้เวลา **ประมาณ 1 สัปดาห์ในการ Port จาก Go มา Rust โดยมี AI Agent ช่วย** แต่สิ่งที่ทำให้ Agent ช่วยได้จริงไม่ใช่แค่การแปลง Syntax ครับ เราต้องกำหนด Software Engineering Practice ให้ชัดเจนก่อน ว่าให้ใช้ Data Structure, Algorithm และ Concurrency Model แบบไหน (เพื่อไม่ให้พลาดซ้ำรอยเดิม 😅)
 
 บทความนี้เป็น Engineering Story ไม่ใช่การบอกว่า Rust เร็วกว่า Go ในทุกกรณี ผลลัพธ์ที่ได้เป็นการวัด Performance บน Production Workload ของ Use Case Recommendation Ranker ใน LMWN เท่านั้นครับ 🔥
 
@@ -115,7 +115,7 @@ Go 1.24+ ใช้ [Swiss Table](https://go.dev/blog/swisstable) ซึ่งม
 
 10,000 Records: Go ประมาณ 3,520,000 B เทียบกับ Arrow 41,250 B (~85×)
 
-จะเห็นได้ว่าการเก็บข้อมูลในรูปแบบ Columnar ด้วย Polars สามารถประหยัดพื้นที่ได้มากกว่า **85x**!
+ในตัวอย่างที่ Go เก็บ Feature ผ่าน Map แยกต่อ Record นี้ Columnar Layout แบบ Arrow/Polars จึงใช้ Memory น้อยกว่าราว **85×** ได้เลยครับ! แต่ตัวเลขนี้เป็น Layout Estimate ภายใต้สมมติฐานข้างต้น ไม่ใช่ Benchmark ที่บอกว่าทุก Workload จะประหยัดได้เท่ากันนะครับ
 
 ### Validity Bitmap: เก็บ Null ด้วย 1 Bit ต่อค่า
 
@@ -177,11 +177,11 @@ Preprocessing ของ ML ไม่ใช่แค่ Loop Transform Feature �
 
 ## 4. Rust 1.98: Algebraic Floating Point เปิดทางให้ SIMD เพิ่มเติม ⚡
 
-โดยปกติแล้วถึงแม้ LLVM จะมีความสามารถในการ Auto-vectorize เพื่อใช้งาน SIMD Instructions ของ CPU อยู่แล้ว แต่ Rust เนื่องด้วยความเลื่องชื่อในด้านความถูกต้องปลอดภัย 😅 Rust จะไม่ยอมให้มีการ Vectorization (ทำได้แต่ต้องเขียน code ในลักษณะที่ไม่ค่อยตรงไปตรงมา)
+จริง ๆ LLVM รองรับการ Auto-vectorize เพื่อใช้งาน SIMD Instructions ของ CPU อยู่แล้ว และ Rust ก็ไม่ได้ห้าม Vectorization นะครับ 😅 แต่บาง Loop โดยเฉพาะการคำนวณ Floating Point จะ Vectorize ตรง ๆ ไม่ได้ หากการแปลงนั้นทำให้ลำดับ Operation เปลี่ยนไปจาก Semantics ที่โค้ดกำหนดไว้
 
 สาเหตุเนื่องมาจากว่า Floating Point ไม่ได้มี Associativity แบบเลขจริง เช่น (a + b) + c อาจได้ค่าไม่เท่ากับ a + (b + c) เพราะมี Rounding ในแต่ละ Operation ดังนั้นเพื่อให้ได้ค่าเดิมเสมอ bitwise identical จะต้องให้ลำดับการประมวลผลเหมือนเดิมเสมอ!
 
-Rust 1.98 เพิ่ม Method อย่าง `**f32::algebraic_add**` และ `**f64::algebraic_mul**` ที่เราเลือกใช้เป็นจุด ๆ ได้ เพื่อเปิดโอกาสให้ Compiler Reassociate หรือเปลี่ยนรูปสมการ และอาจทำให้ Loop Vectorization เกิดขึ้นได้มากขึ้น
+Rust 1.98 เพิ่ม Method อย่าง `f32::algebraic_add` และ `f64::algebraic_mul` ที่เราเลือกใช้เป็นจุด ๆ ได้ เพื่อเปิดโอกาสให้ Compiler Reassociate หรือเปลี่ยนรูปสมการ และอาจทำให้ Loop Vectorization เกิดขึ้นได้มากขึ้น
 
 ![ภาพอธิบายการจัดกลุ่ม Floating Point Operations ใหม่เพื่อเปิดทางให้ Vectorization](https://korntewin.github.io/intro-website/blog/figures/algebraic-floats.png)
 
@@ -215,7 +215,7 @@ let algebraic = a.algebraic_add(b)
 
 เราเลือก **tikv-jemallocator** เป็น Global Allocator ของ Application เพราะลอง Benchmark เทียบกับ ptmalloc และ mimalloc แล้วพบว่าสามารถลดได้ทั้ง Memory / CPU / latency ค่อนข้างเยอะเลยทีเดียว
 
-ถึงแม้ว่า [jemallocator](https://github.com/tikv/jemallocator/commits) ที่ maintain โดย Meta จะเคยถูก Archive ไปแล้ว แต่ทาง Meta ได้กลับมา Unarchive อีกครั้งในช่วงต้นปี 2026 รวมถึงการอัปเดต jemalloc 5.3.1 ในเดือนเมษายน! ซึ่งการอัปเดตในครั้งนี้เป็นการอัดอั้น Improvement และ Optimization จาก Commit ที่ดองไว้กว่า 4 ปีเต็ม 😂
+ที่น่าสนใจคือโปรเจกต์ต้นทางอย่าง [jemalloc](https://github.com/jemalloc/jemalloc) เคยถูก Archive ก่อนกลับมา Unarchive อีกครั้งในช่วงต้นปี 2026 รวมถึงมี jemalloc 5.3.1 ออกมาในเดือนเมษายนด้วย หลังจากสะสม Improvement และ Optimization มาหลายปี เรียกว่าเป็นการกลับมาที่น่าติดตามเลยครับ 😂
 
 ```rust
 #[global_allocator]
