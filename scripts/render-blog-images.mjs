@@ -2,6 +2,7 @@ import { readdir, readFile, writeFile, stat } from 'node:fs/promises';
 import { fileURLToPath } from 'node:url';
 import { join, basename } from 'node:path';
 import sharp from 'sharp';
+import { zipSync, strToU8 } from 'fflate';
 
 const folder = fileURLToPath(new URL('../public/blog/figures/', import.meta.url));
 const articleFile = fileURLToPath(new URL('../src/pages/blog/riir-rust-prediction-service.md', import.meta.url));
@@ -29,3 +30,21 @@ for (const url of blogImages) {
   await stat(join(folder, basename(new URL(url).pathname)));
 }
 console.log('Verified', blogImages.length, 'Medium-ready blog image references.');
+
+const signature = Buffer.from([137, 80, 78, 71, 13, 10, 26, 10]);
+const zipEntries = {
+  'README.txt': strToU8('ML Prediction Service blog images for Medium\n\nThe files are numbered in article reading order. Upload each PNG into the corresponding position in a Medium draft. Upload one at a time if you want to avoid Medium arranging them as a grid.\n\nSource: https://korntewin.github.io/intro-website/blog/riir-rust-prediction-service/\n'),
+};
+for (const [index, url] of blogImages.entries()) {
+  const name = basename(new URL(url).pathname);
+  const data = await readFile(join(folder, name));
+  if (!data.subarray(0, 8).equals(signature)) {
+    throw new Error('Invalid PNG header: ' + name);
+  }
+  const zipName = String(index + 1).padStart(2, '0') + '-' + name;
+  zipEntries[zipName] = data;
+}
+const bundlePath = join(folder, '..', 'medium-images.zip');
+await writeFile(bundlePath, zipSync(zipEntries, { level: 0 }));
+console.log('Created Medium image pack with', blogImages.length, 'verified PNGs:', bundlePath);
+

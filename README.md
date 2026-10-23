@@ -21,4 +21,4 @@ The blog intentionally contains publicly shareable explanations, not internal RF
 
 ## Blog images and Medium imports
 
-Article figures are stored as SVG sources in `public/blog/figures/`. Running `npm run dev` or `npm run build` automatically generates public PNG copies via `scripts/render-blog-images.mjs`. Article Markdown uses absolute HTTPS PNG URLs so Medium can retrieve the images when importing the deployed GitHub Pages article. Check `docs/medium-import.md` for troubleshooting and the manual fallback.
+Article figures are stored as SVG sources in `public/blog/figures/`. Running `npm run dev` or `npm run build` automatically generates public PNG copies via `scripts/render-blog-images.mjs`. Article Markdown uses absolute HTTPS PNG URLs. Since Medium's importer can still reject valid images, the build also generates a one-click [14-image ZIP](https://korntewin.github.io/intro-website/blog/medium-images.zip) for manual upload. Check `docs/medium-import.md` for troubleshooting and the manual fallback.
