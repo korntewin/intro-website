@@ -42,7 +42,7 @@ coverImageAlt: "ภาพประกอบจาก Go สู่ Rust สำห
 
 ### ดูกราฟ Production จริงตลอด 18 ชั่วโมง 👀
 
-ตัวเลข Median ด้านบนทำให้เห็นขนาดของ Improvement แต่สำหรับสาย Performance Engineering สิ่งที่น่าดูกว่าคือ **เส้นกราฟในช่วง Traffic จริง** ครับ ผมจึงนำข้อมูลที่เก็บทุก 1 นาทีตลอด **1,081 Samples** มาวาดกราฟใหม่ โดยใช้ข้อมูลชุดเดียวกับที่สรุปผลด้านบน ไม่มีการสร้าง Time-series สมมติขึ้นมา
+ตัวเลข Median ด้านบนช่วยให้เห็นขนาดของ Improvement แต่สำหรับสาย Performance Engineering สิ่งที่น่าดูไม่แพ้กันคือ **แนวโน้มของ CPU, Memory และ P99 Latency ภายใต้ Traffic จริงตลอด 18 ชั่วโมง** ครับ
 
 ![Production dashboard เปรียบเทียบ CPU, Memory และ P99 Latency ของ Go กับ Rust](https://korntewin.github.io/intro-website/blog/figures/production-timeseries-dashboard.png)
 
@@ -60,7 +60,7 @@ coverImageAlt: "ภาพประกอบจาก Go สู่ Rust สำห
 
 ![กราฟ P99 Latency Go เทียบ Rust ตลอด 18 ชั่วโมง พร้อม Improvement Ratio](https://korntewin.github.io/intro-website/blog/figures/production-p99-timeseries.png)
 
-*หมายเหตุ: Memory ในกราฟแปลงจาก Bytes เป็น GB ฐานสิบ (1 GB = 1,000,000,000 Bytes) เพื่อให้ตรงกับรายงาน ส่วนเส้น Ratio ใช้ค่าที่บันทึกไว้ใน CSV โดยตรง จึงไม่จำเป็นต้องเท่ากับการนำเส้น Go หาร Rust ในแต่ละจุด*
+*หมายเหตุ: Memory ในกราฟแสดงเป็น GB ฐานสิบ (1 GB = 1,000,000,000 Bytes) ส่วน Improvement Ratio แสดงค่าที่บันทึกไว้จากการวัดโดยตรง จึงอาจไม่ตรงกับการนำค่า Go และ Rust ที่เห็นบนกราฟมาหารกัน*
 
 ตัวเลขที่ผมชอบที่สุดไม่ใช่แค่ P99 ที่ลดลง แต่คือ CPU ที่ลดลงอย่างมาก เพราะสำหรับ ML Inference แบบ CPU-bound ทรัพยากรที่ใช้ไปกับ Thread Contention, Cache Miss หรือ Copy ข้อมูล **คือทรัพยากรที่เอาไป Predict ให้โมเดลอื่นไม่ได้**
 
