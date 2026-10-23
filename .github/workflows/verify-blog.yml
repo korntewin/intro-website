@@ -1,0 +1,31 @@
+name: Verify Astro and blog PNG assets
+
+on:
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Install dependencies
+        run: npm install --no-audit --no-fund
+      - name: Build Astro site and rasterize figures
+        run: npm run build
+      - name: Verify Medium-compatible figures exist
+        run: |
+          test -s dist/blog/figures/riir-cover.png
+          test -s dist/blog/figures/production-timeseries-dashboard.png
+          test -s dist/blog/figures/production-cpu-timeseries.png
+          test -s dist/blog/figures/production-memory-timeseries.png
+          test -s dist/blog/figures/production-p99-timeseries.png
+          test -s dist/blog/figures/arrow-validity-large-list.png
+          test -s dist/blog/riir-rust-prediction-service/index.html
+          test "$(find dist/blog/figures -maxdepth 1 -name '*.png' | wc -l | tr -d ' ')" -eq 14
