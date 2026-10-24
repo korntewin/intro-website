@@ -106,15 +106,13 @@ String columns still use offset and value buffers, and Polars can store multiple
 
 ### Memory Efficiency: Arrow vs Go Swiss Table 💾
 
-Take a record with a single **score: f32** feature. Our Go representation uses **[]map[string]any**, with one map per record. That flexibility has a memory cost.
+Let's use **200 `float32` features per record**. Our Go service stores `[]map[string]any`, with one map per record so features can have different types. The earlier ~85× estimate came from putting just one feature in a map that reserves eight slots: fixed overhead and empty slots dominated. With 200 features, that cost is spread over more values. Each slot on a 64-bit system still needs a 16 B string header and a 16 B `any`, with the `float32` value boxed separately. Sharing the feature-name strings across records saves their character data, but each map still stores its own headers. The [Swiss Table](https://go.dev/blog/swisstable) control bytes themselves cost only 1 B per slot.
 
-Go 1.24+ uses [Swiss Table](https://go.dev/blog/swisstable). Under our illustrative 64-bit layout assumptions, each record needs a map header (~48 B), a group of eight slots (8 B of control bytes plus key/value storage, rounded to ~288 B), a slice pointer (8 B), and a boxed f32 (~8 B). That comes to roughly **352 B per record**. With Arrow, the schema is shared and f32 values can sit contiguously at **4 B per record**, plus an optional one-bit-per-value validity bitmap.
+Using the [Go 1.24.0 layout](https://github.com/golang/go/tree/go1.24.0/src/internal/runtime/maps) on a 64-bit system, a map pre-sized for 200 entries reserves **256 slots in 32 groups** under the 7/8 maximum load factor. Each group takes `8 + 8 × (16 + 16) = 264 B`: 8,448 B total, rounded as one allocation to 9,472 B by the [allocator](https://github.com/golang/go/blob/go1.24.0/src/runtime/sizeclasses.go). Add about 800 B of boxed `float32` values and 96 B of headers/references, giving **~10,368 B per record**. Arrow's 200 columns need `200 × 4 = 800 B` per record, plus 25 B if every column has a validity bitmap: **825 B per record**. For **1,000 records**, that's **~10.368 MB in Go vs 0.825 MB in Arrow**; for **10,000 records**, **~103.68 MB vs 8.25 MB**, or about **12.6×**. Without bitmaps, Arrow needs 0.8 / 8 MB and the ratio is about **13×**.
 
-![Estimated memory overhead for Go Swiss Tables versus Arrow for 1,000 and 10,000 records](https://korntewin.github.io/intro-website/blog/figures/arrow-swiss-memory.png)
+![Estimated memory for 200 float32 features per record: one Go map per record versus 200 Arrow columns for 1,000 and 10,000 records, with Go using about 12.6 times the Arrow buffers including validity bitmaps](https://korntewin.github.io/intro-website/blog/figures/arrow-swiss-memory.png)
 
-For **1,000 records**, the estimate is roughly **352,000 B in Go vs 4,125 B with Arrow (~85×)**. For **10,000 records**, it's **3,520,000 B vs 41,250 B (~85×)**.
-
-These are **illustrative layout estimates for a Go map per record**, not measured end-to-end savings. A compact Go `[]float32` can store numeric payloads just as efficiently; real memory use also includes allocation and buffer metadata.
+> Assumptions: all 200 features are present and non-null, feature-name strings are shared, and maps use a size hint of 200. Dynamic boxes average ~4 B per value with tiny-allocation packing. MB means 1,000,000 B. These are estimates of retained data storage, not whole-process memory or production savings. Shared name bytes, Arrow schema/array metadata, buffer padding/spare capacity, and outer-slice allocation rounding are excluded. A Go `map[string]float32` removes the `any`/boxing cost; a compact `[]float32` can store the numeric payload just as densely.
 
 ### Validity Bitmap: One Bit to Represent Null
 

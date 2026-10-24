@@ -105,17 +105,13 @@ String Column ยังใช้ Offsets และ Values Buffers ส่วน P
 
 ### Memory Efficiency: Arrow vs Go Swiss Table 💾
 
-เพื่อเปรียบเทียบให้เห็นภาพ สมมติ 1 Record มี Feature `score: f32` เพียงค่าเดียว และปัจจุบัน Go Service จะเก็บข้อมูลเป็น `[]map[string]any` (หนึ่ง Map ต่อ Record) เพื่อความยืดหยุ่นในการเก็บข้อมูลได้หลากหลายประเภทตามแต่ Feature ที่เราจะใช้ของโมเดล
+ลองประเมินที่ **200 Features ชนิด `float32` ต่อ Record** ครับ ฝั่ง Go Service ของเราเก็บเป็น `[]map[string]any` โดยมีหนึ่ง Map ต่อ Record เพื่อรองรับ Feature หลายชนิด ตัวเลข ~85× ในตัวอย่างเดิมมาจากการใส่ Feature เดียวลงใน Map ที่จองไว้ 8 Slots ทำให้ Fixed Overhead กับช่องว่างมีสัดส่วนสูงมาก พอมี 200 Features ต้นทุนส่วนนี้ก็เฉลี่ยต่อค่าได้น้อยลง แต่แต่ละ Slot บนระบบ 64-bit ยังมี String Header 16 B และ `any` 16 B รวมถึงค่า `float32` ที่ถูก Box แยกออกไป แม้แชร์ตัวอักษรของชื่อ Feature ระหว่าง Records แล้วก็ยังมี Header ซ้ำในแต่ละ Map ส่วน Control Bytes ของ [Swiss Table](https://go.dev/blog/swisstable) ใช้เพียง 1 B ต่อ Slot ครับ
 
-Go 1.24+ ใช้ [Swiss Table](https://go.dev/blog/swisstable) ซึ่งมี Map Header ~48 B และ Group ขนาด 8 Slots (Control 8 B + Key/Value 8 × (16 B string + 16 B any) = 264 B ปัดเป็น ~288 B ตาม Allocator) รวม Slice Pointer 8 B และค่า f32 ที่ถูก Box อีก ~8 B จึงประเมินเป็น **~352 B ต่อ Record** ส่วน Arrow แชร์ Schema และเก็บ f32 แบบ Contiguous เพียง **4 B ต่อ Record** (+ Validity Bitmap 1 Bit ต่อ Record หากต้องแทน Null)
+อ้างอิง [Layout ของ Go 1.24.0](https://github.com/golang/go/tree/go1.24.0/src/internal/runtime/maps) บนระบบ 64-bit: Map ที่เตรียมขนาดไว้สำหรับ 200 Entries จะมี **256 Slots หรือ 32 Groups** ตามเพดาน Load Factor 7/8 แต่ละ Group ใช้ `8 + 8 × (16 + 16) = 264 B` รวม 8,448 B ซึ่ง [Allocator](https://github.com/golang/go/blob/go1.24.0/src/runtime/sizeclasses.go) ปัดทั้งก้อนเป็น 9,472 B บวกค่า `float32` ที่ Box ประมาณ 800 B และ Header/References อีก 96 B จึงได้ **~10,368 B ต่อ Record** ส่วน Arrow เก็บเป็น 200 Columns ใช้ `200 × 4 = 800 B` ต่อ Record และถ้ามี Validity Bitmap ครบทุก Column ก็เพิ่มอีก 25 B เป็น **825 B ต่อ Record** ดังนั้น **1,000 Records: Go ~10.368 MB เทียบกับ Arrow 0.825 MB** และ **10,000 Records: Go ~103.68 MB เทียบกับ Arrow 8.25 MB** หรือประมาณ **12.6×** ถ้าไม่มี Bitmap ฝั่ง Arrow จะเหลือ 0.8 / 8 MB และอัตราส่วนเป็นประมาณ **13×** ครับ
 
-![แผนภาพประมาณการหน่วยความจำ Go Swiss Table เทียบ Apache Arrow สำหรับ 1,000 และ 10,000 Records พร้อม Memory Breakdown และอัตราส่วน 85 เท่า](https://korntewin.github.io/intro-website/blog/figures/arrow-swiss-memory.png)
+![ประมาณการหน่วยความจำสำหรับ 200 Features ชนิด float32 ต่อ Record: Go map ต่อ Record เทียบ Arrow 200 Columns สำหรับ 1,000 และ 10,000 Records โดย Go ใช้ประมาณ 12.6 เท่าของ Arrow เมื่อรวม Validity Bitmap](https://korntewin.github.io/intro-website/blog/figures/arrow-swiss-memory.png)
 
-สำหรับ 1,000 Records: Go ประมาณ 352,000 B เทียบกับ Arrow 4,125 B (~85×)
-
-10,000 Records: Go ประมาณ 3,520,000 B เทียบกับ Arrow 41,250 B (~85×)
-
-ตัวเลข **~85×** นี้เป็นการประมาณ Memory Layout ของเคสที่ Go ใช้ Map แยกต่อ Record ไม่ใช่ผล Benchmark ว่า Arrow จะประหยัด Memory ได้เท่านี้ทุกงานนะครับ ถ้า Go ใช้ `[]float32` ก็เก็บตัวเลขแบบ Compact ได้เช่นกัน และ Memory จริงยังมี Allocation กับ Metadata อื่น ๆ ด้วย
+> สมมติว่าครบทั้ง 200 Features และมีค่าทุกช่อง แชร์ชื่อ Feature และสร้าง Map ด้วย Size Hint 200; ค่า Box นับเฉลี่ย ~4 B ต่อค่าเมื่อ Tiny Allocator จัดเก็บรวมกัน ตัวเลขใช้ MB = 1,000,000 B และเป็นประมาณการพื้นที่ข้อมูลที่ยังใช้งานอยู่ ไม่ใช่ Memory ทั้ง Process หรือผลประหยัดใน Production ยังไม่รวมชื่อ Feature ที่แชร์, Arrow Schema/Array Metadata, Buffer Padding/Capacity ส่วนเกิน และการปัดขนาด Outer Slice ถ้า Go ใช้ `map[string]float32` ก็ลดต้นทุน `any`/Boxing ได้ หรือใช้ `[]float32` ก็เก็บ Numeric Payload ได้แน่นเหมือนกันครับ
 
 ### Validity Bitmap: เก็บ Null ด้วย 1 Bit ต่อค่า
 

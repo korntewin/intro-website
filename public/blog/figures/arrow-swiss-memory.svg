@@ -1,106 +1,107 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="1280" height="835" viewBox="0 0 1280 835" role="img" aria-label="Go Swiss Table map per record estimated at 352 bytes, compared with contiguous Apache Arrow float32 4 bytes plus optional bitmap. 1000 rows: Go 352000 bytes, Arrow 4125 bytes; 10000 rows: Go 3520000 bytes, Arrow 41250 bytes, about 85 times less for Arrow under these assumptions.">
-<rect x="0" y="0" width="1280" height="835" rx="20" fill="#F8FBFF" stroke="#DCE5F0" stroke-width="1.5"/>
-<text x="42" y="48" font-family="Inter,Arial,Helvetica,sans-serif" font-size="15" font-weight="800" fill="#58708B" text-anchor="start">MEMORY LAYOUT  •  ONE FLOAT32 FEATURE PER RECORD</text>
-<text x="42" y="93" font-family="Inter,Arial,Helvetica,sans-serif" font-size="35" font-weight="800" fill="#192B43" text-anchor="start">Go Swiss Table vs Apache Arrow</text>
-<text x="42" y="127" font-family="Inter,Arial,Helvetica,sans-serif" font-size="17" font-weight="500" fill="#667991" text-anchor="start">An illustrative comparison of per-record map overhead vs shared column buffers</text>
-<rect x="38" y="158" width="584" height="295" rx="16" fill="#FFF9F5" stroke="#EFDED3" stroke-width="1.5"/>
-<rect x="658" y="158" width="584" height="295" rx="16" fill="#F1FBF7" stroke="#CCEADB" stroke-width="1.5"/>
-<text x="64" y="198" font-family="Inter,Arial,Helvetica,sans-serif" font-size="24" font-weight="800" fill="#AE6038" text-anchor="start">Go: []map[string]any</text>
-<text x="684" y="198" font-family="Inter,Arial,Helvetica,sans-serif" font-size="24" font-weight="800" fill="#16795C" text-anchor="start">Apache Arrow: Float32 column</text>
-<text x="64" y="229" font-family="Inter,Arial,Helvetica,sans-serif" font-size="16" font-weight="500" fill="#825A45" text-anchor="start">One map and Swiss group for each row</text>
-<text x="684" y="229" font-family="Inter,Arial,Helvetica,sans-serif" font-size="16" font-weight="500" fill="#587C6B" text-anchor="start">One schema and compact value buffers</text>
-<rect x="63" y="246" width="168" height="125" rx="10" fill="#FFFFFF" stroke="#E9D5C8" stroke-width="1.2"/>
-<text x="77" y="272" font-family="Inter,Arial,Helvetica,sans-serif" font-size="15" font-weight="750" fill="#33465E" text-anchor="start">Record 1</text>
-<rect x="75" y="286" width="144" height="37" rx="5" fill="#FFF0E3" stroke="#F2D9C2" stroke-width="1"/>
-<rect x="81" y="296" width="12.6" height="17" rx="2" fill="#D88457" stroke="#BD663D" stroke-width="0.5"/>
-<rect x="98.3" y="296" width="12.6" height="17" rx="2" fill="#F4DBCA" stroke="#ECC8AF" stroke-width="0.5"/>
-<rect x="115.6" y="296" width="12.6" height="17" rx="2" fill="#F4DBCA" stroke="#ECC8AF" stroke-width="0.5"/>
-<rect x="132.9" y="296" width="12.6" height="17" rx="2" fill="#F4DBCA" stroke="#ECC8AF" stroke-width="0.5"/>
-<rect x="150.2" y="296" width="12.6" height="17" rx="2" fill="#F4DBCA" stroke="#ECC8AF" stroke-width="0.5"/>
-<rect x="167.5" y="296" width="12.6" height="17" rx="2" fill="#F4DBCA" stroke="#ECC8AF" stroke-width="0.5"/>
-<rect x="184.8" y="296" width="12.6" height="17" rx="2" fill="#F4DBCA" stroke="#ECC8AF" stroke-width="0.5"/>
-<rect x="202.10000000000002" y="296" width="12.6" height="17" rx="2" fill="#F4DBCA" stroke="#ECC8AF" stroke-width="0.5"/>
-<text x="147" y="347" font-family="Inter,Arial,Helvetica,sans-serif" font-size="14" font-weight="700" fill="#985C3C" text-anchor="middle">8-slot group</text>
-<rect x="244" y="246" width="168" height="125" rx="10" fill="#FFFFFF" stroke="#E9D5C8" stroke-width="1.2"/>
-<text x="258" y="272" font-family="Inter,Arial,Helvetica,sans-serif" font-size="15" font-weight="750" fill="#33465E" text-anchor="start">Record 2</text>
-<rect x="256" y="286" width="144" height="37" rx="5" fill="#FFF0E3" stroke="#F2D9C2" stroke-width="1"/>
-<rect x="262" y="296" width="12.6" height="17" rx="2" fill="#D88457" stroke="#BD663D" stroke-width="0.5"/>
-<rect x="279.3" y="296" width="12.6" height="17" rx="2" fill="#F4DBCA" stroke="#ECC8AF" stroke-width="0.5"/>
-<rect x="296.6" y="296" width="12.6" height="17" rx="2" fill="#F4DBCA" stroke="#ECC8AF" stroke-width="0.5"/>
-<rect x="313.9" y="296" width="12.6" height="17" rx="2" fill="#F4DBCA" stroke="#ECC8AF" stroke-width="0.5"/>
-<rect x="331.2" y="296" width="12.6" height="17" rx="2" fill="#F4DBCA" stroke="#ECC8AF" stroke-width="0.5"/>
-<rect x="348.5" y="296" width="12.6" height="17" rx="2" fill="#F4DBCA" stroke="#ECC8AF" stroke-width="0.5"/>
-<rect x="365.8" y="296" width="12.6" height="17" rx="2" fill="#F4DBCA" stroke="#ECC8AF" stroke-width="0.5"/>
-<rect x="383.1" y="296" width="12.6" height="17" rx="2" fill="#F4DBCA" stroke="#ECC8AF" stroke-width="0.5"/>
-<text x="328" y="347" font-family="Inter,Arial,Helvetica,sans-serif" font-size="14" font-weight="700" fill="#985C3C" text-anchor="middle">8-slot group</text>
-<rect x="425" y="246" width="168" height="125" rx="10" fill="#FFFFFF" stroke="#E9D5C8" stroke-width="1.2"/>
-<text x="439" y="272" font-family="Inter,Arial,Helvetica,sans-serif" font-size="15" font-weight="750" fill="#33465E" text-anchor="start">Record N</text>
-<rect x="437" y="286" width="144" height="37" rx="5" fill="#FFF0E3" stroke="#F2D9C2" stroke-width="1"/>
-<rect x="443" y="296" width="12.6" height="17" rx="2" fill="#D88457" stroke="#BD663D" stroke-width="0.5"/>
-<rect x="460.3" y="296" width="12.6" height="17" rx="2" fill="#F4DBCA" stroke="#ECC8AF" stroke-width="0.5"/>
-<rect x="477.6" y="296" width="12.6" height="17" rx="2" fill="#F4DBCA" stroke="#ECC8AF" stroke-width="0.5"/>
-<rect x="494.9" y="296" width="12.6" height="17" rx="2" fill="#F4DBCA" stroke="#ECC8AF" stroke-width="0.5"/>
-<rect x="512.2" y="296" width="12.6" height="17" rx="2" fill="#F4DBCA" stroke="#ECC8AF" stroke-width="0.5"/>
-<rect x="529.5" y="296" width="12.6" height="17" rx="2" fill="#F4DBCA" stroke="#ECC8AF" stroke-width="0.5"/>
-<rect x="546.8" y="296" width="12.6" height="17" rx="2" fill="#F4DBCA" stroke="#ECC8AF" stroke-width="0.5"/>
-<rect x="564.1" y="296" width="12.6" height="17" rx="2" fill="#F4DBCA" stroke="#ECC8AF" stroke-width="0.5"/>
-<text x="509" y="347" font-family="Inter,Arial,Helvetica,sans-serif" font-size="14" font-weight="700" fill="#985C3C" text-anchor="middle">8-slot group</text>
-<text x="64" y="396" font-family="Inter,Arial,Helvetica,sans-serif" font-size="16" font-weight="700" fill="#784E36" text-anchor="start">48 B header + 288 B group + 8 B ptr + ~8 B f32 box</text>
-<text x="64" y="428" font-family="Inter,Arial,Helvetica,sans-serif" font-size="21" font-weight="800" fill="#AD552B" text-anchor="start">≈ 352 B / record</text>
-<rect x="683" y="248" width="529" height="55" rx="8" fill="#FFFFFF" stroke="#C9E5D8" stroke-width="1.3"/>
-<text x="706" y="282" font-family="Inter,Arial,Helvetica,sans-serif" font-size="16" font-weight="800" fill="#386F5B" text-anchor="start">Shared schema</text>
-<text x="901" y="282" font-family="Inter,Arial,Helvetica,sans-serif" font-size="18" font-weight="750" fill="#186D52" text-anchor="start">score : f32</text>
-<rect x="682" y="324" width="52.6" height="47" rx="1" fill="#BDEAD6" stroke="#82D2AD" stroke-width="0.65"/>
-<text x="708" y="353" font-family="Inter,Arial,Helvetica,sans-serif" font-size="14" font-weight="750" fill="#196A52" text-anchor="middle">f32</text>
-<rect x="734.8" y="324" width="52.6" height="47" rx="1" fill="#CDEFE0" stroke="#82D2AD" stroke-width="0.65"/>
-<text x="760.8" y="353" font-family="Inter,Arial,Helvetica,sans-serif" font-size="14" font-weight="750" fill="#196A52" text-anchor="middle">f32</text>
-<rect x="787.6" y="324" width="52.6" height="47" rx="1" fill="#BDEAD6" stroke="#82D2AD" stroke-width="0.65"/>
-<text x="813.6" y="353" font-family="Inter,Arial,Helvetica,sans-serif" font-size="14" font-weight="750" fill="#196A52" text-anchor="middle">f32</text>
-<rect x="840.4" y="324" width="52.6" height="47" rx="1" fill="#CDEFE0" stroke="#82D2AD" stroke-width="0.65"/>
-<text x="866.4" y="353" font-family="Inter,Arial,Helvetica,sans-serif" font-size="14" font-weight="750" fill="#196A52" text-anchor="middle">f32</text>
-<rect x="893.2" y="324" width="52.6" height="47" rx="1" fill="#BDEAD6" stroke="#82D2AD" stroke-width="0.65"/>
-<text x="919.2" y="353" font-family="Inter,Arial,Helvetica,sans-serif" font-size="14" font-weight="750" fill="#196A52" text-anchor="middle">f32</text>
-<rect x="946" y="324" width="52.6" height="47" rx="1" fill="#CDEFE0" stroke="#82D2AD" stroke-width="0.65"/>
-<text x="972" y="353" font-family="Inter,Arial,Helvetica,sans-serif" font-size="14" font-weight="750" fill="#196A52" text-anchor="middle">f32</text>
-<rect x="998.8" y="324" width="52.6" height="47" rx="1" fill="#BDEAD6" stroke="#82D2AD" stroke-width="0.65"/>
-<text x="1024.8" y="353" font-family="Inter,Arial,Helvetica,sans-serif" font-size="14" font-weight="750" fill="#196A52" text-anchor="middle">f32</text>
-<rect x="1051.6" y="324" width="52.6" height="47" rx="1" fill="#CDEFE0" stroke="#82D2AD" stroke-width="0.65"/>
-<text x="1077.6" y="353" font-family="Inter,Arial,Helvetica,sans-serif" font-size="14" font-weight="750" fill="#196A52" text-anchor="middle">f32</text>
-<rect x="1104.4" y="324" width="52.6" height="47" rx="1" fill="#BDEAD6" stroke="#82D2AD" stroke-width="0.65"/>
-<text x="1130.4" y="353" font-family="Inter,Arial,Helvetica,sans-serif" font-size="14" font-weight="750" fill="#196A52" text-anchor="middle">f32</text>
-<rect x="1157.2" y="324" width="52.6" height="47" rx="1" fill="#CDEFE0" stroke="#82D2AD" stroke-width="0.65"/>
-<text x="1183.2" y="353" font-family="Inter,Arial,Helvetica,sans-serif" font-size="14" font-weight="750" fill="#196A52" text-anchor="middle">…</text>
-<text x="683" y="398" font-family="Inter,Arial,Helvetica,sans-serif" font-size="17" font-weight="750" fill="#276F57" text-anchor="start">Contiguous values: 4 B per record</text>
-<text x="683" y="428" font-family="Inter,Arial,Helvetica,sans-serif" font-size="16" font-weight="650" fill="#568873" text-anchor="start">Optional validity: 1 bit per record</text>
-<text x="43" y="489" font-family="Inter,Arial,Helvetica,sans-serif" font-size="15" font-weight="800" fill="#58708B" text-anchor="start">MEMORY ESTIMATES  •  64-BIT GO, ONE NON-STATIC FLOAT32 PER MAP</text>
-<rect x="38" y="506" width="584" height="250" rx="15" fill="#FFFFFF" stroke="#DCE6F2" stroke-width="1.3"/>
-<text x="61" y="544" font-family="Inter,Arial,Helvetica,sans-serif" font-size="25" font-weight="800" fill="#243B57" text-anchor="start">1,000 records</text>
-<rect x="492" y="520" width="107" height="37" rx="17" fill="#EEF3FA" stroke="#DEE8F3" stroke-width="1"/>
-<text x="545.5" y="546" font-family="Inter,Arial,Helvetica,sans-serif" font-size="23" font-weight="850" fill="#304563" text-anchor="middle">~85×</text>
-<text x="61" y="590" font-family="Inter,Arial,Helvetica,sans-serif" font-size="17" font-weight="700" fill="#9C5938" text-anchor="start">Go Swiss Table (estimate)</text>
-<text x="598" y="590" font-family="Inter,Arial,Helvetica,sans-serif" font-size="17" font-weight="800" fill="#9C5938" text-anchor="end">352,000 B</text>
-<rect x="61" y="602" width="538" height="22" rx="6" fill="#F5E4D8" stroke="none" stroke-width="1"/>
-<rect x="61" y="602" width="538" height="22" rx="6" fill="#D78554" stroke="none" stroke-width="1"/>
-<text x="61" y="653" font-family="Inter,Arial,Helvetica,sans-serif" font-size="17" font-weight="700" fill="#137C59" text-anchor="start">Arrow f32 + null bitmap</text>
-<text x="598" y="653" font-family="Inter,Arial,Helvetica,sans-serif" font-size="17" font-weight="800" fill="#137C59" text-anchor="end">4,125 B</text>
-<rect x="61" y="666" width="538" height="22" rx="6" fill="#E5F5EE" stroke="none" stroke-width="1"/>
-<rect x="61" y="666" width="6.3046875" height="22" rx="3" fill="#2FA77C" stroke="none" stroke-width="1"/>
-<text x="61" y="721" font-family="Inter,Arial,Helvetica,sans-serif" font-size="16" font-weight="550" fill="#6E7B8E" text-anchor="start">Go ~352 KB</text>
-<text x="598" y="721" font-family="Inter,Arial,Helvetica,sans-serif" font-size="16" font-weight="550" fill="#6E7B8E" text-anchor="end">Arrow 4.125 KB</text>
-<rect x="658" y="506" width="584" height="250" rx="15" fill="#FFFFFF" stroke="#DCE6F2" stroke-width="1.3"/>
-<text x="681" y="544" font-family="Inter,Arial,Helvetica,sans-serif" font-size="25" font-weight="800" fill="#243B57" text-anchor="start">10,000 records</text>
-<rect x="1112" y="520" width="107" height="37" rx="17" fill="#EEF3FA" stroke="#DEE8F3" stroke-width="1"/>
-<text x="1165.5" y="546" font-family="Inter,Arial,Helvetica,sans-serif" font-size="23" font-weight="850" fill="#304563" text-anchor="middle">~85×</text>
-<text x="681" y="590" font-family="Inter,Arial,Helvetica,sans-serif" font-size="17" font-weight="700" fill="#9C5938" text-anchor="start">Go Swiss Table (estimate)</text>
-<text x="1218" y="590" font-family="Inter,Arial,Helvetica,sans-serif" font-size="17" font-weight="800" fill="#9C5938" text-anchor="end">3,520,000 B</text>
-<rect x="681" y="602" width="538" height="22" rx="6" fill="#F5E4D8" stroke="none" stroke-width="1"/>
-<rect x="681" y="602" width="538" height="22" rx="6" fill="#D78554" stroke="none" stroke-width="1"/>
-<text x="681" y="653" font-family="Inter,Arial,Helvetica,sans-serif" font-size="17" font-weight="700" fill="#137C59" text-anchor="start">Arrow f32 + null bitmap</text>
-<text x="1218" y="653" font-family="Inter,Arial,Helvetica,sans-serif" font-size="17" font-weight="800" fill="#137C59" text-anchor="end">41,250 B</text>
-<rect x="681" y="666" width="538" height="22" rx="6" fill="#E5F5EE" stroke="none" stroke-width="1"/>
-<rect x="681" y="666" width="6.3046875" height="22" rx="3" fill="#2FA77C" stroke="none" stroke-width="1"/>
-<text x="681" y="721" font-family="Inter,Arial,Helvetica,sans-serif" font-size="16" font-weight="550" fill="#6E7B8E" text-anchor="start">Go ~3,520 KB</text>
-<text x="1218" y="721" font-family="Inter,Arial,Helvetica,sans-serif" font-size="16" font-weight="550" fill="#6E7B8E" text-anchor="end">Arrow 41.25 KB</text>
-<text x="44" y="789" font-family="Inter,Arial,Helvetica,sans-serif" font-size="14" font-weight="550" fill="#566B82" text-anchor="start">Assumptions: Go map/row allocated on heap; key string backing reused; boxed f32; group rounded to 288 B size class.</text>
-<text x="44" y="814" font-family="Inter,Arial,Helvetica,sans-serif" font-size="14" font-weight="550" fill="#566B82" text-anchor="start">Arrow totals include a nullable bitmap, but omit buffer alignment/metadata. These are estimates, not measured heap or RSS.</text>
+<svg xmlns="http://www.w3.org/2000/svg" width="1280" height="1110" viewBox="0 0 1280 1110" role="img" aria-labelledby="memory-title memory-desc">
+<title id="memory-title">200 float32 features: Go row maps versus Arrow columns</title>
+<desc id="memory-desc">Illustrative Go 1.24 64-bit memory estimate for one map[string]any per record, containing 200 dynamic float32 values with shared key strings. Each map reserves 256 slots in 32 Swiss groups. The group array allocates approximately 9,472 bytes; map and table metadata plus references add 96 bytes; boxed values add 800 bytes. Total: approximately 10,368 bytes per record. Arrow has 200 Float32 columns: 800 bytes of values plus 25 bytes of validity per record. For 1,000 records, Go maps use approximately 10.368 MB versus Arrow 0.825 MB. For 10,000 records, Go maps use approximately 103.680 MB versus Arrow 8.250 MB. Go maps divided by Arrow values and validity is approximately 12.6. These are layout estimates, not production memory or RSS measurements; shared key contents and Arrow metadata, padding, and spare capacity are excluded.</desc>
+<rect x="0" y="0" width="1280" height="1110" rx="20" fill="#F8FBFF" stroke="#DCE5F0" stroke-width="1.5"/>
+<text x="42" y="47" font-family="Inter,Arial,Helvetica,sans-serif" font-size="17" font-weight="800" fill="#58708B" text-anchor="start">MEMORY LAYOUT  •  200 FLOAT32 FEATURES PER RECORD</text>
+<text x="42" y="94" font-family="Inter,Arial,Helvetica,sans-serif" font-size="35" font-weight="800" fill="#192B43" text-anchor="start">Go row maps vs Apache Arrow columns</text>
+<text x="42" y="130" font-family="Inter,Arial,Helvetica,sans-serif" font-size="20" font-weight="500" fill="#667991" text-anchor="start">Same values, different storage: map overhead is shared across 200 features.</text>
+<rect x="38" y="160" width="584" height="448" rx="16" fill="#FFF9F5" stroke="#EFDED3" stroke-width="1.5"/>
+<rect x="658" y="160" width="584" height="448" rx="16" fill="#F1FBF7" stroke="#CCEADB" stroke-width="1.5"/>
+<text x="64" y="201" font-family="Inter,Arial,Helvetica,sans-serif" font-size="25" font-weight="800" fill="#AE6038" text-anchor="start">Go: []map[string]any</text>
+<text x="64" y="234" font-family="Inter,Arial,Helvetica,sans-serif" font-size="18" font-weight="500" fill="#825A45" text-anchor="start">One map per record · 200 dynamic float32 values</text>
+<rect x="64" y="258" width="532" height="34" rx="6" fill="#F4DBCA" stroke="none" stroke-width="1"/>
+<rect x="64" y="258" width="415.625" height="34" rx="6" fill="#D78554" stroke="none" stroke-width="1"/>
+<text x="270" y="282" font-family="Inter,Arial,Helvetica,sans-serif" font-size="18" font-weight="800" fill="#FFFFFF" text-anchor="middle">200 used</text>
+<text x="537" y="282" font-family="Inter,Arial,Helvetica,sans-serif" font-size="17" font-weight="700" fill="#784E36" text-anchor="middle">56 spare</text>
+<text x="64" y="320" font-family="Inter,Arial,Helvetica,sans-serif" font-size="20" font-weight="700" fill="#784E36" text-anchor="start">256 reserved slots = 32 groups of 8</text>
+<text x="64" y="351" font-family="Inter,Arial,Helvetica,sans-serif" font-size="18" font-weight="500" fill="#825A45" text-anchor="start">Each slot: 16 B string header + 16 B any</text>
+<text x="64" y="381" font-family="Inter,Arial,Helvetica,sans-serif" font-size="18" font-weight="500" fill="#825A45" text-anchor="start">32 × (8 B control + 8 × 32 B) = 8,448 B</text>
+<text x="64" y="421" font-family="Inter,Arial,Helvetica,sans-serif" font-size="20" font-weight="600" fill="#784E36" text-anchor="start">Group array, allocator rounded</text>
+<text x="596" y="421" font-family="Inter,Arial,Helvetica,sans-serif" font-size="21" font-weight="800" fill="#AE6038" text-anchor="end">9,472 B</text>
+<text x="64" y="458" font-family="Inter,Arial,Helvetica,sans-serif" font-size="17" font-weight="500" fill="#784E36" text-anchor="start">Map / table / directory / slice reference</text>
+<text x="596" y="458" font-family="Inter,Arial,Helvetica,sans-serif" font-size="20" font-weight="800" fill="#AE6038" text-anchor="end">96 B</text>
+<text x="64" y="495" font-family="Inter,Arial,Helvetica,sans-serif" font-size="18" font-weight="500" fill="#784E36" text-anchor="start">Boxed values: 200 × 4 B (tiny-packed)</text>
+<text x="596" y="495" font-family="Inter,Arial,Helvetica,sans-serif" font-size="20" font-weight="800" fill="#AE6038" text-anchor="end">800 B</text>
+<rect x="62" y="522" width="536" height="61" rx="10" fill="#F9E9DD" stroke="none" stroke-width="1"/>
+<text x="80" y="561" font-family="Inter,Arial,Helvetica,sans-serif" font-size="20" font-weight="700" fill="#784E36" text-anchor="start">Estimated total per record</text>
+<text x="580" y="561" font-family="Inter,Arial,Helvetica,sans-serif" font-size="27" font-weight="800" fill="#AD552B" text-anchor="end">10,368 B</text>
+<text x="684" y="201" font-family="Inter,Arial,Helvetica,sans-serif" font-size="25" font-weight="800" fill="#16795C" text-anchor="start">Arrow: 200 Float32 columns</text>
+<text x="684" y="234" font-family="Inter,Arial,Helvetica,sans-serif" font-size="18" font-weight="500" fill="#587C6B" text-anchor="start">Shared schema · each buffer spans all records</text>
+<text x="684" y="285" font-family="Inter,Arial,Helvetica,sans-serif" font-size="18" font-weight="700" fill="#386F5B" text-anchor="start">Feature 1</text>
+<rect x="808" y="260" width="64" height="35" rx="1" fill="#BDEAD6" stroke="#82D2AD" stroke-width="0.65"/>
+<text x="840" y="284" font-family="Inter,Arial,Helvetica,sans-serif" font-size="17" font-weight="650" fill="#196A52" text-anchor="middle">f32</text>
+<rect x="872" y="260" width="64" height="35" rx="1" fill="#CDEFE0" stroke="#82D2AD" stroke-width="0.65"/>
+<text x="904" y="284" font-family="Inter,Arial,Helvetica,sans-serif" font-size="17" font-weight="650" fill="#196A52" text-anchor="middle">f32</text>
+<rect x="936" y="260" width="64" height="35" rx="1" fill="#BDEAD6" stroke="#82D2AD" stroke-width="0.65"/>
+<text x="968" y="284" font-family="Inter,Arial,Helvetica,sans-serif" font-size="17" font-weight="650" fill="#196A52" text-anchor="middle">f32</text>
+<rect x="1000" y="260" width="64" height="35" rx="1" fill="#CDEFE0" stroke="#82D2AD" stroke-width="0.65"/>
+<text x="1032" y="284" font-family="Inter,Arial,Helvetica,sans-serif" font-size="17" font-weight="650" fill="#196A52" text-anchor="middle">f32</text>
+<rect x="1064" y="260" width="64" height="35" rx="1" fill="#BDEAD6" stroke="#82D2AD" stroke-width="0.65"/>
+<text x="1096" y="284" font-family="Inter,Arial,Helvetica,sans-serif" font-size="17" font-weight="650" fill="#196A52" text-anchor="middle">f32</text>
+<rect x="1128" y="260" width="64" height="35" rx="1" fill="#CDEFE0" stroke="#82D2AD" stroke-width="0.65"/>
+<text x="1160" y="284" font-family="Inter,Arial,Helvetica,sans-serif" font-size="17" font-weight="650" fill="#196A52" text-anchor="middle">…</text>
+<text x="684" y="332" font-family="Inter,Arial,Helvetica,sans-serif" font-size="18" font-weight="700" fill="#386F5B" text-anchor="start">Feature 2</text>
+<rect x="808" y="307" width="64" height="35" rx="1" fill="#BDEAD6" stroke="#82D2AD" stroke-width="0.65"/>
+<text x="840" y="331" font-family="Inter,Arial,Helvetica,sans-serif" font-size="17" font-weight="650" fill="#196A52" text-anchor="middle">f32</text>
+<rect x="872" y="307" width="64" height="35" rx="1" fill="#CDEFE0" stroke="#82D2AD" stroke-width="0.65"/>
+<text x="904" y="331" font-family="Inter,Arial,Helvetica,sans-serif" font-size="17" font-weight="650" fill="#196A52" text-anchor="middle">f32</text>
+<rect x="936" y="307" width="64" height="35" rx="1" fill="#BDEAD6" stroke="#82D2AD" stroke-width="0.65"/>
+<text x="968" y="331" font-family="Inter,Arial,Helvetica,sans-serif" font-size="17" font-weight="650" fill="#196A52" text-anchor="middle">f32</text>
+<rect x="1000" y="307" width="64" height="35" rx="1" fill="#CDEFE0" stroke="#82D2AD" stroke-width="0.65"/>
+<text x="1032" y="331" font-family="Inter,Arial,Helvetica,sans-serif" font-size="17" font-weight="650" fill="#196A52" text-anchor="middle">f32</text>
+<rect x="1064" y="307" width="64" height="35" rx="1" fill="#BDEAD6" stroke="#82D2AD" stroke-width="0.65"/>
+<text x="1096" y="331" font-family="Inter,Arial,Helvetica,sans-serif" font-size="17" font-weight="650" fill="#196A52" text-anchor="middle">f32</text>
+<rect x="1128" y="307" width="64" height="35" rx="1" fill="#CDEFE0" stroke="#82D2AD" stroke-width="0.65"/>
+<text x="1160" y="331" font-family="Inter,Arial,Helvetica,sans-serif" font-size="17" font-weight="650" fill="#196A52" text-anchor="middle">…</text>
+<text x="684" y="379" font-family="Inter,Arial,Helvetica,sans-serif" font-size="18" font-weight="700" fill="#386F5B" text-anchor="start">Feature 200</text>
+<rect x="808" y="354" width="64" height="35" rx="1" fill="#BDEAD6" stroke="#82D2AD" stroke-width="0.65"/>
+<text x="840" y="378" font-family="Inter,Arial,Helvetica,sans-serif" font-size="17" font-weight="650" fill="#196A52" text-anchor="middle">f32</text>
+<rect x="872" y="354" width="64" height="35" rx="1" fill="#CDEFE0" stroke="#82D2AD" stroke-width="0.65"/>
+<text x="904" y="378" font-family="Inter,Arial,Helvetica,sans-serif" font-size="17" font-weight="650" fill="#196A52" text-anchor="middle">f32</text>
+<rect x="936" y="354" width="64" height="35" rx="1" fill="#BDEAD6" stroke="#82D2AD" stroke-width="0.65"/>
+<text x="968" y="378" font-family="Inter,Arial,Helvetica,sans-serif" font-size="17" font-weight="650" fill="#196A52" text-anchor="middle">f32</text>
+<rect x="1000" y="354" width="64" height="35" rx="1" fill="#CDEFE0" stroke="#82D2AD" stroke-width="0.65"/>
+<text x="1032" y="378" font-family="Inter,Arial,Helvetica,sans-serif" font-size="17" font-weight="650" fill="#196A52" text-anchor="middle">f32</text>
+<rect x="1064" y="354" width="64" height="35" rx="1" fill="#BDEAD6" stroke="#82D2AD" stroke-width="0.65"/>
+<text x="1096" y="378" font-family="Inter,Arial,Helvetica,sans-serif" font-size="17" font-weight="650" fill="#196A52" text-anchor="middle">f32</text>
+<rect x="1128" y="354" width="64" height="35" rx="1" fill="#CDEFE0" stroke="#82D2AD" stroke-width="0.65"/>
+<text x="1160" y="378" font-family="Inter,Arial,Helvetica,sans-serif" font-size="17" font-weight="650" fill="#196A52" text-anchor="middle">…</text>
+<text x="684" y="426" font-family="Inter,Arial,Helvetica,sans-serif" font-size="21" font-weight="650" fill="#276F57" text-anchor="start">Values: 200 × 4 B</text>
+<text x="1216" y="426" font-family="Inter,Arial,Helvetica,sans-serif" font-size="22" font-weight="800" fill="#16795C" text-anchor="end">800 B</text>
+<text x="684" y="465" font-family="Inter,Arial,Helvetica,sans-serif" font-size="21" font-weight="650" fill="#276F57" text-anchor="start">Validity: 200 × 1 bit</text>
+<text x="1216" y="465" font-family="Inter,Arial,Helvetica,sans-serif" font-size="22" font-weight="800" fill="#16795C" text-anchor="end">25 B</text>
+<text x="684" y="497" font-family="Inter,Arial,Helvetica,sans-serif" font-size="17" font-weight="500" fill="#587C6B" text-anchor="start">Bitmap may be omitted if all values are valid.</text>
+<rect x="682" y="522" width="536" height="61" rx="10" fill="#DFF3E9" stroke="none" stroke-width="1"/>
+<text x="700" y="561" font-family="Inter,Arial,Helvetica,sans-serif" font-size="20" font-weight="700" fill="#276F57" text-anchor="start">Values + validity per record</text>
+<text x="1200" y="561" font-family="Inter,Arial,Helvetica,sans-serif" font-size="27" font-weight="800" fill="#137C59" text-anchor="end">825 B</text>
+<text x="42" y="646" font-family="Inter,Arial,Helvetica,sans-serif" font-size="18" font-weight="800" fill="#58708B" text-anchor="start">ESTIMATED TOTALS  •  GO MAPS ÷ (ARROW VALUES + VALIDITY) ≈ 12.6×</text>
+<rect x="38" y="665" width="584" height="260" rx="15" fill="#FFFFFF" stroke="#DCE6F2" stroke-width="1.3"/>
+<text x="62" y="704" font-family="Inter,Arial,Helvetica,sans-serif" font-size="26" font-weight="800" fill="#243B57" text-anchor="start">1,000 records</text>
+<rect x="478" y="678" width="120" height="39" rx="18" fill="#EEF3FA" stroke="#DEE8F3" stroke-width="1"/>
+<text x="538" y="705" font-family="Inter,Arial,Helvetica,sans-serif" font-size="24" font-weight="800" fill="#304563" text-anchor="middle">~12.6×</text>
+<text x="62" y="748" font-family="Inter,Arial,Helvetica,sans-serif" font-size="21" font-weight="700" fill="#9C5938" text-anchor="start">Go row maps</text>
+<text x="598" y="748" font-family="Inter,Arial,Helvetica,sans-serif" font-size="22" font-weight="800" fill="#9C5938" text-anchor="end">10.368 MB</text>
+<rect x="62" y="762" width="536" height="23" rx="5" fill="#D78554" stroke="none" stroke-width="1"/>
+<text x="62" y="825" font-family="Inter,Arial,Helvetica,sans-serif" font-size="20" font-weight="700" fill="#137C59" text-anchor="start">Arrow values + validity</text>
+<text x="598" y="825" font-family="Inter,Arial,Helvetica,sans-serif" font-size="22" font-weight="800" fill="#137C59" text-anchor="end">0.825 MB</text>
+<rect x="62" y="839" width="536" height="23" rx="5" fill="#E5F5EE" stroke="none" stroke-width="1"/>
+<rect x="62" y="839" width="42.6505" height="23" rx="4" fill="#2FA77C" stroke="none" stroke-width="1"/>
+<text x="62" y="900" font-family="Inter,Arial,Helvetica,sans-serif" font-size="18" font-weight="500" fill="#587C6B" text-anchor="start">Arrow: 0.800 MB values + 0.025 MB bitmap</text>
+<rect x="658" y="665" width="584" height="260" rx="15" fill="#FFFFFF" stroke="#DCE6F2" stroke-width="1.3"/>
+<text x="682" y="704" font-family="Inter,Arial,Helvetica,sans-serif" font-size="26" font-weight="800" fill="#243B57" text-anchor="start">10,000 records</text>
+<rect x="1098" y="678" width="120" height="39" rx="18" fill="#EEF3FA" stroke="#DEE8F3" stroke-width="1"/>
+<text x="1158" y="705" font-family="Inter,Arial,Helvetica,sans-serif" font-size="24" font-weight="800" fill="#304563" text-anchor="middle">~12.6×</text>
+<text x="682" y="748" font-family="Inter,Arial,Helvetica,sans-serif" font-size="21" font-weight="700" fill="#9C5938" text-anchor="start">Go row maps</text>
+<text x="1218" y="748" font-family="Inter,Arial,Helvetica,sans-serif" font-size="22" font-weight="800" fill="#9C5938" text-anchor="end">103.680 MB</text>
+<rect x="682" y="762" width="536" height="23" rx="5" fill="#D78554" stroke="none" stroke-width="1"/>
+<text x="682" y="825" font-family="Inter,Arial,Helvetica,sans-serif" font-size="20" font-weight="700" fill="#137C59" text-anchor="start">Arrow values + validity</text>
+<text x="1218" y="825" font-family="Inter,Arial,Helvetica,sans-serif" font-size="22" font-weight="800" fill="#137C59" text-anchor="end">8.250 MB</text>
+<rect x="682" y="839" width="536" height="23" rx="5" fill="#E5F5EE" stroke="none" stroke-width="1"/>
+<rect x="682" y="839" width="42.6505" height="23" rx="4" fill="#2FA77C" stroke="none" stroke-width="1"/>
+<text x="682" y="900" font-family="Inter,Arial,Helvetica,sans-serif" font-size="18" font-weight="500" fill="#587C6B" text-anchor="start">Arrow: 8.000 MB values + 0.250 MB bitmap</text>
+<rect x="38" y="945" width="1204" height="50" rx="10" fill="#EEF3FA" stroke="none" stroke-width="1"/>
+<text x="61" y="977" font-family="Inter,Arial,Helvetica,sans-serif" font-size="20" font-weight="650" fill="#304563" text-anchor="start">More features amortize fixed map costs; key headers, any values and spare slots remain.</text>
+<text x="43" y="1027" font-family="Inter,Arial,Helvetica,sans-serif" font-size="17" font-weight="500" fill="#566B82" text-anchor="start">Assumptions: Go 1.24, 64-bit, heap maps sized for 200 features; shared key strings; dynamic boxed f32.</text>
+<text x="43" y="1055" font-family="Inter,Arial,Helvetica,sans-serif" font-size="17" font-weight="500" fill="#566B82" text-anchor="start">Go includes allocator rounding. Excludes shared key bytes and Arrow metadata, padding and spare capacity.</text>
+<text x="43" y="1083" font-family="Inter,Arial,Helvetica,sans-serif" font-size="17" font-weight="500" fill="#566B82" text-anchor="start">Layout estimates, not measured production memory or RSS. Decimal MB = 1,000,000 B.</text>
 </svg>
