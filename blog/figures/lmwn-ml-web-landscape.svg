@@ -1,0 +1,76 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1320" height="980" viewBox="0 0 1320 980" role="img" aria-labelledby="landscape-title landscape-desc">
+  <title id="landscape-title">Why Rust fits our next ML layer</title>
+  <desc id="landscape-desc">A three-region map of the prediction service engineering context. Applied ML with Python occupies the upper left; low-level optimization with Rust, C, and C++ is beneath it. Web and services, mainly Go at LMWN, fill the right. Current State marks applied ML and web services, and Prediction Service Direction points downward toward native ML optimization. Region sizes do not represent market share.</desc>
+  <defs>
+    <clipPath id="landscape-regions">
+      <rect x="40" y="185" width="1240" height="685" rx="20"/>
+    </clipPath>
+    <linearGradient id="native-fill" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#fff7ef"/>
+      <stop offset="1" stop-color="#ffeadb"/>
+    </linearGradient>
+  </defs>
+
+  <rect width="1320" height="980" rx="24" fill="#fcfcfa"/>
+
+  <g font-family="Inter,Arial,sans-serif">
+    <text x="42" y="49" font-size="17" font-weight="700" letter-spacing="2" fill="#65718a">WHY RUST / ENGINEERING LANDSCAPE</text>
+    <text x="40" y="101" font-size="39" font-weight="800" fill="#17233b">Why Rust fits our next ML layer</text>
+    <text x="70" y="160" font-size="22" font-weight="700" fill="#335e98">ML DOMAIN</text>
+    <text x="850" y="160" font-size="22" font-weight="700" fill="#08758b">WEB DOMAIN</text>
+
+    <!-- The vertical boundary spans both rows; only the ML side is divided. -->
+    <g clip-path="url(#landscape-regions)">
+      <rect x="40" y="185" width="780" height="325" fill="#edf4ff"/>
+      <rect x="40" y="510" width="780" height="360" fill="url(#native-fill)"/>
+      <rect x="820" y="185" width="460" height="685" fill="#eaf8fa"/>
+    </g>
+    <rect x="40" y="185" width="1240" height="685" rx="20" fill="none" stroke="#cbd6e3" stroke-width="2"/>
+    <path d="M820 185V870 M40 510H820" fill="none" stroke="#a7b6c9" stroke-width="3"/>
+
+    <!-- Upper-left: the current applied-ML layer. -->
+    <rect x="70" y="213" width="174" height="36" rx="18" fill="#d6e5fb"/>
+    <circle cx="91" cy="231" r="5" fill="#2a64ad"/>
+    <text x="106" y="237" font-size="16" font-weight="700" fill="#244f8c">CURRENT STATE</text>
+    <text x="70" y="300" font-size="33" font-weight="800" fill="#17233b">Applied ML</text>
+    <text x="68" y="370" font-size="58" font-weight="800" fill="#2f62a4">Python</text>
+    <text x="70" y="416" font-size="24" fill="#425b7d">Training · features · experimentation</text>
+    <text x="70" y="453" font-size="23" fill="#425b7d">Python-facing tools and workflows</text>
+
+    <!-- Lower-left: a deeper layer, not a replacement for every workflow. -->
+    <rect x="70" y="542" width="350" height="36" rx="18" fill="#f9d7be"/>
+    <circle cx="91" cy="560" r="5" fill="#b84e1c"/>
+    <text x="106" y="566" font-size="16" font-weight="700" fill="#8d3c18">PREDICTION SERVICE DIRECTION</text>
+    <text x="70" y="627" font-size="33" font-weight="800" fill="#17233b">Low-level optimization</text>
+    <text x="68" y="694" font-size="49" font-weight="800" fill="#b84e1c">Rust · C · C++</text>
+    <text x="70" y="740" font-size="24" fill="#7b513b">Memory layout · SIMD · execution</text>
+    <text x="70" y="788" font-size="23" fill="#7b513b">Rust: Polars · Tokenizers</text>
+    <text x="70" y="824" font-size="23" fill="#7b513b">C/C++: native inference engines</text>
+
+    <!-- One clear direction of travel into native ML performance work. -->
+    <path d="M748 388V650" fill="none" stroke="#fffaf4" stroke-width="24" stroke-linecap="round"/>
+    <path d="M748 388V650" fill="none" stroke="#c95b24" stroke-width="12" stroke-linecap="round"/>
+    <path d="M727 635L748 660L769 635" fill="none" stroke="#c95b24" stroke-width="12" stroke-linecap="round" stroke-linejoin="round"/>
+    <rect x="502" y="478" width="225" height="64" rx="12" fill="#fffaf4" stroke="#e9ba99" stroke-width="1.5"/>
+    <text x="615" y="503" text-anchor="middle" font-size="18" font-weight="700" fill="#9f431b">Prediction Service</text>
+    <text x="615" y="526" text-anchor="middle" font-size="18" font-weight="600" fill="#9f431b">Direction</text>
+
+    <!-- Right: a single service domain, explicitly scoped to LMWN. -->
+    <rect x="850" y="213" width="174" height="36" rx="18" fill="#cceef1"/>
+    <circle cx="871" cy="231" r="5" fill="#08758b"/>
+    <text x="886" y="237" font-size="16" font-weight="700" fill="#096575">CURRENT STATE</text>
+    <text x="850" y="300" font-size="33" font-weight="800" fill="#17233b">Web &amp; services</text>
+    <text x="846" y="398" font-size="86" font-weight="800" fill="#08758b">Go</text>
+    <text x="850" y="446" font-size="25" font-weight="600" fill="#266373">Mainly Go at LMWN</text>
+    <text x="850" y="500" font-size="23" fill="#426672">API / RPC · networking</text>
+    <text x="850" y="537" font-size="23" fill="#426672">Business logic · orchestration</text>
+
+    <path d="M850 605H902" stroke="#62a4af" stroke-width="4" stroke-linecap="round"/>
+    <text x="850" y="650" font-size="23" font-weight="700" fill="#266373">Add a native ML layer.</text>
+    <text x="850" y="691" font-size="23" fill="#426672">Keep Python workflows</text>
+    <text x="850" y="728" font-size="23" fill="#426672">and web services in the stack.</text>
+
+    <text x="42" y="916" font-size="20" fill="#5d6980">LMWN context from the author; regions do not represent market share.</text>
+    <text x="42" y="950" font-size="20" fill="#5d6980">Languages span multiple domains. Examples show roles in this engineering story.</text>
+  </g>
+</svg>
