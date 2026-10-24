@@ -20,13 +20,13 @@ As more ML use cases arrived, so did more models, more data, and more traffic. T
 
 Here's the tricky part: **a request doesn't predict just one item**. It can rank **roughly 500–10,000 items per request**. When a bunch of requests hit during peak traffic, we're suddenly talking about **hundreds of thousands of items predicted per second**. 😵‍💫 That's why every unnecessary data copy, cache miss, and thread fighting for CPU time makes a real difference to system capacity.
 
-So the question changed from “How do we tune the existing service a little more?” to **“How can we revamp our ML Prediction Service (with a little help from AI 😂) to handle the growing workload with so little private-cloud capacity left?”**
+So the question became: **How do we handle a growing ML workload when our private cloud has so little capacity left?**
 
-We decided to do **RIIR (Rewrite It In Rust)**. But this wasn't a line-by-line Go-to-Rust translation. We took the opportunity to **re-architect the whole thing**: memory layout, concurrency, preprocessing execution, and code structure. The goal was simple: make every CPU core spend more time doing useful work.
+We decided to do **RIIR (Rewrite It In Rust)**. Not a line-by-line translation: we changed the memory layout, concurrency model, preprocessing execution, and code structure. We wanted to stop spending CPU cycles on work that didn't help us serve predictions.
 
-And here's a fun detail: **the port from Go to Rust took about a week with the help of an AI agent**. What made that possible wasn't asking the agent to translate syntax. We first had to pin down the engineering approach: which data structures, algorithms, and concurrency model should it use? (Preferably without repeating all of our old mistakes. 😅)
+We ported the service from Go to Rust in **about a week, with help from an AI agent**. That only worked because we had already made the architectural decisions: **Apache Arrow** for columnar data, **Kahn's Algorithm** for preprocessing dependencies, and the **Actor Model** for controlled concurrency. We weren't asking the agent to design the system while translating Go syntax. 😅
 
-This is an **engineering story**, not a claim that Rust is faster than Go for every workload. The results here come from the production workload of a recommendation-ranking use case at LMWN. 🔥
+These numbers come from a **production recommendation-ranking workload at LMWN**, not a general-purpose Rust-versus-Go benchmark. 🔥
 
 ## Go vs Rust: Production Results 📊
 
@@ -40,11 +40,11 @@ We compared both services in production using an **A/B test with an even traffic
 | **Max pod CPU usage** | 16.9% / 45.2% | 3.0% / 8.6% | **5.4×** |
 | **Max pod memory** | 2.68 / 3.56 GB | 1.43 / 1.70 GB | **1.9×** |
 
-One small but important note: the improvement numbers are the **medians of the minute-by-minute Go/Rust ratios**, *not* ratios calculated by dividing the two separately reported medians. The chart uses each service's own median to show the difference in scale. Those are two slightly different calculations, so don't mix them up.
+The improvement figures are **medians of minute-by-minute Go/Rust ratios**, while the Go and Rust columns show each service's median separately. That's why dividing the displayed medians won't give exactly the reported improvement ratios.
 
-### Let's Look at the Full 18 Hours 👀
+### Production Traffic Over 18 Hours 👀
 
-The median numbers tell us the scale of the improvement. But if you're into performance engineering, the **CPU, memory, and P99 latency trends throughout 18 hours of real traffic** are just as interesting.
+The aggregate numbers are useful, but I also wanted to see **how CPU, memory, and P99 latency behaved across the full 18 hours of real traffic**.
 
 ![Production dashboard comparing Go and Rust CPU, memory and P99 latency over 18 hours](https://korntewin.github.io/intro-website/blog/figures/production-timeseries-dashboard.png)
 
@@ -58,7 +58,7 @@ The median numbers tell us the scale of the improvement. But if you're into perf
 
 ![Memory usage of Go versus Rust and their improvement ratio over 18 hours](https://korntewin.github.io/intro-website/blog/figures/production-memory-timeseries.png)
 
-**P99 Latency:** It's not just average performance that matters. We also care about tail latency and what each service does when traffic fluctuates.
+**P99 Latency:** This is where we can see how tail latency behaves as traffic changes, rather than looking only at a typical request.
 
 ![P99 latency of Go versus Rust and their improvement ratio over 18 hours](https://korntewin.github.io/intro-website/blog/figures/production-p99-timeseries.png)
 
@@ -66,7 +66,7 @@ My favorite number here isn't even the P99 improvement. It's the **huge reductio
 
 ## Why Not Just Switch Languages?
 
-When we see programming-language benchmarks, it's tempting to conclude that “Rust is faster than Go.” In production inference, though, **the language is only one piece of the puzzle**.
+Switching languages alone wouldn't have fixed the bottlenecks we had in production.
 
 Imagine keeping features in the same HashMaps, copying data every time we split a batch, and letting every ONNX Runtime instance start threads that all compete for the same CPU cores. Rewriting that in Rust wouldn't magically fix things. On the other hand, getting the **memory layout and concurrency control** right can eliminate a lot of CPU work that shouldn't have existed in the first place.
 
@@ -74,7 +74,7 @@ Imagine keeping features in the same HashMaps, copying data every time we split 
 
 We didn't jump straight into a rewrite. We also tried **model quantization** as a quick win to reduce inference cost. But the model for this use case was **already quite small**. The performance gain was modest, while the drop in **model accuracy was too large for us to accept in production**.
 
-That doesn't mean quantization is useless. A larger model, different hardware, or more suitable kernels might tell a completely different story. In our workload, reducing numerical precision just wasn't enough to improve the entire pipeline. So we turned our attention to **data movement, preprocessing, and concurrency**—things we could optimize without sacrificing model accuracy.
+For our small model, that accuracy trade-off wasn't worth it. We focused instead on **data movement, preprocessing, and concurrency**, where we could reduce CPU use without changing model accuracy.
 
 ### Another Reason for Rust: The Data & ML Ecosystem 🦀
 
@@ -84,15 +84,15 @@ At **LINE MAN Wongnai (LMWN)**, I tend to see two familiar worlds. There's **App
 
 Moving downward in that diagram means more direct control over **memory layout, SIMD, preprocessing, and inference execution**, while still connecting to our Python workflows and existing services.
 
-Go is a great language for web services, networking, and cloud infrastructure. But for **data processing and ML inference**, I find Rust's library ecosystem a particularly good fit. Think **[Polars](https://pola.rs/)**, **[nlpO3](https://github.com/PyThaiNLP/nlpo3)** for Thai NLP, and **[Hugging Face Tokenizers](https://github.com/huggingface/tokenizers)**. All of these have a Rust core.
+Go served us well for networking and backend services. For this data-heavy preprocessing workload, Rust also let us use **[Polars](https://pola.rs/)**, **[nlpO3](https://github.com/PyThaiNLP/nlpo3)** for Thai NLP, and **[Hugging Face Tokenizers](https://github.com/huggingface/tokenizers)** directly. All three have Rust cores.
 
-We can use those libraries directly in Rust and control **ownership, lifetimes, and memory layout** without adding a language-level garbage collector to the hot path. I'm not saying Rust wins every battle against Go. I'm saying that when preprocessing needs to scan a *lot* of records, the ecosystem matters just as much as the language. 🦀
+That gives us direct control over **ownership, lifetimes, and memory layout** on the hot path, without a language-level garbage collector. The available libraries were a practical part of our decision to use Rust. 🦀
 
-**Python integration is another big reason.** Go's [cgo](https://pkg.go.dev/cmd/cgo) is a mature way to call C APIs, but it wasn't built specifically for Python bindings. To embed Python in the same Go process, you end up dealing with the CPython C API, pointers, object lifetimes, and the GIL across runtime boundaries. Rust has [PyO3](https://pyo3.rs/), a binding designed specifically for both calling Python from Rust and building Python extensions with Rust, plus [maturin](https://www.maturin.rs/) for building and packaging them. Both cgo and PyO3 are mature at what they set out to do. For **Python integration**, though, I think Rust offers more convenient abstractions and tooling.
+**Python integration mattered too.** Go's [cgo](https://pkg.go.dev/cmd/cgo) is mature for calling C APIs, but embedding CPython through it means handling the C API, object lifetimes, references, and the GIL across runtime boundaries. Rust's [PyO3](https://pyo3.rs/) gives us Python-specific abstractions for embedding Python or building Python extensions, with [maturin](https://www.maturin.rs/) for packaging. For this kind of integration, it's easier to work with than wiring up Python bindings through cgo ourselves.
 
 ## 1. Apache Arrow + Polars: Making Data Easier for CPUs to Read 📦
 
-First, a CPU doesn't fetch data from RAM for free. Every time we follow a pointer to another memory location, we risk a **cache miss** and may have to wait for a slower layer of the memory hierarchy—from CPU caches all the way out to RAM.
+Pointer-heavy data structures make the CPU chase memory addresses. When the next address isn't cached, it has to wait for a slower level of the memory hierarchy, sometimes all the way to RAM.
 
 In a row-oriented representation, where each record holds lots of fields in separate HashMaps, processing the same feature over thousands of records can turn into a whole lot of **pointer chasing**.
 
@@ -102,11 +102,11 @@ But ML preprocessing often works **“one feature across many records”** rathe
 
 In a columnar layout, values of the same type live together in buffers. Scanning a numeric column has better memory locality than repeatedly dereferencing nested objects, and it gives the compiler or library more opportunities to use **SIMD and vectorized operations** effectively.
 
-Of course, not every Arrow column is one big flat array of numbers. Strings, for instance, use offsets and value buffers, and Polars may have multiple chunks. The point is to **avoid unnecessary jumps around memory when processing columns**.
+String columns still use offset and value buffers, and Polars can store multiple chunks. What matters for our workload is reducing pointer chasing when processing columns.
 
 ### Memory Efficiency: Arrow vs Go Swiss Table 💾
 
-Here's a deliberately simple comparison. Suppose each record has just one feature, **score: f32**, and the Go service represents it as **[]map[string]any**, one map per record. It's flexible—we can store many kinds of model features—but that flexibility has a memory cost.
+Take a record with a single **score: f32** feature. Our Go representation uses **[]map[string]any**, with one map per record. That flexibility has a memory cost.
 
 Go 1.24+ uses [Swiss Table](https://go.dev/blog/swisstable). Under our illustrative 64-bit layout assumptions, each record needs a map header (~48 B), a group of eight slots (8 B of control bytes plus key/value storage, rounded to ~288 B), a slice pointer (8 B), and a boxed f32 (~8 B). That comes to roughly **352 B per record**. With Arrow, the schema is shared and f32 values can sit contiguously at **4 B per record**, plus an optional one-bit-per-value validity bitmap.
 
@@ -114,7 +114,7 @@ Go 1.24+ uses [Swiss Table](https://go.dev/blog/swisstable). Under our illustrat
 
 For **1,000 records**, the estimate is roughly **352,000 B in Go vs 4,125 B with Arrow (~85×)**. For **10,000 records**, it's **3,520,000 B vs 41,250 B (~85×)**.
 
-That's a pretty dramatic difference! 🤯 But it's a **layout estimate for this specific map-per-record representation**, not a measured claim that Arrow uses 85× less memory than *any* Go data structure. Actual heap usage depends on allocation and boxing, the estimate leaves out some Arrow metadata and alignment, and a Go []float32 slice can store numeric payloads just as compactly.
+These are **illustrative layout estimates for a Go map per record**, not measured end-to-end savings. A compact Go `[]float32` can store numeric payloads just as efficiently; real memory use also includes allocation and buffer metadata.
 
 ### Validity Bitmap: One Bit to Represent Null
 
@@ -140,11 +140,11 @@ Arrow supports **slicing by sharing the original buffers** and changing metadata
 
 ![Arrow zero-copy slicing shares the original underlying buffer](https://korntewin.github.io/intro-website/blog/figures/arrow-zero-copy.png)
 
-One caveat: **zero-copy doesn't mean a completely allocation-free pipeline**. Casting types, computing features, rechunking, or preparing an input for ONNX Runtime may still allocate new buffers. We use zero-copy where it's actually supported and measure allocations where they can't be avoided.
+**Zero-copy applies to the slices, not necessarily the entire pipeline.** Type casts, feature computation, rechunking, and ONNX input preparation can still allocate buffers.
 
 ## 2. Actor Model: Let Each ML Model Own Its Mini-Batches 🧵
 
-Here's a classic CPU-bound-service problem: as more requests arrive, it's easy to crank **concurrency and parallelism** higher than the hardware can handle. Requests spawn their own work, and each model might also bring an ONNX Runtime thread pool to the party.
+Under heavy traffic, it's easy to create more runnable work than the CPU cores can handle. Each request may spawn tasks while ONNX Runtime also maintains its own worker threads.
 
 The result is **oversubscription**: more runnable threads than CPU cores, more context switching, and more contention for caches. Throughput doesn't necessarily increase, but tail latency can get much worse.
 
@@ -154,7 +154,7 @@ For RIIR, we use the **Actor Model** with separate **preprocessing actor pools**
 
 That lets us tune **worker count, batch size, and ONNX Runtime threads** per model instead of forcing the same settings on the entire service. Different models behave differently. Some spend most of their time in preprocessing; others are limited by memory bandwidth during inference, where adding threads can do more harm than good.
 
-The Actor Model doesn't make math faster by itself. What helps is having **clear boundaries for concurrency and ownership** so we can tune each stage systematically, rather than letting every incoming request fight for CPU however it wants.
+The benefit isn't faster math; it's **clear boundaries for concurrency and ownership**. We can tune each stage without letting incoming requests fight over CPU cores unchecked.
 
 ## 3. Kahn's Algorithm: Sort Preprocessing Before Traffic Arrives 🧩
 
@@ -164,7 +164,7 @@ Run those functions in the wrong order and you might get incorrect predictions o
 
 ![Preprocessing dependency DAG and Kahn topological sorting](https://korntewin.github.io/intro-website/blog/figures/kahn-dag.png)
 
-The idea is straightforward: count the number of dependencies entering each node (its **in-degree**), start with nodes whose in-degree is zero, and remove those ready nodes one at a time. Each removal reduces the in-degree of downstream nodes. Repeat until you're done. If nodes remain but none is ready, there's a cycle that needs fixing before the service starts.
+Kahn's Algorithm counts the dependencies entering each node (its **in-degree**), starts with nodes whose in-degree is zero, and removes ready nodes one at a time. Each removal reduces the in-degree of downstream nodes. If nodes remain but none is ready, there's a cycle to fix before the service starts.
 
 In production, this changes our job from **“find the preprocessing order on every request”** to **“validate and compile the order once at startup.”** Incoming requests simply execute the plan we've already prepared.
 
@@ -196,9 +196,9 @@ let algebraic = a.algebraic_add(b)
     .algebraic_add(d);
 ~~~
 
-Of course, upgrading to Rust 1.98 doesn't make every line of code faster overnight. We have to choose where those operations make sense and watch for **numerical accuracy, NaNs, infinity, signed zero, and compiler/architecture differences**.
+Algebraic operations can change rounding behavior and how NaNs, infinities, and signed zeros are handled. We enable them selectively and verify the results against the previous implementation with **parity tests and benchmarks**.
 
-For production ML, predictions still need to be consistent with the previous implementation. We need **parity tests and benchmarks** before enabling an optimization. Also, the **2.4× / 5.4× / 1.9×** improvements above are the combined result of many design decisions, *not* a benchmark of algebraic floating-point operations alone. 🚀
+The **2.4× / 5.4× / 1.9×** production gains reflect the full redesign, not algebraic floating-point operations on their own. 🚀
 
 ## 5. Memory Allocator: ptmalloc, mimalloc, or jemalloc? 🧠
 
@@ -222,7 +222,7 @@ static GLOBAL_ALLOCATOR: tikv_jemallocator::Jemalloc =
     tikv_jemallocator::Jemalloc;
 ~~~
 
-Still, **there is no universally fastest allocator**. To compare them fairly, use the same traffic, model, worker count, batch size, binary, and environment, and measure throughput, P99, CPU, and RSS—not just a microbenchmark.
+To compare allocators fairly, keep the traffic, model, worker count, batch size, binary, and environment the same, then measure throughput, P99, CPU, and RSS.
 
 ### How Do We Make Every Application Use the Same Allocator?
 
@@ -242,24 +242,14 @@ Each application can compose its own predictor. Perhaps it chains multiple model
 
 The payoff isn't just code reuse. We can **benchmark, test, and tune each application** without maintaining several versions of the same prediction engine. There's a lot more to the architecture, but I'll save the rest for another post. 😄
 
-## Learning Points: What RIIR Taught Us 💡
 
-1. **Memory layout matters as much as the language.** Start by reducing pointer chasing and unnecessary copies before adding more threads.
-2. **More concurrency doesn't automatically mean better performance.** Our actor pools use one-dimensional data parallelism across mini-batches, without parallelizing DAG nodes on top.
-3. **Compile what you already know at startup.** Validate and topologically sort preprocessing dependencies before the first request arrives.
-4. **SIMD is also about semantics.** Algebraic floating-point operations can unlock more compiler optimizations, but the numerical results still need testing.
-5. **The allocator is part of performance design.** In our benchmarks, jemalloc reduced peak-load memory usage by roughly 100–500 MB, and CI policies keep allocator configuration consistent.
-6. **Good architecture compounds the value of optimization.** When several use cases share a prediction core, one improvement can benefit all of them.
-7. **AI agents accelerate implementation, not architecture decisions.** The port took about a week because we first gave the agent a concrete plan built around Apache Arrow, Kahn's Algorithm, and the Actor Model.
-8. **A quick win must be worth the accuracy trade-off.** Quantization barely improved performance for our already-small model and reduced accuracy too much for production.
+## What Stuck With Me
 
-## Conclusions
+Looking back, the rewrite was less about swapping Go for Rust and more about rebuilding the path from data to prediction: fewer copies, bounded worker pools, and a preprocessing plan compiled ahead of time.
 
-Last time, we optimized our Go runtime. This time, we **rethought how an ML Prediction Service should organize data, CPU threads, and model execution from the ground up**, using Rust, Apache Arrow, Polars, the Actor Model, and a few other pieces that work together.
+The production comparison above shows why the work mattered. If we roll these changes out across **all the team's use cases**, we project that cluster CPU requests could fall from **79% to 69% (10 percentage points)**. That's still a **projection**, not a measured post-rollout result.
 
-In our production comparison, **P99 latency improved 2.4×, CPU usage dropped 5.4×, and memory usage fell 1.9×** under an even traffic split. Once we roll out the improvements across **all the team's use cases**, we project cluster CPU requests could go from **79% to 69% (10 percentage points)**. That's a **projection**, not a measured post-rollout result.
-
-The biggest takeaway for me is that performance engineering isn't about picking the single fastest library. It's about matching the **data flow, memory layout, scheduling, and architecture** to what the workload actually does—especially when private-cloud capacity is tight and “just add more machines” isn't a practical answer. 🚀
+What surprised me most wasn't just a faster executable. It was how much CPU we could get back by cutting unnecessary data movement, allocations, and thread contention. With private-cloud capacity so tight, those saved cycles give us room for the next ML use case without immediately asking for more machines. That's the part of RIIR I'm happiest about. 🦀
 
 ---
 
