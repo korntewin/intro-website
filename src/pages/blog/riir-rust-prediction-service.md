@@ -19,13 +19,13 @@ coverImageAlt: "ภาพประกอบจาก Go สู่ Rust สำห
 
 ที่ท้าทายกว่านั้นคือ หนึ่ง Request ไม่ได้ Predict แค่ Item เดียว แต่ต้องจัดอันดับ **ประมาณ 500–10,000 Items ต่อ Request** เมื่อ Traffic หลาย Request เข้ามาพร้อมกันในช่วง Peak งานที่ต้อง Predict จึงพุ่งไปถึง **ระดับหลายแสน Items ต่อวินาที** 😵‍💫 นี่คือเหตุผลว่าทำไมทุกการ Copy ข้อมูล, Cache Miss และ CPU Thread ที่แย่งกันทำงานจึงมีผลต่อ Capacity ของระบบอย่างมาก
 
-โจทย์รอบนี้จึงเปลี่ยนจาก “จูน Service ที่มีอยู่แล้วให้ดีขึ้น” มาเป็น เราจะ Revamp ML Prediction Service (ด้วยพลัง AI 😂) ให้รองรับ Workload ที่เพิ่มขึ้นได้อย่างไร ภายใต้ Capacity ของ Private Cloud ที่เหลืออยู่อย่างจำกัด?
+โจทย์รอบนี้เลยไม่ใช่แค่การจูน Service เดิมแล้วครับ แต่คือ **เราจะรองรับ ML Workload ที่โตขึ้นได้อย่างไร ในเมื่อ Private Cloud เหลือ Capacity ให้ใช้อีกไม่มาก?**
 
-เราตัดสินใจทำ **RIIR (Rewrite It In Rust)** แต่ไม่ได้แค่แปลงโค้ด Go เป็น Rust แบบหนึ่งต่อหนึ่ง เราใช้โอกาสนี้ Re-Architect ใหม่ทั้งหมด รวมไปถึง Memory Layout, Concurrency, Preprocessing Execution และ Code Structure ใหม่ โดยเป้าหมายคือให้แต่ละ CPU Core ทำงานที่มีประโยชน์มากขึ้นครับ
+เราเลยทำ **RIIR (Rewrite It In Rust)** แต่ไม่ได้แปลง Go เป็น Rust แบบบรรทัดต่อบรรทัด เรารื้อทั้ง Memory Layout, Concurrency, Preprocessing Execution และ Code Structure ใหม่ โดยตั้งใจลดงานที่กิน CPU แต่ไม่ได้ช่วยให้เรา Predict ได้มากขึ้นครับ
 
-อีกเรื่องที่น่าสนใจคือ เราใช้เวลา **ประมาณ 1 สัปดาห์ในการ Port จาก Go มา Rust โดยมี AI Agent ช่วย** แต่สิ่งที่ทำให้ Agent ช่วยได้จริงไม่ใช่แค่การแปลง Syntax ครับ เราต้องกำหนด Software Engineering Practice ให้ชัดเจนก่อน ว่าให้ใช้ Data Structure, Algorithm และ Concurrency Model แบบไหน (เพื่อไม่ให้พลาดซ้ำรอยเดิม 😅)
+เรา Port จาก Go มา Rust ได้ใน **ประมาณ 1 สัปดาห์ โดยมี AI Agent ช่วย** แต่ก่อนให้ Agent ลงมือ เราต้องกำหนด Architecture ให้ชัดก่อน ทั้ง **Apache Arrow** สำหรับ Columnar Data, **Kahn’s Algorithm** สำหรับ Preprocessing Dependencies และ **Actor Model** สำหรับคุม Concurrency ไม่ใช่แค่สั่งให้แปลง Syntax แล้วหวังว่า Performance จะดีขึ้นเอง 😅
 
-บทความนี้เป็น Engineering Story ไม่ใช่การบอกว่า Rust เร็วกว่า Go ในทุกกรณี ผลลัพธ์ที่ได้เป็นการวัด Performance บน Production Workload ของ Use Case Recommendation Ranker ใน LMWN เท่านั้นครับ 🔥
+ตัวเลขในบทความนี้เป็นผลวัดจาก **Production Workload ของ Recommendation Ranker ที่ LMWN** ไม่ใช่ Benchmark ที่ใช้ฟันธงว่า Rust เร็วกว่า Go ในทุกงานครับ 🔥
 
 ## ผลลัพธ์ Go vs Rust บน Production 📊
 
@@ -39,11 +39,11 @@ coverImageAlt: "ภาพประกอบจาก Go สู่ Rust สำห
 | **Max pod CPU usage** | 16.9% / 45.2% | 3.0% / 8.6% | **5.4×** |
 | **Max pod memory** | 2.68 / 3.56 GB | 1.43 / 1.70 GB | **1.9×** |
 
-หมายเหตุเล็กน้อย: ค่า Improvement ในรายงานคำนวณจาก median ของอัตราส่วน Go/Rust ที่วัดแต่ละนาที ไม่ใช่นำ median ของสองฝั่งมาหารกันตรง ๆ ส่วนกราฟแสดง median ของแต่ละฝั่งเพื่อให้เห็นขนาดความแตกต่าง อ่านตัวเลขสองแบบนี้แยกกันนะครับ
+ค่า Improvement ใช้ **Median ของอัตราส่วน Go/Rust ในแต่ละนาที** ส่วนคอลัมน์ Go และ Rust แสดง Median ของแต่ละฝั่งแยกกัน ดังนั้นเอา Median ในตารางมาหารกันตรง ๆ จึงอาจไม่ตรงกับค่า Improvement ที่รายงานครับ
 
-### ดูกราฟ Production จริงตลอด 18 ชั่วโมง 👀
+### กราฟจาก Production ตลอด 18 ชั่วโมง 👀
 
-ตัวเลข Median ด้านบนช่วยให้เห็นขนาดของ Improvement แต่สำหรับสาย Performance Engineering สิ่งที่น่าดูไม่แพ้กันคือ แนวโน้มของ CPU, Memory และ P99 Latency ภายใต้ Traffic จริงตลอด 18 ชั่วโมง ครับ
+นอกจากตัวเลข Median ผมอยากดูด้วยว่า **CPU, Memory และ P99 Latency เปลี่ยนไปอย่างไรระหว่าง 18 ชั่วโมงที่มี Traffic จริง** ครับ
 
 ![Production dashboard เปรียบเทียบ CPU, Memory และ P99 Latency ของ Go กับ Rust](https://korntewin.github.io/intro-website/blog/figures/production-timeseries-dashboard.png)
 
@@ -57,7 +57,7 @@ coverImageAlt: "ภาพประกอบจาก Go สู่ Rust สำห
 
 ![กราฟ Memory Usage Go เทียบ Rust ตลอด 18 ชั่วโมง พร้อม Improvement Ratio](https://korntewin.github.io/intro-website/blog/figures/production-memory-timeseries.png)
 
-**P99 Latency:** สิ่งที่ต้องดูไม่ใช่แค่ค่าเฉลี่ย แต่รวมถึง Tail Latency ว่าแต่ละ Service ตอบสนองอย่างไรเมื่อ Traffic แกว่ง
+**P99 Latency:** กราฟนี้ช่วยให้เห็น Tail Latency ตอน Traffic เปลี่ยน ไม่ใช่แค่เวลาตอบสนองของ Request ทั่วไป
 
 ![กราฟ P99 Latency Go เทียบ Rust ตลอด 18 ชั่วโมง พร้อม Improvement Ratio](https://korntewin.github.io/intro-website/blog/figures/production-p99-timeseries.png)
 
@@ -65,7 +65,7 @@ coverImageAlt: "ภาพประกอบจาก Go สู่ Rust สำห
 
 ## ทำไมไม่เปลี่ยนแค่ภาษา?
 
-หลายครั้งเวลาเห็น Benchmark ภาษาโปรแกรม เรามักสรุปสั้น ๆ ว่า “Rust เร็วกว่า Go” แต่สำหรับ Production Inference จริง ๆ **ภาษาเป็นเพียงหนึ่งในปัจจัย** ครับ
+แค่เปลี่ยนภาษาอย่างเดียวคงแก้ Bottleneck ที่เราเจอใน Production ไม่ได้ครับ
 
 สมมติเรายังเก็บ Feature เป็น HashMap แบบเดิม, Copy Data ทุกครั้งที่แบ่ง Batch หรือปล่อยให้ ONNX Runtime ทุกตัวเปิด Thread แข่งกัน แม้เปลี่ยนเป็น Rust ก็อาจไม่ได้ผลอย่างที่หวัง ตรงกันข้าม หากจัด Memory Layout และ Concurrency Control ให้ดี เราก็สามารถลดงานที่ CPU ไม่จำเป็นต้องทำลงไปได้มากแล้วครับ
 
@@ -73,7 +73,7 @@ coverImageAlt: "ภาพประกอบจาก Go สู่ Rust สำห
 
 เราไม่ได้กระโดดไป Rewrite อย่างเดียวครับ อีกแนวทางที่เราลองเป็น Quick Win คือ **Model Quantization** เพื่อลดต้นทุนของ Inference แต่โมเดลที่ใช้ใน Use Case นี้ **มีขนาดเล็กอยู่แล้ว** ผลที่วัดได้คือ **Performance ดีขึ้นเพียงเล็กน้อย** ขณะที่ **Model Accuracy ลดลงมากเกินกว่าที่เรายอมรับได้** จึงไม่ใช่ Trade-off ที่เหมาะกับการนำขึ้น Production
 
-ไม่ได้แปลว่า Quantization ไม่มีประโยชน์นะครับ สำหรับโมเดลที่ใหญ่กว่านี้หรือ Hardware/Kernel ที่รองรับได้ดี ผลลัพธ์อาจต่างกันมาก แต่ใน Workload ของเรา การลด Precision ของโมเดลไม่ได้ช่วยลดต้นทุนของ Pipeline ทั้งเส้นได้มากพอ เราจึงหันมาให้ความสำคัญกับ Data Movement, Preprocessing และ Concurrency ซึ่งเป็นจุดที่ Optimize ได้โดยไม่ต้องแลก Model Accuracy
+สำหรับโมเดลขนาดเล็กของเรา Accuracy ที่เสียไปไม่คุ้มกับ Performance ที่ได้ เราเลยหันมาแก้ **Data Movement, Preprocessing และ Concurrency** ซึ่งช่วยลดการใช้ CPU ได้โดยไม่ต้องลดความแม่นยำของโมเดล
 
 ### อีกเหตุผลที่เลือก Rust: Ecosystem ฝั่ง Data & ML 🦀
 
@@ -83,11 +83,11 @@ coverImageAlt: "ภาพประกอบจาก Go สู่ Rust สำห
 
 การขยับลงมาด้านล่างหมายถึงการเพิ่มความสามารถในการจัดการ Memory Layout, SIMD, Preprocessing และ Inference Execution ด้วยตัวเอง โดยยังเชื่อมกับ Workflow ฝั่ง Python และ Service ที่มีอยู่
 
-จริง ๆ แล้ว Go เป็นภาษาที่ดีมากสำหรับ Web Service, Networking และ Cloud Infrastructure ครับ แต่พอเป็นงาน Data Processing กับ ML Inference ผมมองว่า Rust มี Ecosystem ของ Library ที่ตอบโจทย์เรามากกว่า เช่น [Polars](https://pola.rs/) , [nlpO3](https://github.com/PyThaiNLP/nlpo3) สำหรับ Thai NLP และ [Hugging Face Tokenizers](https://github.com/huggingface/tokenizers) สำหรับ Tokenization ซึ่งทั้งหมดมี Core Engine อยู่บน Rust
+Go ตอบโจทย์งาน Networking และ Backend Service ของเราอยู่แล้วครับ แต่พอเป็น Preprocessing ที่ต้องจัดการข้อมูลจำนวนมาก Rust มี Library ที่เราใช้ได้ตรง ๆ เช่น [Polars](https://pola.rs/), [nlpO3](https://github.com/PyThaiNLP/nlpo3) สำหรับ Thai NLP และ [Hugging Face Tokenizers](https://github.com/huggingface/tokenizers) สำหรับ Tokenization ซึ่งทั้งหมดมี Core อยู่บน Rust
 
-ข้อได้เปรียบคือเราสามารถใช้ Library เหล่านี้ใน Rust ได้โดยตรงและควบคุม **Ownership, Lifetime และ Memory Layout** ได้ละเอียด โดยไม่ต้องมี Garbage Collector ของภาษาเข้ามาทำงานบน Hot Path นี่ไม่ได้แปลว่า Rust เก่งกว่า Go ในทุกด้านนะครับ แต่สำหรับงาน Preprocessing ที่ต้องวิ่งผ่านข้อมูลจำนวนมาก ความพร้อมของ Ecosystem สำคัญไม่แพ้ตัวภาษาเลย 🦀
+เราจึงควบคุม **Ownership, Lifetime และ Memory Layout** บน Hot Path ได้ละเอียด โดยไม่มี Garbage Collector ของภาษาเข้ามาเกี่ยวข้อง สำหรับ Workload นี้ Ecosystem เป็นเหตุผลสำคัญที่เราเลือก Rust ครับ 🦀
 
-อีกเหตุผลสำคัญคือ การเชื่อมกับ Python Ecosystem ครับ ฝั่ง Go มี [cgo](https://pkg.go.dev/cmd/cgo) ที่เป็นเครื่องมือ Mature สำหรับเรียก C API แต่ ไม่ได้ออกแบบมาเป็น Python Binding โดยตรง หากต้องเรียก Python ภายใน Process เดียวกัน ก็ต้องเชื่อมผ่าน CPython C API และดูแล Pointer, Object Lifetime และ GIL ข้าม Runtime เพิ่มขึ้น ขณะที่ฝั่ง Rust มี [PyO3](https://pyo3.rs/) ซึ่งเป็น Python Binding ที่พัฒนามาสำหรับงานนี้โดยเฉพาะ ทั้งการเรียก Python จาก Rust และการสร้าง Python Extension ด้วย Rust พร้อม [maturin](https://www.maturin.rs/) สำหรับ Build และ Package ดังนั้น cgo และ PyO3 ต่างก็ Mature ในขอบเขตของตัวเอง แต่สำหรับ Python Integration ผมมองว่า Rust มี Abstraction และ Tooling ที่ตอบโจทย์กว่า
+อีกเหตุผลคือการเชื่อมกับ Python ครับ ฝั่ง Go มี [cgo](https://pkg.go.dev/cmd/cgo) ที่ Mature สำหรับเรียก C API แต่ถ้าจะ Embed CPython ก็ต้องจัดการ CPython C API, Object Lifetime, References และ GIL ข้าม Runtime เอง ส่วน Rust มี [PyO3](https://pyo3.rs/) ที่ออกแบบมาเพื่อ Python Binding โดยตรง ทั้งการเรียก Python จาก Rust และการทำ Python Extension พร้อม [maturin](https://www.maturin.rs/) สำหรับ Build และ Package งานแบบนี้จึงเขียนและดูแลผ่าน PyO3 ได้สะดวกกว่าการต่อ Binding ผ่าน cgo เองครับ
 
 ## 1. Apache Arrow + Polars: จัด Memory ให้ CPU อ่านง่ายขึ้น 📦
 
@@ -101,7 +101,7 @@ coverImageAlt: "ภาพประกอบจาก Go สู่ Rust สำห
 
 ใน Columnar Layout ค่าประเภทเดียวกันจะถูกจัดเก็บใน Buffer ตาม Column ทำให้การ Scan Column ตัวเลขมี Memory Locality ดีกว่าโครงสร้างที่ต้อง Dereference Object หลายชั้น และเปิดโอกาสให้ Compiler หรือ Library ใช้ SIMD / Vectorized Operations ได้มีประสิทธิภาพขึ้น
 
-แน่นอนว่าไม่ใช่ทุก Arrow Column จะเรียง Value เป็น Array ตัวเลขก้อนเดียวเสมอ เช่น String ใช้ Offset Buffer กับ Values Buffer และ Polars ก็อาจมีหลาย Chunk แต่หลักสำคัญคือ ลดการกระโดดของ Memory Access ที่ไม่จำเป็นสำหรับงานประมวลผลเป็นคอลัมน์
+String Column ยังใช้ Offsets และ Values Buffers ส่วน Polars ก็อาจเก็บหลาย Chunk ได้ แต่สำหรับ Workload ของเรา จุดสำคัญคือการลด Pointer Chasing ตอนประมวลผลทีละ Column
 
 ### Memory Efficiency: Arrow vs Go Swiss Table 💾
 
@@ -115,7 +115,7 @@ Go 1.24+ ใช้ [Swiss Table](https://go.dev/blog/swisstable) ซึ่งม
 
 10,000 Records: Go ประมาณ 3,520,000 B เทียบกับ Arrow 41,250 B (~85×)
 
-ในตัวอย่างที่ Go เก็บ Feature ผ่าน Map แยกต่อ Record นี้ Columnar Layout แบบ Arrow/Polars จึงใช้ Memory น้อยกว่าราว **85×** ได้เลยครับ! แต่ตัวเลขนี้เป็น Layout Estimate ภายใต้สมมติฐานข้างต้น ไม่ใช่ Benchmark ที่บอกว่าทุก Workload จะประหยัดได้เท่ากันนะครับ
+ตัวเลข **~85×** นี้เป็นการประมาณ Memory Layout ของเคสที่ Go ใช้ Map แยกต่อ Record ไม่ใช่ผล Benchmark ว่า Arrow จะประหยัด Memory ได้เท่านี้ทุกงานนะครับ ถ้า Go ใช้ `[]float32` ก็เก็บตัวเลขแบบ Compact ได้เช่นกัน และ Memory จริงยังมี Allocation กับ Metadata อื่น ๆ ด้วย
 
 ### Validity Bitmap: เก็บ Null ด้วย 1 Bit ต่อค่า
 
@@ -135,17 +135,17 @@ Go 1.24+ ใช้ [Swiss Table](https://go.dev/blog/swisstable) ซึ่งม
 
 ### Bonus: Zero-copy Slice ไม่ต้อง Copy ทุก Mini-batch
 
-เวลาจะส่งข้อมูลจำนวนมากเข้า Worker เรามักต้องแบ่งเป็น Mini-batch ถ้าทุกครั้งต้องสร้าง Array ใหม่แล้ว Copy ค่าเดิมทั้งหมด ก็เท่ากับต้องเสีย Memory Bandwidth ไปกับการ Allocation เพิ่มทั้งที่ข้อมูลใช้ข้อมูลเดิม!
+เวลาแบ่ง Items เป็น Mini-batch ถ้าต้องสร้าง Array ใหม่แล้ว Copy ค่าเดิมทุกครั้ง ก็เปลืองทั้ง Allocation และ Memory Bandwidth โดยไม่จำเป็นครับ
 
 Arrow รองรับการ **Slice ที่แชร์ Buffer เดิม** โดยเปลี่ยน Metadata เช่น Offset และ Length แทนการ Copy Payload ซึ่งเหมาะกับการส่ง Mini-batch ให้ Worker มากครับ
 
 ![แผนภาพ Arrow Zero-copy Slicing ที่แชร์ Underlying Buffer เดียวกัน](https://korntewin.github.io/intro-website/blog/figures/arrow-zero-copy.png)
 
-ข้อควรระวังคือ Zero-copy ไม่ได้หมายความว่า Pipeline ทั้งเส้นไม่มี Allocation การ Cast Type, Compute Feature, Rechunk หรือแปลง Input สำหรับ ONNX Runtime บางกรณีก็ยังสร้าง Buffer ใหม่ได้ เราจึงใช้ Zero-copy ในจุดที่รองรับจริง และวัด Allocation ในจุดที่ยังหลีกเลี่ยงไม่ได้
+**Zero-copy ใช้ได้กับการ Slice ไม่ได้แปลว่า Pipeline ทั้งเส้นไม่มี Allocation** การ Cast Type, Compute Feature, Rechunk หรือเตรียม Input ให้ ONNX Runtime อาจยังต้องสร้าง Buffer ใหม่ครับ
 
 ## 2. Actor Model: ให้แต่ละ ML Model จัดการ Mini-batch ของตัวเอง 🧵
 
-ปัญหาคลาสสิกของระบบ CPU-bound คือเมื่อมี Request เข้ามามาก เราอาจเผลอเพิ่ม Concurrency/Parallel มากกว่าที่ Hardware จะรับไหว เช่น Request หลายตัวต่าง Spawn งานประมวลผลพร้อมกัน และแต่ละโมเดลก็อาจมี Thread Pool ของ ONNX Runtime ของตัวเองอีก
+พอ Traffic สูง เราอาจมี Runnable Threads มากกว่าจำนวน CPU Cores โดยไม่รู้ตัว ทั้งงานที่แต่ละ Request Spawn ขึ้นมา และ Worker Threads ของ ONNX Runtime เอง
 
 ผลที่ตามมาคือ **Oversubscription**: มี Runnable Threads มากเกิน CPU Core จนเกิด Context Switching และแย่ง Cache กัน สุดท้าย Throughput ไม่เพิ่ม แต่ Tail Latency กลับแย่ลง
 
@@ -155,7 +155,7 @@ Arrow รองรับการ **Slice ที่แชร์ Buffer เดิ
 
 สิ่งที่ได้คือเราสามารถปรับ **Worker Count, Batch Size และ ONNX Runtime Threads** แยกตามโมเดลได้ ไม่จำเป็นต้องใช้ค่าเดียวกันทั้ง Service เพราะแต่ละโมเดลมีลักษณะต่างกัน เช่น Preprocessing หนักแต่ Inference เบา หรือ Inference ใช้ Memory Bandwidth มากจนเพิ่ม Threads แล้วไม่ได้เร็วขึ้น
 
-Actor Model ไม่ได้ทำให้คำนวณเร็วขึ้นโดยตัวมันเองนะครับ จุดที่ช่วยคือการสร้าง ขอบเขตของ Concurrency และ Ownership ที่ชัดเจน ทำให้เรา Tune แต่ละ Stage อย่างเป็นระบบ แทนที่จะปล่อยให้ทุก Request แข่งกันใช้ CPU มากจนเกินไป
+จุดที่ Actor Model ช่วยไม่ใช่ทำให้คำนวณเร็วขึ้นตรง ๆ แต่คือการกำหนด **ขอบเขต Concurrency และ Ownership** ให้ชัด เราจึง Tune แต่ละ Stage ได้โดยไม่ปล่อยให้ทุก Request แย่ง CPU กันเองครับ
 
 ## 3. Kahn’s Algorithm: จัดลำดับ Preprocessing ก่อนรับ Traffic 🧩
 
@@ -165,7 +165,7 @@ Preprocessing ของ ML ไม่ใช่แค่ Loop Transform Feature �
 
 ![แผนภาพ Dependency Graph และ Kahn Topological Sort ของ Preprocessing](https://korntewin.github.io/intro-website/blog/figures/kahn-dag.png)
 
-หลักการของ Kahn’s Algorithm เข้าใจง่ายมาก: นับจำนวน Dependency ที่เข้ามาในแต่ละ Node (in-degree) แล้วเริ่มจาก Node ที่มี in-degree เป็น 0 จากนั้นค่อยนำ Node ที่พร้อมออกมาประมวลผล ลด in-degree ของ Node ถัดไป และทำซ้ำจนจบ หากยังมี Node เหลือแต่ไม่มีตัวไหนพร้อม แปลว่ามี Cycle ที่ต้องแก้ก่อน Service Start
+Kahn’s Algorithm เริ่มจากนับจำนวน Dependency ที่เข้ามาในแต่ละ Node (in-degree) แล้วเลือก Node ที่มี in-degree เป็น 0 มาประมวลผล จากนั้นลด in-degree ของ Node ถัดไปและทำซ้ำ หากยังมี Node เหลือแต่ไม่มีตัวไหนพร้อม แสดงว่ามี Cycle ที่ต้องแก้ก่อน Service Start
 
 ข้อดีสำหรับ Production Service คือเราเปลี่ยนงานจาก “ค้นหาลำดับ Preprocessing ทุก Request” เป็น “**Validate และ Compile ครั้งเดียวตั้งแต่ตอน Startup**” เมื่อ Request เข้ามาก็ Execute แผนที่เตรียมไว้ได้เลย
 
@@ -197,9 +197,9 @@ let algebraic = a.algebraic_add(b)
     .algebraic_add(d);
 ```
 
-นี่ไม่ได้แปลว่า Update Compiler เป็น Rust 1.98 แล้ว Code ทุกบรรทัดจะเร็วขึ้นทันทีนะครับ เราต้องเลือกใช้ Method เหล่านี้อย่างมีเหตุผล และระวังเรื่อง Numerical Accuracy, NaN, Infinity, Signed Zero ตลอดจนความแตกต่างของผลลัพธ์ระหว่าง Compiler/Architecture
+Algebraic Operations อาจทำให้ผลลัพธ์ต่างไปจากเดิม ทั้งเรื่อง Rounding, NaN, Infinity และ Signed Zero เราจึงเลือกเปิดใช้เป็นจุด ๆ พร้อมทำ **Parity Tests และ Benchmark** เทียบกับ Implementation เดิมก่อนครับ
 
-โดยเฉพาะ Production ML ที่ผล Predict ต้องมีความสอดคล้องกับเวอร์ชันเดิม เราจึงต้องมี **Parity Tests** และ Benchmark ก่อนเปิด Optimization ในจุดที่เหมาะสม ส่วนตัวเลข 2.4×/5.4×/1.9× ข้างต้นเป็นผลรวมของการออกแบบหลายส่วน ไม่ใช่ Benchmark แยกเฉพาะ Algebraic Operations 🚀
+ส่วนตัวเลข **2.4× / 5.4× / 1.9×** ด้านบนเป็นผลจากการออกแบบระบบใหม่หลายส่วนรวมกัน ไม่ใช่ Benchmark ของ Algebraic FP เพียงอย่างเดียวครับ 🚀
 
 ## 5. Memory Allocator: ptmalloc, mimalloc หรือ jemalloc? 🧠
 
@@ -223,7 +223,7 @@ static GLOBAL_ALLOCATOR: tikv_jemallocator::Jemalloc =
     tikv_jemallocator::Jemalloc;
 ```
 
-แต่ผมอยากย้ำว่า ไม่มี Allocator ตัวไหนชนะทุก Workload โดยอัตโนมัติ การเปรียบเทียบที่แฟร์ควรใช้ Traffic, Model, Worker Count, Batch Size, Binary และ Environment เดียวกัน แล้ววัดทั้ง Throughput, P99, CPU และ RSS ครับ
+ถ้าจะเทียบ Allocator ให้แฟร์ ต้องใช้ Traffic, Model, Worker Count, Batch Size, Binary และ Environment เดียวกัน แล้ววัดทั้ง Throughput, P99, CPU และ RSS ครับ
 
 ### ทำอย่างไรให้ทุก Application ใช้ Allocator เดียวกัน?
 
@@ -243,31 +243,14 @@ static GLOBAL_ALLOCATOR: tikv_jemallocator::Jemalloc =
 
 ข้อดีไม่ได้มีแค่ Code Reuse แต่ยังช่วยให้เรา Benchmark, Test และ Tune แต่ละ Application ได้โดยไม่สร้างหลาย Implementation ของ Prediction Engine ส่วน Details เรื่อง Architecture ยังมีอีกเยอะ แต่ขอเก็บไว้เล่าคราวหน้าครับ 😄
 
-## Learning Points: สิ่งที่ได้จาก RIIR รอบนี้ 💡
 
-1. Memory Layout สำคัญไม่แพ้ภาษา เราจึงเริ่มจากลด Pointer Chasing และการ Copy ที่ไม่จำเป็น ก่อนเพิ่มความซับซ้อนเรื่อง Threads
+## ทิ้งท้าย
 
-2. Concurrency ที่มากกว่าไม่ได้แปลว่าเร็วกว่า เราใช้ 1D Data Parallelism ผ่าน Actor Pools และ Mini-batches โดยไม่ Parallel DAG Nodes เพิ่ม เพื่อเลี่ยง CPU Oversubscription
+ย้อนกลับมาดูแล้ว รอบนี้ไม่ได้จบที่การเปลี่ยน Go เป็น Rust แต่เป็นการจัดทางเดินของ Data ไปจนถึง Prediction ใหม่ ตั้งแต่ลดการ Copy ข้อมูล คุมจำนวน Actor Workers ไปจนถึง Compile ลำดับ Preprocessing ไว้ก่อนรับ Request
 
-3. Compile สิ่งที่รู้ล่วงหน้าตั้งแต่ Startup DAG ของ Preprocessing ควรถูกจัดลำดับ Dependency ไว้ก่อนรับ Request แรก
+ผลบน Production ด้านบนทำให้เห็นว่าการรื้อระบบครั้งนี้คุ้มแค่ไหน และถ้า Rollout ครบ **ทุก Use Case ของทีม** เราคาดว่า Cluster CPU Request จะลดจาก **79% เหลือ 69% (10 percentage points)** แต่ตัวเลขนี้ยังเป็น **Projection** ไม่ใช่ผลที่วัดได้หลัง Rollout นะครับ
 
-4. SIMD ต้องเข้าใจ Semantics Algebraic FP เปิดโอกาสให้ Compiler Optimize ได้มากขึ้น แต่ต้องตรวจผลลัพธ์เชิงตัวเลขทุกครั้ง
-
-5. Allocator เป็นส่วนหนึ่งของ Performance Design Benchmark ของ Prediction Service แสดงว่า jemalloc ลด Memory Usage ได้ประมาณ 100–500 MB ช่วง Peak Load และเราใช้ CI Policy เพื่อไม่ให้ Application ไหนลืม Config
-
-6. Architecture ที่ดีช่วยให้ Optimization คุ้มในระยะยาว เมื่อ Core ถูกแชร์กัน การปรับปรุงครั้งเดียวก็มีโอกาสส่งผลให้หลาย Use Case
-
-7. AI Agent เร่ง Implementation แต่ไม่ได้แทนการออกแบบระบบ การ Port ใช้เวลาประมาณ 1 สัปดาห์ โดยเรากำหนด Apache Arrow, Kahn’s Algorithm และ Actor Model เป็นโจทย์ที่ชัดเจนก่อนให้ Agent ช่วยลงมือ
-
-8. Quick Win ต้องคุ้มทั้งความเร็วและความแม่นยำ Quantization ให้ Performance Gain น้อยในโมเดลขนาดเล็กของเรา แต่ Accuracy ลดลงเกินรับได้ จึงไม่ใช่ทางเลือกสำหรับ Production
-
-## Conclusions
-
-ถ้ารอบก่อนคือการ Optimize Go Runtime รอบนี้ก็คือการ Re-think ว่า ML Prediction Service ควรจัด Data, CPU Threads และ Model Execution อย่างไรตั้งแต่แรก ผ่าน Rust, Apache Arrow, Polars, Actor Model และกลไกอื่น ๆ ที่ทำงานร่วมกัน
-
-ผลบน Production ของการเปรียบเทียบครั้งนี้คือ **P99 Latency ดีขึ้น 2.4 เท่า, CPU Usage ลดลง 5.4 เท่า และ Memory ลดลง 1.9 เท่า** ใน Traffic Split เท่ากัน ส่วนเมื่อ Rollout การปรับปรุงให้ครบ ทุก Use Case ของทีม เราคาดว่า Cluster CPU Request จะลดจาก 79% เหลือ 69% (10 percentage points) ซึ่งยังเป็น Projection ไม่ใช่ผลที่วัดได้หลัง Rollout
-
-สุดท้ายสิ่งที่ผมได้เรียนรู้คือ Performance Engineering ไม่ใช่การหา Library ที่เร็วที่สุดเพียงตัวเดียว แต่เป็นการทำให้ Data Flow, Memory Layout, Scheduling และ Architecture เข้ากันได้กับธรรมชาติของ Workload มากที่สุด โดยเฉพาะในวันที่ Private Cloud มี Capacity เหลืออยู่อย่างจำกัด และเราไม่สามารถแก้ปัญหาด้วยการเพิ่มเครื่องได้ง่าย ๆ ครับ 🚀
+พอลองไล่ดู Bottleneck ทีละจุด ผมแปลกใจว่าเรามี CPU เสียไปกับการ Copy Data, Allocation และ Thread Contention มากแค่ไหน พอเอา CPU เหล่านั้นกลับมาได้ ก็มี Capacity เหลือให้ ML Use Case ถัดไปโดยไม่ต้องรีบหาเครื่องเพิ่มใน Private Cloud ที่แทบจะเต็มอยู่แล้ว นี่แหละครับสิ่งที่ผมชอบที่สุดของ RIIR รอบนี้ 🦀
 
 ---
 
