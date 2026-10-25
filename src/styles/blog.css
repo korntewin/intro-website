@@ -360,3 +360,100 @@ body.portfolio-mode .portfolio .reading.article-prose {
   .portfolio .blog-feature:hover,
   .portfolio .blog-feature:hover .blog-feature-cover img { transform: none; }
 }
+
+
+/* The interactive memory estimate is enhanced on the live site only.
+   Medium receives the same static article prose without JavaScript controls. */
+.portfolio .article-prose .riir-memory-lab {
+  box-sizing: border-box;
+  margin: 30px 0 13px;
+  padding: clamp(19px, 3vw, 29px);
+  background: var(--p-card);
+  border: 1px solid var(--p-line);
+  border-radius: 18px;
+}
+.portfolio .riir-memory-lab-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  flex-wrap: wrap;
+  gap: 17px 24px;
+}
+.portfolio .article-prose .riir-memory-kicker {
+  font: 750 .67rem/1.5 ui-monospace, Menlo, Consolas, monospace;
+  letter-spacing: .09em;
+  color: var(--p-accent-ink);
+  margin: 0 0 7px;
+}
+.portfolio .article-prose .riir-memory-title {
+  font-size: clamp(1rem, 2.2vw, 1.27rem);
+  line-height: 1.45;
+  letter-spacing: -.02em;
+  margin: 0;
+}
+.portfolio .riir-memory-presets {
+  display: flex;
+  gap: 4px;
+  padding: 4px;
+  border: 1px solid var(--p-line);
+  border-radius: 999px;
+}
+.portfolio .riir-memory-presets button {
+  cursor: pointer;
+  border: 0;
+  border-radius: 999px;
+  background: transparent;
+  color: var(--p-muted);
+  font: 700 .76rem/1.4 ui-monospace, Menlo, Consolas, monospace;
+  padding: 7px 11px;
+}
+.portfolio .riir-memory-presets button[aria-pressed="true"] {
+  color: var(--p-card);
+  background: var(--p-accent-ink);
+}
+.portfolio .riir-memory-presets button:focus-visible {
+  outline: 2px solid var(--p-accent-ink);
+  outline-offset: 3px;
+}
+.portfolio .article-prose .riir-memory-explanation {
+  color: var(--p-muted);
+  font-size: .9rem;
+  line-height: 1.7;
+  margin: 13px 0 22px;
+}
+.portfolio .riir-memory-row + .riir-memory-row { margin-top: 17px; }
+.portfolio .riir-memory-label {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 12px;
+  font-size: .85rem;
+  margin-bottom: 7px;
+}
+.portfolio .riir-memory-label strong { font-variant-numeric: tabular-nums; white-space: nowrap; }
+.portfolio .riir-memory-track {
+  width: 100%;
+  height: 22px;
+  background: var(--p-chip);
+  border-radius: 5px;
+  overflow: hidden;
+}
+.portfolio .riir-memory-bar { height: 100%; border-radius: 5px; }
+.portfolio .riir-memory-go { background: #d79550; width: 100%; }
+.portfolio .riir-memory-arrow { background: #3b9a90; }
+.portfolio .riir-memory-summary {
+  font-size: .93rem;
+  margin-top: 19px;
+  font-variant-numeric: tabular-nums;
+}
+.portfolio .riir-memory-summary strong { color: var(--p-accent-ink); font-size: 1.2rem; }
+.portfolio .article-prose .riir-memory-note {
+  color: var(--p-muted);
+  font-size: .73rem;
+  line-height: 1.65;
+  margin: 11px 0 0;
+}
+@media (max-width: 500px) {
+  .portfolio .riir-memory-presets { width: 100%; }
+  .portfolio .riir-memory-presets button { flex: 1; }
+}
