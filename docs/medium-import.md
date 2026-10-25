@@ -33,7 +33,7 @@ The rendered content uses a complete h-entry / e-content body. The plain export 
 <p><em>Article cover</em></p>
 ~~~
 
-Image URLs are absolute HTTPS PNGs with explicit dimensions. The **16 images used by both articles** are rasterized from existing SVGs. Both languages reference the same figures in the same order, including the cluster-capacity projection at the end. The Medium image ZIP contains all 16 images in article reading order.
+Image URLs are absolute HTTPS PNGs with explicit dimensions. The **17 images used by both articles** are rasterized from existing SVGs. Both languages reference the same figures in the same order, including the cluster-capacity projection at the end. The Medium image ZIP contains all 16 images in article reading order.
 
 If Medium misses images, the [PNG image pack](https://korntewin.github.io/intro-website/blog/medium-images.zip) lets you upload them individually to the correct positions in the draft.
 

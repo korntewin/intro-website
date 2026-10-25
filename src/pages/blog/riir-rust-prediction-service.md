@@ -40,6 +40,8 @@ coverImageAlt: "ภาพประกอบจาก Go สู่ Rust สำห
 
 **Candidate Items 500–10,000 ตัว → Feature Data → Preprocessing → ONNX Runtime Inference → Ranking Scores**
 
+![ภาพรวมหนึ่ง Prediction Request: Candidate Items ผ่าน Feature Data, Preprocessing, ONNX Runtime Inference ไปเป็น Ranking Scores พร้อมจุดที่เกิด Feature Lookup, Data Copy และ Thread Contention](https://korntewin.github.io/intro-website/blog/figures/prediction-request-pipeline.png)
+
 หนึ่ง Request ต้องจัดการข้อมูลหลายพัน Records ตั้งแต่เตรียม Feature, ทำ Transformation ตาม Dependency ไปจนถึงส่ง Tensor เข้า Model Inference ยิ่ง Traffic เพิ่ม งานรอบ ๆ โมเดลก็เพิ่มตาม ทั้ง Feature Lookup, Temporary Allocation, การย้ายข้อมูล และจำนวน Threads ที่อาจแย่ง CPU กันเอง
 
 ลองนึกภาพแบบง่าย ๆ ครับ ถ้าแต่ละ Item มี **200 Features ชนิด `float32`** แค่ค่าตัวเลขล้วน ๆ ก็ใช้ **0.8 MB สำหรับ 1,000 Items** หรือ **8 MB สำหรับ 10,000 Items** แล้ว ยังไม่รวม Map, Null Metadata, Intermediate Columns หรือการเตรียม Input เข้าโมเดลนะครับ ของจริงยังมี Feature หลายชนิดปนกันด้วย ตัวเลขนี้จึงใช้ให้เห็น Scale เท่านั้น
