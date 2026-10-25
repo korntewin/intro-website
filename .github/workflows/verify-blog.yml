@@ -28,6 +28,7 @@ jobs:
           test -s dist/blog/figures/production-p99-timeseries.png
           test -s dist/blog/figures/arrow-validity-large-list.png
           test -s dist/blog/figures/arrow-swiss-memory.png
+          test -s dist/blog/figures/cluster-capacity.png
           test -s dist/blog/figures/lmwn-ml-web-landscape.png
           test -s dist/blog/riir-rust-prediction-service/index.html
           test -s dist/blog/riir-rust-prediction-service/en/index.html
@@ -38,4 +39,4 @@ jobs:
           test -s dist/blog/medium-images.zip
           unzip -tqq dist/blog/medium-images.zip
           png_count="$(unzip -Z -1 dist/blog/medium-images.zip | grep -c '[.]png$')"
-          test "$png_count" -eq 15
+          test "$png_count" -eq 16
