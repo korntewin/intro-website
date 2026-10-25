@@ -41,6 +41,8 @@ With resource efficiency as the goal, we looked at how much unnecessary CPU work
 
 **500–10,000 candidate items → feature data → preprocessing transformations → ONNX Runtime inference → ranking scores.**
 
+![One prediction request: candidate items, feature data, preprocessing, ONNX Runtime inference and ranking scores, highlighting lookups, copies and thread contention](https://korntewin.github.io/intro-website/blog/figures/prediction-request-pipeline.png)
+
 One incoming request may touch thousands of records. We build model-ready features, run the transformations in their dependency order, and pass the resulting tensors to inference. As traffic grows, *everything around the model* grows too: feature lookups, temporary allocations, data movement, and the number of workers competing for CPU.
 
 Here's a simple way to picture the scale. If a candidate has **200 `float32` features**, the raw numeric payload alone is **0.8 MB for 1,000 items** or **8 MB for 10,000 items**. That's before any maps, null metadata, intermediate columns, or model-input preparation. The actual service handles mixed feature types, of course; this is just an illustration.
