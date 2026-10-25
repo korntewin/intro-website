@@ -97,7 +97,6 @@ String Column ยังใช้ Offsets และ Values Buffers ส่วน P
 
 ![ประมาณการหน่วยความจำสำหรับ 200 Features ชนิด float32 ต่อ Record: Go map ต่อ Record เทียบ Arrow 200 Columns สำหรับ 1,000 และ 10,000 Records โดย Go ใช้ประมาณ 12.6 เท่าของ Arrow เมื่อรวม Validity Bitmap](https://korntewin.github.io/intro-website/blog/figures/arrow-swiss-memory.png)
 
-> สมมติว่าครบทั้ง 200 Features และมีค่าทุกช่อง แชร์ชื่อ Feature และสร้าง Map ด้วย Size Hint 200; ค่า Box นับเฉลี่ย ~4 B ต่อค่าเมื่อ Tiny Allocator จัดเก็บรวมกัน ตัวเลขใช้ MB = 1,000,000 B และเป็นประมาณการพื้นที่ข้อมูลที่ยังใช้งานอยู่ ไม่ใช่ Memory ทั้ง Process หรือผลประหยัดใน Production ยังไม่รวมชื่อ Feature ที่แชร์, Arrow Schema/Array Metadata, Buffer Padding/Capacity ส่วนเกิน และการปัดขนาด Outer Slice ถ้า Go ใช้ `map[string]float32` ก็ลดต้นทุน `any`/Boxing ได้ หรือใช้ `[]float32` ก็เก็บ Numeric Payload ได้แน่นเหมือนกันครับ
 
 ### 2. Arrow Memory Layout: Bitmap, Offsets และ Zero-copy Slice 💾
 
@@ -135,7 +134,7 @@ Arrow รองรับการ **Slice ที่แชร์ Buffer เดิ
 
 ผลที่ตามมาคือ **Oversubscription**: มี Runnable Threads มากเกิน CPU Core จนเกิด Context Switching และแย่ง Cache กัน สุดท้าย Throughput ไม่เพิ่ม แต่ Tail Latency กลับแย่ลง
 
-ใน RIIR เราใช้ **Actor Model** โดยแยก **Preprocessing Actor Pool** และ **Inference Actor Pool** สำหรับแต่ละ ML Model แล้วแบ่ง Items ใน Request เป็น Mini-batch ให้ Worker ประมวลผล
+ใน RIIR เราใช้ **Actor Model** ผ่าน [**Kameo**](https://github.com/tqwewe/kameo) ซึ่งเป็น Actor Library ของ Rust โดยแยก **Preprocessing Actor Pool** และ **Inference Actor Pool** สำหรับแต่ละ ML Model แล้วแบ่ง Items ใน Request เป็น Mini-batch ให้ Worker ประมวลผล
 
 ![แผนภาพ Actor Model แยก Preprocessing และ Inference Worker Pools พร้อม Mini-batches](https://korntewin.github.io/intro-website/blog/figures/actor-mini-batches.png)
 
@@ -293,7 +292,7 @@ Go ตอบโจทย์งาน Networking และ Backend Service ขอ
 
 ย้อนกลับมาดูแล้ว รอบนี้ไม่ได้จบที่การเปลี่ยน Go เป็น Rust แต่เป็นการจัดทางเดินของ Data ไปจนถึง Prediction ใหม่ ตั้งแต่ลดการ Copy ข้อมูล คุมจำนวน Actor Workers ไปจนถึง Compile ลำดับ Preprocessing ไว้ก่อนรับ Request
 
-A/B Test รอบนี้บอกว่า **Service ทั้งชุด** ทำงานต่างจากเดิมอย่างไรเมื่อรับ Traffic จริง แต่ไม่ได้แยกวัดว่า Arrow, Actor Model, Allocator หรือ Algebraic FP ช่วยไปคนละเท่าไร และตัวเลข **~12.6× ระหว่าง Go Map กับ Arrow** ก็เป็น Estimate ของพื้นที่เก็บข้อมูลภายใต้สมมติฐานที่ระบุไว้ ไม่ใช่ตัวเลขเดียวกับ **1.9× ของ Pod Memory ที่วัดบน Production** ครับ
+A/B Test รอบนี้บอกว่า **Service ทั้งชุด** ทำงานต่างจากเดิมอย่างไรเมื่อรับ Traffic จริง แต่ไม่ได้แยกวัดว่า Arrow, Actor Model, Allocator หรือ Algebraic FP ช่วยไปคนละเท่าไร และตัวเลข **~12.6× ระหว่าง Go Map กับ Arrow** ก็เป็น Estimate ของการเก็บ **200 `float32` Features ต่อ Record** ไม่ใช่ตัวเลขเดียวกับ **1.9× ของ Pod Memory ที่วัดบน Production** ครับ
 
 อีกอย่างที่ได้เรียนรู้คือ CPU-bound ไม่ได้แปลว่าต้อง Parallel ทุกอย่าง เราเลือก Parallel ตาม Items แต่ Execute DAG Nodes ตามลำดับในแต่ละ Mini-batch เพื่อไม่สร้าง Oversubscription อีกชั้น ส่วนจุดที่อนุญาตให้ Floating Point Reassociate ก็ต้องทำ Parity Test อยู่ดีครับ
 

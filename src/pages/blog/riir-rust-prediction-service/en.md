@@ -98,7 +98,6 @@ Using the [Go 1.24.0 Swiss Table layout](https://github.com/golang/go/tree/go1.2
 
 ![Estimated memory for 200 float32 features per record: one Go map per record versus 200 Arrow columns for 1,000 and 10,000 records, with Go using about 12.6 times the Arrow buffers including validity bitmaps](https://korntewin.github.io/intro-website/blog/figures/arrow-swiss-memory.png)
 
-> Assumptions: all 200 features are present and non-null, feature-name strings are shared, and maps use a size hint of 200. Dynamic boxes average ~4 B per value with tiny-allocation packing. MB means 1,000,000 B. These are estimates of retained data storage, not whole-process memory or production savings. Shared name bytes, Arrow schema/array metadata, buffer padding/spare capacity, and outer-slice allocation rounding are excluded. A Go `map[string]float32` removes the `any`/boxing cost; a compact `[]float32` can store the numeric payload just as densely.
 
 ### 2. Inside Arrow's memory layout: bitmaps, offsets, and zero-copy slices 💾
 
@@ -136,7 +135,7 @@ Under heavy traffic, it's easy to create more runnable work than the CPU cores c
 
 The result is **oversubscription**: more runnable threads than CPU cores, more context switching, and more contention for caches. Throughput doesn't necessarily increase, but tail latency can get much worse.
 
-For RIIR, we use the **Actor Model** with separate **preprocessing actor pools** and **inference actor pools** for each ML model. We split the items in a request into mini-batches and send those batches to workers.
+For RIIR, we use [**Kameo**](https://github.com/tqwewe/kameo), an **Actor Model** library for Rust, with separate **preprocessing actor pools** and **inference actor pools** for each ML model. We split the items in a request into mini-batches and send those batches to workers.
 
 ![Per-model preprocessing and inference actors processing request-level mini-batches](https://korntewin.github.io/intro-website/blog/figures/actor-mini-batches.png)
 
@@ -294,7 +293,7 @@ My favorite number here isn't even the P99 improvement. It's the **huge reductio
 
 Looking back, the rewrite was less about swapping Go for Rust and more about rebuilding the path from data to prediction: fewer copies, bounded worker pools, and a preprocessing plan compiled ahead of time.
 
-The A/B test tells us how the **whole implementation** behaved with real traffic. It doesn't isolate the effect of Arrow, actor pools, an allocator, or algebraic floating-point operations individually. And the **~12.6× Arrow-vs-map figure** is an estimate of retained data storage under explicit assumptions—not the **1.9×** production pod-memory result. Those are two different measurements.
+The A/B test tells us how the **whole implementation** behaved with real traffic. It doesn't isolate the effect of Arrow, actor pools, an allocator, or algebraic floating-point operations individually. And the **~12.6× Arrow-vs-map figure** estimates storage for **200 `float32` features per record**—it isn't the **1.9×** production pod-memory result. Those are two different measurements.
 
 One other lesson: optimizing a CPU-bound pipeline isn't about parallelizing everything. We parallelize across items, but deliberately keep preprocessing nodes sequential within each mini-batch to avoid a second layer of oversubscription. And when we relax floating-point semantics for SIMD, parity tests still matter.
 
