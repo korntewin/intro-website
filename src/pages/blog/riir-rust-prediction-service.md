@@ -73,7 +73,7 @@ coverImageAlt: "ภาพประกอบจาก Go สู่ Rust สำห
 
 รอบนี้ไม่ได้มี Optimization ตัวเดียวที่แก้ได้ทุกอย่างครับ เราเลยไล่ตั้งแต่การจัด Memory ไปจนถึงการคุม Threads ว่างานไหนที่ CPU ไม่จำเป็นต้องทำบ้าง
 
-### 1. Data Locality: จาก Go Map มาสู่ Arrow และ Polars 📦
+### 1. Memory Layout: จาก Go Map มาสู่ Arrow และ Polars 📦
 
 ก่อนอื่นต้องเข้าใจว่า CPU ไม่ได้อ่านข้อมูลจาก RAM ทีละชิ้นแบบไม่มีต้นทุน ทุกครั้งที่ต้องตาม Pointer ไปยัง Memory Location ใหม่ เราเสี่ยงเจอ Cache Miss และต้องรอข้อมูลจาก Memory Hierarchy ชั้นที่ช้ากว่า (จาก CPU Cache -> RAM)
 
@@ -83,11 +83,11 @@ coverImageAlt: "ภาพประกอบจาก Go สู่ Rust สำห
 
 ![ภาพอธิบาย Row-oriented และ Columnar Memory Layout](https://korntewin.github.io/intro-website/blog/figures/columnar-memory.png)
 
-ใน Columnar Layout ค่าประเภทเดียวกันจะถูกจัดเก็บใน Buffer ตาม Column ทำให้การ Scan Column ตัวเลขมี Memory Locality ดีกว่าโครงสร้างที่ต้อง Dereference Object หลายชั้น และเปิดโอกาสให้ Compiler หรือ Library ใช้ SIMD / Vectorized Operations ได้มีประสิทธิภาพขึ้น
+จุดนี้แหละครับที่เรียกว่า **Memory Layout** เราไม่ได้ดูแค่ว่าข้อมูลกิน RAM ไปกี่ MB แต่ดูด้วยว่า **ค่าแต่ละ Feature อยู่ตรงไหน และ CPU ต้องอ่านมันอย่างไร** ฝั่ง Arrow วางค่าของ Feature เดียวกันไว้ใน Buffer ตาม Column ทำให้การ Scan มี **Data Locality** ดีกว่าการ Lookup ข้าม Map และ Object หลายชั้น และเปิดโอกาสให้ Compiler หรือ Library ใช้ SIMD / Vectorized Operations ได้ง่ายขึ้น
 
 String Column ยังใช้ Offsets และ Values Buffers ส่วน Polars ก็อาจเก็บหลาย Chunk ได้ แต่สำหรับ Workload ของเรา จุดสำคัญคือการลด Pointer Chasing ตอนประมวลผลทีละ Column
 
-#### 200 float32 Features ใช้ Memory เท่าไร: Go Swiss Table vs Arrow 💾
+#### เทียบ Memory Layout ระหว่าง Go Swiss Table กับ Arrow 💾
 
 ลองประเมินที่ **200 Features ชนิด `float32` ต่อ Record** ครับ ฝั่ง Go Service ของเราเก็บเป็น `[]map[string]any` โดยมีหนึ่ง Map ต่อ Record เพื่อรองรับ Feature หลายชนิด ตัวเลข ~85× ในตัวอย่างเดิมมาจากการใส่ Feature เดียวลงใน Map ที่จองไว้ 8 Slots ทำให้ Fixed Overhead กับช่องว่างมีสัดส่วนสูงมาก พอมี 200 Features ต้นทุนส่วนนี้ก็เฉลี่ยต่อค่าได้น้อยลง แต่แต่ละ Slot บนระบบ 64-bit ยังมี String Header 16 B และ `any` 16 B รวมถึงค่า `float32` ที่ถูก Box แยกออกไป แม้แชร์ตัวอักษรของชื่อ Feature ระหว่าง Records แล้วก็ยังมี Header ซ้ำในแต่ละ Map ส่วน Control Bytes ของ [Swiss Table](https://go.dev/blog/swisstable) ใช้เพียง 1 B ต่อ Slot ครับ
 
@@ -97,7 +97,7 @@ String Column ยังใช้ Offsets และ Values Buffers ส่วน P
 
 > สมมติว่าครบทั้ง 200 Features และมีค่าทุกช่อง แชร์ชื่อ Feature และสร้าง Map ด้วย Size Hint 200; ค่า Box นับเฉลี่ย ~4 B ต่อค่าเมื่อ Tiny Allocator จัดเก็บรวมกัน ตัวเลขใช้ MB = 1,000,000 B และเป็นประมาณการพื้นที่ข้อมูลที่ยังใช้งานอยู่ ไม่ใช่ Memory ทั้ง Process หรือผลประหยัดใน Production ยังไม่รวมชื่อ Feature ที่แชร์, Arrow Schema/Array Metadata, Buffer Padding/Capacity ส่วนเกิน และการปัดขนาด Outer Slice ถ้า Go ใช้ `map[string]float32` ก็ลดต้นทุน `any`/Boxing ได้ หรือใช้ `[]float32` ก็เก็บ Numeric Payload ได้แน่นเหมือนกันครับ
 
-### 2. ลด Object และ Copy: Bitmap, Offsets และ Zero-copy Slice 💾
+### 2. Arrow Memory Layout: Bitmap, Offsets และ Zero-copy Slice 💾
 
 พอจัดข้อมูลเป็น Column แล้ว เราก็มีโอกาสลด Object ย่อย ๆ ต่อ Record และส่ง Mini-batch ด้วยการแชร์ Buffer เดิมได้มากขึ้นครับ
 
@@ -306,7 +306,7 @@ A/B Test รอบนี้บอกว่า **Service ทั้งชุด** 
 ถ้าต้องกลับมา Optimize CPU-bound Prediction Service แบบนี้อีกรอบ ผมจะไล่เช็กประมาณนี้ครับ:
 
 1. **วัด Workload ที่ใกล้ของจริง** ดู CPU, Memory และ P99 ต่อ Pod ภายใต้ Traffic ที่เทียบกันได้ ไม่ใช่ดู Microbenchmark อย่างเดียว
-2. **ดู Data Layout ก่อน** ถ้างานวิ่งทีละ Feature เป็นหลัก Columnar Buffer อาจเหมาะกว่า Map ต่อ Record
+2. **ดู Memory Layout ก่อน** ถ้างานวิ่งทีละ Feature เป็นหลัก Columnar Buffer อาจเหมาะกว่า Map ต่อ Record
 3. **นับ Copy และ Allocation** Slice อาจ Zero-copy ได้ แต่ Type Cast หรือ ONNX Input Preparation อาจยังต้อง Allocate ใหม่
 4. **คุมจำนวนงานที่วิ่งพร้อมกัน** จูน Mini-batch, Actor Workers และ ONNX Threads ไปด้วยกัน
 5. **Compile Preprocessing DAG ก่อน Serve** เจอ Dependency ผิดหรือ Cycle ตั้งแต่ตอน Start ดีกว่าตอนรับ Traffic จริง
