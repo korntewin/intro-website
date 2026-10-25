@@ -27,15 +27,15 @@ So this time we tried **RIIR (Rewrite It In Rust)**. The production numbers look
 
 These are results from a **production recommendation ranker at LMWN**, measured across **18 hours of evenly split A/B traffic on October 17–18, 2026**. This isn't a claim that Rust is always 5.4× more CPU-efficient than Go. 🔥
 
-## The problem: when the cluster runs out of room 😬
+## The problem: making better use of a shared cluster 😬
 
-As more ML use cases arrived, so did more models, more data, and more traffic. The cluster that had just started to look comfortable was almost full again. And cost wasn't our only constraint: **LINE MAN Wongnai's private cloud was running close to capacity too**. Adding more machines quickly enough to support new workloads wasn't exactly an easy option. 😬
+As more ML use cases arrived, so did more models, more data, and more traffic. That naturally meant more demand on our Kubernetes cluster. And since it's **a shared cluster used by multiple teams**, we also have to think about resource usage across the cluster, not just our own service. Cost isn't the only consideration either: expanding **compute capacity in LINE MAN Wongnai's private cloud** comes with some constraints. So we wanted to make better use of the capacity we already had before scaling up. 😅
 
 Here's the tricky part: **a request doesn't predict just one item**. It can rank **roughly 500–10,000 items per request**. When a bunch of requests hit during peak traffic, we're suddenly talking about **hundreds of thousands of items predicted per second**. 😵‍💫 That's why every unnecessary data copy, cache miss, and thread fighting for CPU time makes a real difference to system capacity.
 
-So the question became: **How do we handle a growing ML workload when our private cloud has so little capacity left?**
+So the question became: **How do we support growing ML workloads while making better use of our shared cluster's capacity?**
 
-We couldn't simply keep adding machines, so we had to recover capacity from the work each request was already doing.
+With resource efficiency as the goal, we looked at how much unnecessary CPU work we could remove from each request.
 
 ## Inside one prediction request 🔍
 
@@ -300,7 +300,7 @@ The production comparison above shows why the work mattered. If we roll these ch
 
 ![Projected cluster CPU requests before and after rolling out RIIR to all team use cases](https://korntewin.github.io/intro-website/blog/figures/cluster-capacity.png)
 
-What surprised me most wasn't just a faster executable. It was how much CPU we could get back by cutting unnecessary data movement, allocations, and thread contention. With private-cloud capacity so tight, those saved cycles give us room for the next ML use case without immediately asking for more machines. That's the part of RIIR I'm happiest about. 🦀
+What surprised me most wasn't just a faster executable. It was how much CPU we could get back by cutting unnecessary data movement, allocations, and thread contention. Those saved cycles give us room for the next ML use case while reducing our resource footprint on a cluster shared with other teams. That's the part of RIIR I'm happiest about. 🦀
 
 ## A checklist for CPU-bound ML prediction services ✅
 
