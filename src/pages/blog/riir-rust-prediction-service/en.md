@@ -74,7 +74,7 @@ Quantization was a useful experiment precisely because it gave us an answer earl
 
 There wasn't one magic optimization here. We worked through the parts of a prediction request that keep the CPU busy even when the model itself is small.
 
-### 1. Data locality: from Go maps to Arrow and Polars 📦
+### 1. Memory layout: from Go maps to Arrow and Polars 📦
 
 Pointer-heavy data structures make the CPU chase memory addresses. When the next address isn't cached, it has to wait for a slower level of the memory hierarchy, sometimes all the way to RAM.
 
@@ -84,11 +84,11 @@ But ML preprocessing often works **“one feature across many records”** rathe
 
 ![Row-oriented versus columnar memory layout](https://korntewin.github.io/intro-website/blog/figures/columnar-memory.png)
 
-In a columnar layout, values of the same type live together in buffers. Scanning a numeric column has better memory locality than repeatedly dereferencing nested objects, and it gives the compiler or library more opportunities to use **SIMD and vectorized operations** effectively.
+This is what I mean by **memory layout**: not just **how many bytes** we store, but **where feature values live and how the CPU reads them**. In Arrow, values of the same feature sit together in column buffers, so scanning that feature can have better **data locality** than looking it up in a map for every record. That also creates more opportunities for **SIMD and vectorized operations**.
 
 String columns still use offset and value buffers, and Polars can store multiple chunks. What matters for our workload is reducing pointer chasing when processing columns.
 
-#### What 200 float32 features cost: Go Swiss Table vs Arrow 💾
+#### Comparing memory layouts: Go Swiss Table vs Arrow 💾
 
 Let's use **200 `float32` features per record**. Our Go service stores `[]map[string]any`, with one map per record so features can have different types. The earlier ~85× estimate came from putting just one feature in a map that reserves eight slots: fixed overhead and empty slots dominated. With 200 features, that cost is spread over more values. Each slot on a 64-bit system still needs a 16 B string header and a 16 B `any`, with the `float32` value boxed separately. Sharing the feature-name strings across records saves their character data, but each map still stores its own headers. The [Swiss Table](https://go.dev/blog/swisstable) control bytes themselves cost only 1 B per slot.
 
@@ -98,7 +98,7 @@ Using the [Go 1.24.0 layout](https://github.com/golang/go/tree/go1.24.0/src/inte
 
 > Assumptions: all 200 features are present and non-null, feature-name strings are shared, and maps use a size hint of 200. Dynamic boxes average ~4 B per value with tiny-allocation packing. MB means 1,000,000 B. These are estimates of retained data storage, not whole-process memory or production savings. Shared name bytes, Arrow schema/array metadata, buffer padding/spare capacity, and outer-slice allocation rounding are excluded. A Go `map[string]float32` removes the `any`/boxing cost; a compact `[]float32` can store the numeric payload just as densely.
 
-### 2. Compact data and fewer copies: bitmaps, offsets, and slices 💾
+### 2. Inside Arrow's memory layout: bitmaps, offsets, and zero-copy slices 💾
 
 After putting features into columns, we could also avoid a lot of per-record objects and reuse buffers when splitting requests into mini-batches.
 
@@ -307,7 +307,7 @@ What surprised me most wasn't just a faster executable. It was how much CPU we c
 If I were doing this again, this is what I'd check before reaching for a rewrite:
 
 1. **Measure the actual workload.** Track per-pod CPU, memory, and P99 under comparable traffic, not just a microbenchmark.
-2. **Look at the shape of the data.** Maps are flexible, but a columnar buffer may be a better match for feature-wise preprocessing.
+2. **Inspect the memory layout.** Maps are flexible, but a columnar buffer may be a better match for feature-wise preprocessing.
 3. **Count copies and allocations.** Slicing can be zero-copy; type casts and ONNX input preparation may not be.
 4. **Put a budget on concurrency.** Tune mini-batch sizes, actor workers, and ONNX threads together.
 5. **Compile preprocessing dependencies before serving.** Catch cycles and missing dependencies during startup.
