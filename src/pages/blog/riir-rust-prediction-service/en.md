@@ -25,7 +25,7 @@ So this time we tried **RIIR (Rewrite It In Rust)**. The production numbers look
 - **Memory:** **1.9× lower** max pod memory usage.
 - **How:** a different memory layout, fewer avoidable copies, controlled concurrency, and a preprocessing plan prepared at startup.
 
-These are results from a **production recommendation ranker at LMWN**, measured across **18 hours of evenly split A/B traffic on October 17–18, 2026**. This isn't a claim that Rust is always 5.4× more CPU-efficient than Go. 🔥
+These are results from a **production recommendation ranker at LMWN**, measured across **18 hours of evenly split A/B traffic**. This isn't a claim that Rust is always 5.4× more CPU-efficient than Go. 🔥
 
 ## The problem: making better use of a shared cluster 😬
 
@@ -255,7 +255,7 @@ That's why we use **Semgrep as a policy check in CI** to require every applicati
 
 ## Production results: Go vs Rust 📊
 
-We compared both services in production using an **A/B test with an even traffic split**, collecting **18 hours of data on October 17–18, 2026**. We looked at P99 latency, CPU, and memory at the pod level.
+We compared both services in production using an **A/B test with an even traffic split**, collecting **18 hours of data**. We looked at P99 latency, CPU, and memory at the pod level.
 
 ![Production comparison of P99 latency, CPU and memory for Go and Rust](https://korntewin.github.io/intro-website/blog/figures/production-results.png)
 

@@ -24,7 +24,7 @@ coverImageAlt: "ภาพประกอบจาก Go สู่ Rust สำห
 - **Memory:** Max Pod Memory ใช้น้อยลง **1.9×**
 - **สิ่งที่เปลี่ยน:** Memory Layout ใหม่, ลดการ Copy ที่ไม่จำเป็น, คุม Concurrency และ Compile แผน Preprocessing ไว้ก่อนรับ Traffic
 
-ตัวเลขนี้วัดจาก **Production Recommendation Ranker ของ LMWN** ด้วย **A/B Testing ที่ Split Traffic เท่ากัน เป็นเวลา 18 ชั่วโมง วันที่ 17–18 ตุลาคม 2026** ไม่ได้หมายความว่าเปลี่ยน Go เป็น Rust แล้วทุก Service จะใช้ CPU น้อยลง 5.4 เท่านะครับ 🔥
+ตัวเลขนี้วัดจาก **Production Recommendation Ranker ของ LMWN** ด้วย **A/B Testing ที่ Split Traffic เท่ากัน เป็นเวลา 18 ชั่วโมง** ไม่ได้หมายความว่าเปลี่ยน Go เป็น Rust แล้วทุก Service จะใช้ CPU น้อยลง 5.4 เท่านะครับ 🔥
 
 ## โจทย์รอบนี้: ใช้ Capacity ของ Shared Cluster ให้คุ้มที่สุด 😬
 
@@ -254,7 +254,7 @@ Go ตอบโจทย์งาน Networking และ Backend Service ขอ
 
 ## ผลลัพธ์บน Production: Go vs Rust 📊
 
-เราเปรียบเทียบ Service ทั้งสองเวอร์ชันใน Production ด้วย **A/B Testing** ภายใต้ **Traffic Split เท่ากัน** เก็บข้อมูลต่อเนื่อง 18 ชั่วโมง ในวันที่ 17–18 ตุลาคม 2026 และดูทั้ง P99 Latency, CPU และ Memory ในระดับ Pod
+เราเปรียบเทียบ Service ทั้งสองเวอร์ชันใน Production ด้วย **A/B Testing** ภายใต้ **Traffic Split เท่ากัน** เก็บข้อมูลต่อเนื่อง 18 ชั่วโมง และดูทั้ง P99 Latency, CPU และ Memory ในระดับ Pod
 
 ![กราฟเปรียบเทียบ P99 latency, CPU และ Memory ของ Go และ Rust](https://korntewin.github.io/intro-website/blog/figures/production-results.png)
 
