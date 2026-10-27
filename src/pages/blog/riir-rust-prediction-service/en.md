@@ -317,6 +317,8 @@ If I were doing this again, this is what I'd check before reaching for a rewrite
 
 The goal isn't to use every Rust trick. It's to make sure the CPU spends its time on predictions rather than avoidable overhead. 😄
 
+These results have also made us more confident about what's next. **For new ML prediction services, we'll gradually start building in Rust from day one**, rather than starting with Go and rewriting later. That doesn't mean moving every service to Rust overnight, though. We'll still decide what makes sense for each use case. 🦀
+
 ---
 
 **Further reading / References:** [Our previous optimization story](https://life.lmwn.com/เบื้องหลังการลด-cost-ai-server-ลง-9-เท่า-และทำให้แอปเร็วขึ้น-4-เท่าที่-line-man-wongnai-da855335de5f) · [Rust 1.98 Release Notes](https://blog.rust-lang.org/2026/08/20/Rust-1.98.0/) · [Apache Arrow Columnar Format](https://arrow.apache.org/docs/format/Columnar.html) · [Go Swiss Tables](https://go.dev/blog/swisstable) · [Polars](https://pola.rs/) · [tikv/jemallocator](https://github.com/tikv/jemallocator)
