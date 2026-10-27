@@ -316,6 +316,8 @@ A/B Test รอบนี้บอกว่า **Service ทั้งชุด** 
 
 สุดท้ายเราไม่ได้อยากใช้ทุก Rust Trick ที่มีหรอกครับ แค่อยากให้ CPU ไปเสียเวลากับการ Predict จริง ๆ มากกว่างานที่ตัดออกได้ 😄
 
+ผลลัพธ์รอบนี้ทำให้เรามั่นใจขึ้นครับว่า **สำหรับ ML Prediction Service ใหม่ ๆ ต่อจากนี้ เราจะค่อย ๆ เริ่มพัฒนาด้วย Rust ตั้งแต่ต้น** แทนที่จะเริ่มจาก Go แล้วค่อยมา Rewrite ทีหลัง แต่ไม่ได้หมายความว่าจะย้ายทุก Service มา Rust ทันทีนะครับ เรายังต้องดูความเหมาะสมของแต่ละ Use Case ด้วย 🦀
+
 ---
 
 **อ่านต่อ / References:** [บทความ Optimization รอบก่อน](https://life.lmwn.com/เบื้องหลังการลด-cost-ai-server-ลง-9-เท่า-และทำให้แอปเร็วขึ้น-4-เท่าที่-line-man-wongnai-da855335de5f) · [Rust 1.98 Release Notes](https://blog.rust-lang.org/2026/08/20/Rust-1.98.0/) · [Apache Arrow Columnar Format](https://arrow.apache.org/docs/format/Columnar.html) · [Go Swiss Tables](https://go.dev/blog/swisstable) · [Polars](https://pola.rs/) · [tikv/jemallocator](https://github.com/tikv/jemallocator)
