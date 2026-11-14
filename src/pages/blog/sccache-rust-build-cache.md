@@ -9,114 +9,114 @@ coverImageAlt: "Cargo, sccache และ rustc ทำงานร่วมกั
 
 ![Cargo ส่ง Compile Request ผ่าน sccache เพื่อใช้ผลลัพธ์เดิมหรือเรียก rustc](https://korntewin.github.io/intro-website/blog/figures/sccache-cover.png)
 
-เคยไหมครับ แก้ Rust ไปไม่กี่บรรทัด Push ขึ้นไป แล้วนั่งดู CI Compile Dependencies เดิมอีกรอบ 😅 ในเครื่องเราอาจมี `target/` เก็บผลลัพธ์ไว้อยู่แล้ว แต่พอเป็น CI Runner ที่เริ่มใหม่ทุก Job ไฟล์เหล่านั้นอาจหายไปก่อน Build ครั้งถัดไป
+เคยเจออาการนี้ไหมครับ แก้โค้ด Rust ไปแค่ไม่กี่บรรทัด พอ Push ขึ้นไปปุ๊บ ก็ต้องมานั่งรอ CI Compile Dependencies ชุดเดิมซ้ำอีกรอบ 😅 ในเครื่องเรายังมีโฟลเดอร์ `target/` ช่วยจำผล Build ไว้ให้ แต่พออยู่บน CI Runner ที่เปิดเครื่องใหม่สะอาดทุก Job ไฟล์พวกนั้นก็หายเกลี้ยงตั้งแต่ก่อนเริ่ม Build รอบใหม่
 
-ระหว่างทำ Rust Service ที่มี Dependency Graph ค่อนข้างใหญ่ ผมเลยเริ่มกลับมาดูว่า **มีงานส่วนไหนที่เราเอาผลลัพธ์เดิมกลับมาใช้ได้บ้าง** เครื่องมือหนึ่งที่ช่วยได้คือ **sccache** ครับ มันเป็น Compiler Wrapper ที่เก็บผลการ Compile ส่วนที่ Cache ได้ไว้ใช้ซ้ำ ตัวอย่างในบทความนี้เป็นโปรเจกต์สมมติ และค่าที่ใช้มีไว้เพื่ออธิบายแนวคิด ยกเว้นผลเปรียบเทียบ CI ช่วงท้ายบทความ ซึ่งมาจากโปรเจกต์จริงของ LINE MAN Wongnai (LMWN) ครับ
+ตอนที่ผมทำ Rust Service ที่มี Dependency Graph ใหญ่พอสมควร เลยเริ่มไล่เช็กดูว่า **พอมีขั้นตอนไหนที่เราหยิบผลลัพธ์เก่ากลับมาใช้ต่อได้บ้าง** และตัวช่วยที่ตอบโจทย์มากก็คือ **sccache** ครับ ตัวนี้เป็น Compiler Wrapper ที่เก็บผล Compile ที่ Cache ได้ไว้ใช้ซ้ำ สำหรับตัวอย่างโค้ดและตัวเลขในบทความนี้จะเป็นโปรเจกต์สมมติที่ตั้งค่าไว้เพื่ออธิบายคอนเซปต์นะครับ ยกเว้นผลวัดเวลาบน CI ช่วงท้ายที่เก็บมาจากโปรเจกต์จริงครับ
 
 ## สรุปสั้น ๆ ก่อน ⚡
 
-- Cargo ใช้ผลลัพธ์ที่มีอยู่ใน `target/` ซ้ำได้ ส่วน sccache มี Cache แยกสำหรับผลการ Compile ที่ Cache ได้
-- Cache Hit ช่วยข้ามการเรียก Compiler ครั้งนั้น แต่ Linking, Build Script และ Crate บางชนิดยังต้องทำงาน
-- sccache สร้าง Key จาก Inputs ของแต่ละ Compilation ถ้าแก้ Crate ไหน Crate นั้นและ Crate ที่พึ่งพามันจะ Miss ส่วน LRU Eviction ช่วยคุม Local Cache ให้อยู่ใน Size Limit
-- Rust Incremental Compilation กับ Shared Compiler Cache แก้ปัญหาคนละระดับ เลือกให้เหมาะกับ Workflow
-- วัดเวลา **ทั้ง Job** รวม Restore และ Upload Cache ด้วย เพราะ Hit Rate สูงไม่ได้รับประกันว่า Build โดยรวมจะเร็วขึ้นครับ
+- Cargo เอาของเดิมใน `target/` กลับมาใช้ต่อได้อยู่แล้ว ส่วน sccache จะเป็นชั้น Cache แยกสำหรับเก็บผล Compile ที่ Cache ได้ไว้ให้
+- เวลา Cache Hit เราจะข้ามขั้นตอนเรียก Compiler รอบนั้นไปได้เลย แต่พวก Linking, Build Script และ Crate บางประเภทก็ยังต้องรันอยู่ดี
+- sccache สร้าง Key จาก Inputs ของการ Compile แต่ละครั้ง ถ้าเราแก้ Crate ไหน ตัวมันกับ Crate ที่เรียกใช้ต่อจากมันก็จะ Miss ส่วน Local Cache จะใช้ LRU Eviction คอยคุมขนาดไม่ให้เกิน Limit
+- Rust Incremental Compilation กับ Shared Compiler Cache ช่วยแก้คนละโจทย์กัน ต้องเลือกเปิดใช้ให้ตรงกับ Workflow
+- เวลาวัดผลให้ดูเวลา **ทั้ง Job** รวมถึงช่วง Restore กับ Upload Cache ด้วยนะครับ เพราะต่อให้ Hit Rate สูง ก็ไม่ได้การันตีว่า Job โดยรวมจะเร็วขึ้นครับ
 
 ## sccache คืออะไร? 📦
 
-[sccache](https://github.com/mozilla/sccache/blob/v0.19.0/README.md) เป็นตัวกลางระหว่าง Build Tool กับ Compiler ใช้ได้กับ Rust, C/C++ และ Compiler อื่น ๆ ที่ sccache รองรับ โดยเก็บผลลัพธ์ลง Local Disk หรือใช้ Remote Backend ที่รองรับ เพื่อให้หลายเครื่องนำผลลัพธ์กลับมาใช้ร่วมกันได้
+[sccache](https://github.com/mozilla/sccache/blob/v0.19.0/README.md) เป็นเครื่องมือทำ Compiler Cache ที่เริ่มต้นพัฒนาโดย **Mozilla** องค์กรผู้ให้กำเนิดภาษา Rust นี่แหละครับ ตัวมันทำหน้าที่คั่นกลางระหว่าง Build Tool กับ Compiler ใช้ได้กับทั้ง Rust, C/C++ และอีกหลาย Compiler โดยสามารถเก็บผล Compile ลง Local Disk หรือส่งขึ้น Remote Backend เพื่อให้เครื่องอื่น ๆ หยิบไปใช้ต่อร่วมกันได้
 
-**Shared Cache** คือการแชร์ผล Compile ที่เสร็จแล้ว นอกจากนี้ sccache ยังรองรับ **Distributed Compilation** ที่ส่งงานไป Compile บนเครื่องอื่นด้วย สองอย่างนี้เป็นคนละฟีเจอร์กันครับ ตัวอย่างในบทความใช้ Compiler Cache โดยไม่ต้องตั้ง Distributed Compiler Cluster
+ตรงนี้แยกเป็น 2 ฟีเจอร์นะครับ **Shared Cache** คือการแชร์ผล Compile ที่ทำเสร็จแล้วระหว่างเครื่อง ส่วน **Distributed Compilation** คือการกระจายงานไป Compile บนเครื่องอื่น สำหรับตัวอย่างในบทความนี้เราจะใช้แค่ Compiler Cache อย่างเดียว ไม่ต้องตั้ง Distributed Compiler Cluster ให้วุ่นวายครับ
 
 ## เจาะลึก: sccache ทำงานอย่างไร? 🔍
 
-sccache ไม่ได้ทำให้ rustc เร็วขึ้นนะครับ แต่ช่วยประหยัดเวลาด้วยการ **ไม่เรียก rustc** สำหรับ Crate ที่เคย Compile ด้วยเงื่อนไขเดียวกันทุกประการมาแล้ว ส่วนนี้จะตอบสองคำถาม คือ sccache ตัดสินอย่างไรว่า Compilation สองครั้ง “เหมือนกันทุกประการ” และดูแลไม่ให้ผลลัพธ์ที่เก็บไว้ล้น Disk ได้อย่างไร รายละเอียดอ้างอิงการรองรับ Rust ใน sccache 0.19.0 และอาจเปลี่ยนไปตามเวอร์ชันครับ
+จริง ๆ แล้ว sccache ไม่ได้ทำให้ตัว rustc ทำงานเร็วขึ้นนะครับ แต่มันช่วยประหยัดเวลาด้วยการ **ข้ามการเรียก rustc ไปเลย** สำหรับ Crate ที่เคย Compile ด้วยเงื่อนไขเดียวกันเป๊ะ ๆ มาก่อน พาร์ตนี้จะพาไปดู 2 คำถามหลักครับ คือ sccache ดูจากอะไรว่างาน Compile สองรอบนี้ “เหมือนกันเป๊ะ” แล้วจริง ๆ กับมันจัดการอย่างไรไม่ให้ไฟล์ Cache บวมจนล้น Disk (รายละเอียดนี้อิงการรองรับ Rust ใน sccache 0.19.0 ซึ่งอาจเปลี่ยนไปตามเวอร์ชันนะครับ)
 
-เมื่อกำหนด `RUSTC_WRAPPER=sccache` Cargo จะเรียก `sccache rustc …` สำหรับทุก Crate ที่ตัดสินใจว่าต้อง Build คำสั่งนี้เป็นแค่ Client บาง ๆ โดยค่าเริ่มต้นจะส่ง Request ต่อให้ **sccache Server** ที่ทำงานอยู่เบื้องหลัง (ถ้ายังไม่มีก็จะเริ่มให้) Server เป็นตัวถือการเชื่อมต่อกับ Storage และเก็บ Stats นี่จึงเป็นเหตุผลที่ `--show-stats`, `--zero-stats` และ `--stop-server` ต้องคุยกับ Server และค่าอย่างขนาด Cache จะถูกอ่านตอน Server เริ่มทำงานครับ
+เวลาเราตั้ง `RUSTC_WRAPPER=sccache` ตัว Cargo จะไปเรียก `sccache rustc …` แทนสำหรับทุก Crate ที่ Cargo ดูแล้วว่าต้อง Build เจ้าตัวคำสั่งนี้เป็นแค่ Thin Client เบา ๆ โดยค่าเริ่มต้นมันจะโยน Request ไปให้ **sccache Server** ที่รันอยู่เบื้องหลัง (ถ้ายังไม่ได้เปิดไว้ มันก็สตาร์ตให้เอง) ตัว Server จะเป็นคนถือ Connection กับ Storage รวมถึงคอยนับ Stats ให้ เพราะแบบนี้พวกคำสั่ง `--show-stats`, `--zero-stats` และ `--stop-server` เลยต้องคุยกับ Server และพวก Config อย่างขนาด Cache ก็จะถูกอ่านตอน Server เริ่มทำงานครับ
 
-![Compile Request ที่ Cache ได้ใช้ Inputs ค้นหา Cache ถ้า Hit จะคืนผลลัพธ์ ถ้า Miss จะเรียก Compiler](https://korntewin.github.io/intro-website/blog/figures/sccache-flow.png)
+![Compile Request ที่ Cache ได้จะนำ Inputs ไปค้นหาใน Cache ถ้า Hit จะคืนผลลัพธ์เดิม ถ้า Miss จะส่งไปเรียก Compiler](https://korntewin.github.io/intro-website/blog/figures/sccache-flow.png)
 
-สำหรับแต่ละ Request Server จะตรวจก่อนว่า Cache ได้ไหม ถ้าได้ sccache จะสร้าง Key จาก Inputs ของ Request นั้นแล้วค้นหาใน Storage ถ้า **Hit** ก็คืน Output ที่เก็บไว้ ถ้า **Miss** ก็เรียก Compiler แล้วอาจเก็บผลลัพธ์ที่สำเร็จไว้ ส่วน Request ที่ Cache ไม่ได้จะส่งต่อให้ Compiler ทำงานตามปกติ อ่านเพิ่มเติมได้จาก [Architecture Documentation](https://github.com/mozilla/sccache/blob/v0.19.0/docs/Architecture.md) ครับ
+พอมี Request เข้ามา ตัว Server จะเช็กก่อนว่าเคสนี้ Cache ได้ไหม ถ้าได้ sccache ก็จะคำนวณ Key จาก Inputs แล้วเอาไปค้นใน Storage ถ้า **Hit** ก็ดึง Output เดิมมาคืนให้เลย แต่ถ้า **Miss** ก็ปล่อยให้ Compiler ทำงานไป แล้วพอ Compile ผ่านและเข้าเกณฑ์ ค่อยเก็บผลลัพธ์ลง Cache ส่วน Request ไหนที่ Cache ไม่ได้ ก็แค่ส่งต่อไปให้ Compiler รันตามปกติ อ่านเพิ่มได้ใน [Architecture Documentation](https://github.com/mozilla/sccache/blob/v0.19.0/docs/Architecture.md) ครับ
 
-sccache ดู Compile Request ทีละรายการ ไม่ได้ตัดสินว่า Pipeline ทั้งชุด “เหมือนเดิม” การเปลี่ยน Compiler, Feature, Target, Profile, Flags, Source หรือ Input ที่เกี่ยวข้องจึงอาจทำให้เกิด Miss ซึ่งเป็นเรื่องดีครับ เพราะผล Compile เดิมไม่ควรถูกนำมาใช้เมื่อเงื่อนไขเปลี่ยนไป
+จุดสำคัญคือ sccache เช็กแยกทีละ Compile Request ไม่ได้เหมารวมว่า Pipeline ทั้งเส้น “เหมือนเดิม” ดังนั้นพอเปลี่ยน Compiler, Feature, Target, Profile, Flags, Source หรือ Input ที่เกี่ยวข้องก็ย่อมเกิด Miss ซึ่งถือว่าถูกต้องแล้วครับ เพราะถ้าเงื่อนไขเปลี่ยน เราก็ไม่ควรหยิบของเก่ามาใช้ผิด ๆ
 
 ### Compile Request แบบไหน Cache ได้? ✅
 
-การเป็น Dependency อย่างเดียวไม่ได้แปลว่า Cache ได้เสมอครับ สำหรับ sccache 0.19.0 Compile Request ของ Rust Library ทั่วไปที่ปิด Incremental จะ Cache ได้ เมื่อ Arguments และ Outputs อยู่ในรูปแบบที่รองรับ ส่วน Request ที่เปิด Incremental และ Crate ที่เรียก System Linker เช่น `bin`, `dylib`, `cdylib` และ `proc-macro` จะผ่านไป Compile ตามปกติ การรัน Build Script, Linking และการรัน Test ก็ยังกินเวลาอยู่ ดู [เงื่อนไข Cache ของ Rust](https://github.com/mozilla/sccache/blob/v0.19.0/docs/Rust.md) เพิ่มเติมครับ
+การเป็น Dependency อย่างเดียวไม่ได้แปลว่า Cache ได้เสมอนะครับ สำหรับ sccache 0.19.0 ตัว Compile Request ของ Rust Library ทั่วไปที่ปิด Incremental จะ Cache ได้เมื่อ Arguments กับ Outputs อยู่ในรูปแบบที่รองรับ ส่วน Request ที่เปิด Incremental รวมถึง Crate ที่ต้องเรียก System Linker อย่าง `bin`, `dylib`, `cdylib` และ `proc-macro` จะข้าม Cache ไป Compile ตามปกติ แถมการรัน Build Script, Linking และการรัน Test ก็ยังกินเวลาอยู่ดี ดูเพิ่มใน [เงื่อนไข Cache ของ Rust](https://github.com/mozilla/sccache/blob/v0.19.0/docs/Rust.md) ได้ครับ
 
 ### อะไรบ้างที่อยู่ใน Cache Key? 🔑
 
 ![Compiler, Arguments, Source Files, Dependencies, Environment และ Working Directory ถูก Hash รวมเป็น Cache Key ถ้า Inputs เหมือนเดิมจะ Hit ถ้ามี Input เปลี่ยนจะ Miss](https://korntewin.github.io/intro-website/blog/figures/sccache-key.png)
 
-Key ต้องเปลี่ยนทุกครั้งที่ Output มีโอกาสเปลี่ยน **Key จึงแทน Compile Request หนึ่งรายการ ไม่ใช่แค่ชื่อ Crate กับ Version** ก่อน Hash sccache จะขอ Dependency Information จาก rustc (`--emit dep-info`) ซึ่งบอกว่า Crate อ่านไฟล์ไหนบ้าง รวมถึง Modules และไฟล์ที่ดึงเข้ามาด้วย `include_str!` และ Environment Variables ที่อ่านผ่าน `env!` จากนั้นจึง Hash Inputs เหล่านี้ด้วย blake3:
+Key ต้องเปลี่ยนทุกครั้งที่ Output มีสิทธิ์เปลี่ยนได้ **พูดง่าย ๆ คือ Key หนึ่งตัวแทน Compile Request หนึ่งครั้ง ไม่ใช่แค่ชื่อ Crate กับ Version** ครับ ก่อนจะ Hash ตัว sccache จะไปขอข้อมูล Dependencies จาก rustc (`--emit dep-info`) เพื่อดูว่า Crate นี้เปิดอ่านไฟล์ไหนบ้าง ทั้ง Modules, ไฟล์ที่ดึงมาด้วย `include_str!` และ Environment Variables ที่อ่านผ่าน `env!` จากนั้นค่อยเอา Inputs ทั้งหมดด้านล่างมา Hash ด้วย blake3:
 
-- **Compiler:** เวอร์ชันของ rustc และ Libraries ใน Sysroot อัปเดต Toolchain เมื่อไหร่ก็ได้ Key ใหม่
-- **Arguments:** ชื่อ Crate, Edition, ค่า `--cfg` เช่น Features ที่เปิดอยู่, Optimization Level, Target และ Codegen Flags ส่วนตำแหน่ง Output อย่าง `--out-dir` และ Search Path จาก `-L` ไม่ถูกนำมาคิด
+- **Compiler:** เวอร์ชันของ rustc และ Libraries ใน Sysroot พออัปเดต Toolchain เมื่อไหร่ก็ได้ Key ใหม่ทันที
+- **Arguments:** ชื่อ Crate, Edition, ค่า `--cfg` อย่าง Features ที่เปิดใช้, Optimization Level, Target และ Codegen Flags ส่วนตำแหน่ง Output อย่าง `--out-dir` กับ Search Path จาก `-L` จะไม่ถูกนำมาคิด
 - **Source Files:** เนื้อหาของทุกไฟล์ในรายการ dep-info
-- **Dependencies:** เนื้อหาของทุก Crate ที่ส่งผ่าน `--extern` (`.rlib` หรือ `.rmeta`) ซึ่ง Crate นี้ใช้ตอน Compile
-- **Environment:** ตัวแปร `CARGO_*` ยกเว้นบางตัว เช่น `CARGO_BUILD_JOBS` และ `CARGO_MAKEFLAGS` รวมถึงค่าของตัวแปรที่อ่านด้วย `env!`
-- **Working Directory:** Directory ที่ rustc ทำงาน นี่เป็นอีกเหตุผลที่ Checkout Path ใน CI ควรคงที่
+- **Dependencies:** เนื้อหาของทุก Crate ที่ส่งผ่าน `--extern` (`.rlib` หรือ `.rmeta`) ที่ Crate นี้ต้องใช้ตอน Compile
+- **Environment:** ตัวแปร `CARGO_*` ยกเว้นบางตัว เช่น `CARGO_BUILD_JOBS` กับ `CARGO_MAKEFLAGS` รวมถึงค่าของตัวแปรที่อ่านผ่าน `env!`
+- **Working Directory:** Directory ที่ rustc รันอยู่ นี่เป็นอีกเหตุผลว่าทำไม Checkout Path บน CI ถึงควรตั้งให้คงที่เหมือนเดิมทุกครั้ง
 
-Cache ไม่เคยแก้ Entry เดิมทับที่เดิมครับ เมื่อ Input เปลี่ยน sccache จะค้นหาด้วย Key ใหม่ที่อาจยังไม่มี Entry และไม่ได้ลบ Entry เก่าทันที ผลลัพธ์เก่ายังมีประโยชน์ได้เมื่อกลับไปใช้ Branch หรือ Inputs ชุดเดิม รายการข้างบนเป็นคำอธิบายแบบย่อจาก [โค้ดสร้าง Key ของ Rust](https://github.com/mozilla/sccache/blob/v0.19.0/src/compiler/rust.rs) ดู [เอกสารการ Hash](https://github.com/mozilla/sccache/blob/v0.19.0/docs/Caching.md) ประกอบได้ครับ
+ตัว Cache จะไม่เคยเขียนทับ Entry เดิมครับ เวลา Input เปลี่ยน sccache แค่เอา Key ใหม่ไปค้น ซึ่งอาจจะยังไม่มี Entry เก็บไว้ แต่ก็ไม่ได้ตามไปลบของเก่าทิ้งทันที ของเดิมเลยยังช่วยได้เผื่อจังหวะที่เราสลับกลับไป Branch หรือ Inputs ชุดเดิมครับ รายการด้านบนนี้สรุปแบบย่อมาจาก [โค้ดสร้าง Key ของ Rust](https://github.com/mozilla/sccache/blob/v0.19.0/src/compiler/rust.rs) อ่านคู่กับ [เอกสารการ Hash](https://github.com/mozilla/sccache/blob/v0.19.0/docs/Caching.md) เพิ่มได้เลยครับ
 
 ### Hit หรือ Miss เวลาหายไปไหน? ⏱️
 
 ![Timeline ของหนึ่ง Crate: Miss ต้อง Hash ค้นหา Compile และเก็บผล Hit ต้อง Hash ค้นหา และ Restore ส่วน Request ที่ Cache ไม่ได้จะเรียก rustc โดยตรง](https://korntewin.github.io/intro-website/blog/figures/sccache-hit-miss.png)
 
-Miss ทำงาน **มากกว่า** การเรียก rustc ตรง ๆ เล็กน้อย เพราะ sccache ต้องเรียก rustc หนึ่งครั้งเพื่อเอา dep-info อ่านและ Hash ทุก Input, Compile จริง แล้วบีบอัดและเก็บผลลัพธ์ ส่วน Hit ทำการ Hash และค้นหาเหมือนกัน แต่ข้ามการ Compile ไปทั้งหมด เวลาที่ประหยัดได้ต่อหนึ่ง Hit จึงประมาณเวลา Compile ของ Crate นั้นลบด้วยเวลา Restore ดังนั้น Dependencies ใหญ่ ๆ ที่ Compile นานจะได้ประโยชน์มากที่สุดครับ
+เวลา Miss งานจะ **เยอะกว่า** การเรียก rustc ตรง ๆ นิดหน่อยครับ เพราะ sccache ต้องสะกิด rustc หนึ่งรอบเพื่อขอ dep-info, อ่านแล้ว Hash ทุก Input, สั่ง Compile จริง ก่อนจะบีบอัดแล้วเก็บลง Cache ส่วนฝั่ง Hit ก็ต้อง Hash กับค้นหาเหมือนกัน แต่ข้ามช่วง Compile จริงไปได้ทั้งหมด เวลาที่ประหยัดได้ต่อ 1 Hit ก็เลยประมาณเวลา Compile ของ Crate นั้นลบด้วยเวลา Restore นี่จึงเป็นเหตุผลว่าทำไม Dependencies ก้อนใหญ่ ๆ ที่ Compile นานถึงได้ประโยชน์จาก Cache มากที่สุดครับ
 
-แต่ละ Entry เป็น Archive ขนาดเล็กที่เก็บ Output ที่ Compile แล้ว เช่น `.rlib` และ `.rmeta` ซึ่งบีบอัดด้วย zstd พร้อม stdout และ stderr ของ rustc เมื่อ Hit sccache จะเขียนไฟล์ไปยังตำแหน่งที่ Cargo ต้องการ แล้วแสดงข้อความของ Compiler ซ้ำ Warning จาก Workspace Crate ที่มาจาก Cache จึงยังแสดงอยู่ ส่วน Request ที่ Cache ไม่ได้จะส่งตรงไปที่ rustc โดยไม่เก็บอะไรไว้
+ข้างในแต่ละ Entry จะเป็น Archive ก้อนเล็ก ๆ ที่รวม Output ที่ Compile เสร็จแล้วอย่าง `.rlib` และ `.rmeta` ซึ่งบีบอัดด้วย zstd แนบมากับ stdout และ stderr ของ rustc ด้วย พอ Hit ปุ๊บ sccache ก็จะแตกไฟล์ไปวางในจุดที่ Cargo รอรับ แล้วพ่นข้อความเดิมของ Compiler ออกมาซ้ำ พวก Warning จาก Workspace Crate ที่ดึงมาจาก Cache เลยยังโชว์ให้เห็นเหมือนเดิม ส่วน Request ที่ Cache ไม่ได้ก็จะส่งตรงไปที่ rustc โดยไม่บันทึกอะไรลง Cache เลยครับ
 
 ### ทำไมแก้ Crate เดียวไม่ต้อง Build ใหม่ทั้งหมด? 🕸️
 
 ![Crate Graph หลังแก้ core บน Runner ใหม่: core และ api ที่พึ่งพามัน Miss ส่วน Crate ที่ไม่ถูกแก้ Hit และ Proc-macro กับ Binary ต้อง Compile ทุกครั้ง](https://korntewin.github.io/intro-website/blog/figures/sccache-graph.png)
 
-ลองนึกถึง CI Runner ใหม่ที่ `target/` ว่าง แต่ sccache ยังอุ่นอยู่ และ Commit นี้แก้เฉพาะ Workspace Crate ชื่อ `core` Cargo ไม่มี Output เดิมเลย จึงส่ง Compile Request ของทุก Crate และแต่ละ Request ถูกตรวจแยกกัน:
+ลองนึกภาพตามนะครับว่าเราได้ CI Runner เครื่องใหม่ที่ `target/` ยังว่างเปล่า แต่ sccache ยังมีข้อมูลอุ่น ๆ อยู่ แล้ว Commit รอบนี้เราแก้แค่ Workspace Crate ชื่อ `core` ตัวเดียว พอ Cargo ไม่มี Output เก่าติดเครื่องอยู่ มันก็จะส่ง Compile Request ของทุก Crate เข้ามา แล้วแต่ละ Request ก็จะถูกเช็กแยกกันแบบนี้ครับ:
 
-- Third-party Crates และ Workspace Libraries ที่ไม่ถูกแก้มี Inputs เหมือนเดิม: **Hit**
-- `core` มี Source File ที่เปลี่ยน: **Miss**
-- `api` ไม่ได้ถูกแก้ แต่ Compile กับ `.rlib` ใหม่ของ `core` และเนื้อหาของ Dependency นั้นเป็นส่วนหนึ่งของ Key ของ `api` จึง **Miss** ด้วย การเปลี่ยนแปลงไหลต่อไปยัง Crate ปลายทาง
-- Procedural Macro `macros` และ Binary `app` ต้องเรียก Linker จึง **Compile ทุกครั้ง**
+- Third-party Crates กับ Workspace Libraries ตัวอื่นที่ไม่ได้แก้มี Inputs เหมือนเดิมเป๊ะ: **Hit**
+- `core` มี Source File เปลี่ยนไป: **Miss**
+- `api` ไม่ได้ถูกแก้โค้ดก็จริง แต่ต้อง Compile คู่กับ `.rlib` ตัวใหม่ของ `core` และตัวไฟล์ Dependency นั้นก็นับเป็นส่วนหนึ่งของ Key ของ `api` ด้วย มันเลย **Miss** ตามไปด้วย แรงกระเพื่อมเลยไหลต่อมายัง Crate ปลายน้ำ
+- Procedural Macro `macros` และ Binary `app` ต้องเรียก Linker เลยต้อง **Compile ใหม่ทุกครั้ง**
 
-Hit ก็ไหลต่อได้เหมือนกันครับ เพราะ Hit คืน Output ที่ตรงกับที่เก็บไว้ทุก Byte Crate ถัดไปจึงเห็นเนื้อหา Dependency เหมือนเดิมและยัง Match ต่อไปได้ งานที่เหลือจึงประมาณว่า “ส่วนที่เปลี่ยน + ทุกอย่างที่อยู่ปลายทางของมัน + ส่วนที่ Cache ไม่ได้” นี่จึงเป็นเหตุผลที่การแก้ Crate ที่อยู่ล่าง ๆ ของ Graph, การอัปเดต Dependency ที่ถูกใช้แทบทุกที่ หรือการเปลี่ยน Toolchain หรือ Flags มีต้นทุนสูงกว่าการแก้ Crate ปลายทางมาก
+ในทางกลับกัน Hit ก็ส่งต่อเป็นลูกโซ่ได้เหมือนกันครับ เพราะการ Hit จะคืน Output ที่ตรงกันเป๊ะทุก Byte Crate ตัวถัดไปเลยเห็นไฟล์ Dependency เหมือนเดิมเป๊ะและ Hit ตามกันไปได้ งาน Compile ที่เหลือก็เลยจะตกอยู่แค่ “ส่วนที่แก้ + ทุกตัวที่เรียกใช้มันต่อ + ส่วนที่ Cache ไม่ได้” นี่จึงเป็นเหตุผลว่าทำไมการแก้ Crate ต้นน้ำที่อยู่ฐาน Graph, การอัปเดต Dependency ที่ใช้กันทั่วบ้าน หรือการเปลี่ยน Toolchain กับ Flags ถึงเจ็บตัวหนักกว่าการแก้ Crate ปลายทางมากครับ
 
-ดังนั้นการแก้ `Cargo.lock` ไม่ได้ล้าง sccache ทั้งก้อน Compile Request ที่ไม่ได้รับผลกระทบยัง Hit ได้ ในทางกลับกัน Version ของ Crate เหมือนเดิมก็ไม่ได้รับประกัน Hit ถ้า Compiler, Features หรือ Inputs อื่นต่างไป แม้ Key ไม่เปลี่ยนก็ยัง Miss ได้ถ้า Entry นั้นไม่เคยถูกเก็บ หรือถูกลบเพื่อคืนพื้นที่แล้ว
+เห็นไหมครับว่าการแก้ `Cargo.lock` ไม่ได้ล้าง sccache ทั้งก้อน Compile Request ส่วนที่ไม่ได้โดนหางเลขก็ยัง Hit ต่อได้ แต่กลับกัน ต่อให้ Crate Version เดิมเป๊ะก็ไม่ได้การันตีว่าจะ Hit เสมอไปถ้า Compiler, Features หรือ Inputs อื่นเปลี่ยน หรือแม้แต่ Key เดิมก็ยัง Miss ได้ถ้า Entry นั้นยังไม่เคยถูกเก็บ หรือโดน Evict ทิ้งไปแล้ว
 
 ### sccache คุมขนาด Cache อย่างไร? 🧹
 
 ![Entries ใน Local Cache เรียงตามการใช้งานล่าสุด Hit จะย้าย Entry ไปฝั่งที่ใช้ล่าสุด และการเก็บ Entry ใหม่ที่เกิน Size Limit จะลบ Entry ที่ไม่ได้ใช้นานที่สุด](https://korntewin.github.io/intro-website/blog/figures/sccache-lru.png)
 
-**Inputs เปลี่ยน กับการคืนพื้นที่ เป็นคนละกลไกกันครับ** Key ใหม่ไม่ได้ลบอะไรเลย พื้นที่จะถูกคืนเมื่อ Cache เต็มเท่านั้น สำหรับ Local Disk Cache แต่ละ Entry คือไฟล์หนึ่งไฟล์ใน `SCCACHE_DIR` และ Server จะคอยนับขนาดรวมเทียบกับ `SCCACHE_CACHE_SIZE` (ค่าเริ่มต้น 10 GB ส่วนตัวอย่างในบทความใช้ 2 GB) โดยเรียง Entry ตามเวลาที่ถูกใช้ล่าสุด เรียกว่า **Least Recently Used (LRU)** Eviction:
+**การเปลี่ยน Inputs กับการเคลียร์พื้นที่ (Eviction) เป็นคนละกลไกกันครับ** การได้ Key ใหม่ไม่ได้ไปลบทิ้งอะไรเลย ระบบจะไล่ลบคืนพื้นที่ก็ต่อเมื่อ Cache เต็มเท่านั้น สำหรับ Local Disk Cache แต่ละ Entry ก็คือไฟล์หนึ่งไฟล์อยู่ใน `SCCACHE_DIR` โดยตัว Server จะคอยนับขนาดรวมเทียบกับเพดาน `SCCACHE_CACHE_SIZE` (ค่าเริ่มต้น 10 GB ส่วนตัวอย่างในบทความนี้ใช้ 2 GB) แล้วเรียงลำดับตามเวลาที่ถูกหยิบใช้ล่าสุด เรียกว่า **Least Recently Used (LRU)** Eviction ครับ:
 
-1. เมื่อ Hit Entry นั้นจะกลายเป็นตัวที่ถูกใช้ล่าสุด sccache ยังอัปเดต Modification Time ของไฟล์ด้วย ลำดับจึงยังอยู่แม้ Server จะ Restart
-2. ก่อนเก็บ Entry ใหม่ Server จะตรวจว่ายังอยู่ภายใต้ Limit ไหม
-3. ถ้าไม่พอ Server จะลบ Entry ที่ไม่ได้ใช้นานที่สุดจนกว่าจะพอ แล้วจึงเก็บ Entry ใหม่ ส่วน Entry ที่ใหญ่กว่า Limit ทั้งหมดจะไม่ถูกเก็บ ถ้าภายหลังต้องใช้ผลลัพธ์ที่ถูกลบไปแล้ว Request นั้นก็จะ Miss และ Compile ใหม่
+1. พอเกิด Hit ตัว Entry นั้นจะถูกเลื่อนขึ้นมาเป็นตัวที่เพิ่งใช้ล่าสุด โดย sccache จะอัปเดต Modification Time ของไฟล์ไว้ด้วย ลำดับเลยยังจำได้อยู่แม้ Server จะ Restart
+2. ก่อนจะบันทึก Entry ใหม่ Server จะเช็กก่อนว่าขนาดรวมยังอยู่ใต้ Limit ไหม
+3. ถ้าพื้นที่ไม่พอ Server จะไล่ลบ Entry ที่ไม่ได้ถูกหยิบใช้นานที่สุดออกไปจนกว่าจะพอ แล้วค่อยเก็บ Entry ใหม่ ส่วน Entry ไหนที่ใหญ่เกิน Limit ทั้งก้อนตั้งแต่แรกก็จะไม่ถูกเก็บเลย และถ้าวันหลังต้องใช้ผลที่โดนลบไปแล้ว Request นั้นก็จะ Miss แล้ว Compile ใหม่ครับ
 
-ไม่ต้องมี Cleanup Job แยกครับ Entry ที่ Build ใช้อยู่เรื่อย ๆ จะยังอุ่นอยู่ ส่วนผลจาก Toolchain, Flags หรือ Dependency Versions เก่าจะค่อย ๆ หลุดออกไปเอง จุดที่ต้องระวังคือ Limit ที่ **เล็กเกินไป** ถ้า Clean Build หนึ่งครั้งสร้าง Entries มากกว่าที่ Cache รับได้ Entries แรก ๆ จะถูกลบก่อนที่ Build ถัดไปจะได้ใช้ แล้ว Hit จะหายไปเกือบหมด ควรตั้งขนาดให้เก็บได้อย่างน้อยหนึ่ง Full Build ต่อหนึ่ง Configuration ที่อยากให้อุ่นไว้ (Profile, Target และ Toolchain) แล้วเทียบ Cache Size กับค่าสูงสุดใน `sccache --show-stats` ดู [การตั้งค่า Local Cache](https://github.com/mozilla/sccache/blob/v0.19.0/docs/Local.md) และ [โค้ด LRU Storage](https://github.com/mozilla/sccache/blob/v0.19.0/src/lru_disk_cache/mod.rs) ประกอบได้ครับ
+ตรงนี้เราไม่ต้องไปตั้ง Cleanup Job แยกเลยครับ เพราะ Entry ไหนที่ Build หยิบใช้บ่อย ๆ ก็จะยังอยู่รอดต่อไป ส่วนพวกของเก่าจาก Toolchain, Flags หรือ Dependency Versions เดิมก็จะค่อย ๆ โดนเบียดหลุดออกไปเอง จุดที่ต้องระวังอย่างเดียวคือตั้ง Limit **เล็กเกินไป** ครับ เพราะถ้า Clean Build หนึ่งรอบสร้าง Entries เยอะกว่าขนาด Cache ที่ตั้งไว้ Entries แรก ๆ จะโดนลบทิ้งตั้งแต่ก่อนที่ Build ถัดไปจะได้หยิบมาใช้ ทำให้ Hit แทบไม่เหลือเลยครับ แนะนำให้เผื่อขนาดไว้อย่างน้อย 1 Full Build ต่อ 1 Configuration ที่อยากเลี้ยง Cache ไว้ (Profile, Target และ Toolchain) แล้วเทียบขนาดกับยอดสูงสุดใน `sccache --show-stats` ดูครับ รายละเอียดเพิ่มดูได้ใน [การตั้งค่า Local Cache](https://github.com/mozilla/sccache/blob/v0.19.0/docs/Local.md) กับ [โค้ด LRU Storage](https://github.com/mozilla/sccache/blob/v0.19.0/src/lru_disk_cache/mod.rs)
 
-Limit นี้ไม่ได้ล้าง `target/`, Source ที่ Cargo Download มา หรือ Cache Archives เก่าที่ CI Provider เก็บไว้ และใช้กับ Local Disk Cache เท่านั้น ถ้าใช้ Remote Storage ต้องกำหนดนโยบายพื้นที่และ Retention ที่ Backend เอง เช่น Redis `maxmemory` คู่กับ Policy `allkeys-lru` หรือ `SCCACHE_REDIS_EXPIRATION`, Lifecycle Rules ของ Object Storage Bucket หรือ Cache Retention ของ CI Platform ส่วนตัวอย่าง CI ด้านล่าง Archive คือสำเนาของ `SCCACHE_DIR` ในเครื่อง `SCCACHE_CACHE_SIZE` จึงช่วยจำกัดขนาดสิ่งที่แต่ละ Job ต้อง Restore และ Upload ด้วยครับ
+ย้ำอีกทีว่า Limit นี้ใช้กับ Local Disk Cache เท่านั้นนะครับ ไม่ได้ไปล้าง `target/`, ซอร์สที่ Cargo โหลดมา หรือ Cache Archives เก่าบน CI Provider ถ้าเปลี่ยนไปใช้ Remote Storage ก็ต้องไปตั้ง Policy คุมขนาดกับ Retention ฝั่ง Backend เองด้วย เช่น ตั้ง Redis `maxmemory` คู่กับ `allkeys-lru` หรือ `SCCACHE_REDIS_EXPIRATION`, ใส่ Lifecycle Rules บน Object Storage Bucket หรือปรับ Cache Retention บน CI Platform แต่สำหรับตัวอย่าง CI ด้านล่าง ตัว Archive ก็คือสำเนาของ `SCCACHE_DIR` ในเครื่องนั่นแหละครับ `SCCACHE_CACHE_SIZE` เลยช่วยคุมขนาดก้อนไฟล์ที่แต่ละ Job ต้อง Restore และ Upload ไปในตัวด้วย
 
 ## Cargo, Incremental Compilation และ sccache ต่างกันอย่างไร? 🧩
 
 ![Cargo build outputs, Rust incremental compilation และ sccache Reuse ของเดิมคนละระดับ](https://korntewin.github.io/intro-website/blog/figures/sccache-layers.png)
 
-**Cargo Outputs:** Cargo เก็บ Artifacts และ Fingerprints ไว้ใน `target/` ถ้าเห็นว่า Unit ยัง Fresh ก็ข้ามการเรียก `rustc` ได้เลย ดังนั้นการ `cargo build` ซ้ำโดยไม่แก้อะไรอาจไม่มี sccache Hit เพิ่ม เพราะ Cargo ไม่ได้ส่งงานไปให้ Compiler ครับ
+**Cargo Outputs:** Cargo จะเก็บ Artifacts กับ Fingerprints ไว้ใน `target/` ถ้าเห็นว่า Unit ไหนยังไม่เปลี่ยน (Fresh) มันจะข้ามการเรียก `rustc` ไปเลย เพราะฉะนั้นถ้าเราสั่ง `cargo build` ซ้ำติดกันโดยไม่แก้โค้ด จึงอาจไม่เห็น sccache Hit เพิ่มขึ้น เพราะ Cargo ตัดจบตั้งแต่ก่อนถึง Compiler แล้วครับ
 
-**Rust Incremental Compilation:** rustc ใช้ผลบางส่วนของ Crate เดิมซ้ำหลังแก้ Code เหมาะกับ Edit/Build Loop ในเครื่อง โดยเฉพาะ Workspace Crates สำหรับ sccache 0.19.0 การ Compile ที่เปิด Incremental จะ Cache ไม่ได้ แต่ Dependencies ที่ Compile แบบไม่ Incremental ยัง Cache ได้
+**Rust Incremental Compilation:** rustc จะหยิบผลลัพธ์บางส่วนของ Crate เดิมกลับมาใช้ซ้ำเวลาเราแก้โค้ด เหมาะกับ Edit/Build Loop ในเครื่อง โดยเฉพาะตัว Workspace Crates เอง แต่ใน sccache 0.19.0 การ Compile ที่เปิด Incremental จะ Cache ไม่ได้นะครับ ส่วน Dependencies ที่ Compile แบบไม่ Incremental ยัง Cache ได้ตามปกติ
 
-**sccache:** เก็บผล Compile ที่ Cache ได้แยกจาก `target/` หลัง Clean หรือบน Runner ใหม่ที่เข้าถึง Cache ได้ Cargo อาจส่ง Compile Request มาอีกครั้ง แล้ว sccache คืนผลลัพธ์ที่ตรงกันได้ มันไม่ได้แทนการ Download Dependencies ของ Cargo และไม่ได้ Cache ทุก Crate เสมอไปครับ ดู [Rust Caveats](https://github.com/mozilla/sccache/blob/v0.19.0/docs/Rust.md) เพิ่มเติมได้
+**sccache:** จะแยกเก็บผล Compile ที่ Cache ได้ไว้นอก `target/` เวลาเราสั่ง Clean หรือเปิด CI Runner เครื่องใหม่ที่ต่อกับ Cache นี้ได้ พอ Cargo ส่ง Compile Request เข้ามา sccache ก็จะหยิบผลลัพธ์ที่ตรงกันมาคืนให้ได้ทันที แต่ตัวมันไม่ได้ทำหน้าที่แทนการ Download Dependencies ของ Cargo และไม่ได้แปลว่าจะ Cache ได้ทุก Crate นะครับ รายละเอียดดูเพิ่มใน [Rust Caveats](https://github.com/mozilla/sccache/blob/v0.19.0/docs/Rust.md) ได้เลย
 
-สำหรับการแก้ Code ในเครื่อง ปล่อย Incremental ไว้ตาม Default ก็โอเคแล้ว ส่วน CI ที่เน้น Clean Build สามารถใช้ `CARGO_INCREMENTAL=0` เพื่อให้ Workspace Library ที่ Cache ได้ใช้ sccache ได้ ลอง Benchmark ทั้งสองแบบกับงานจริงก่อนเลือกครับ
+ตอนพัฒนาในเครื่อง แนะนำให้เปิด Incremental ตามค่า Default ไว้เหมือนเดิมจะสะดวกกว่าครับ ส่วนบน CI ที่เน้น Clean Build เราสามารถตั้ง `CARGO_INCREMENTAL=0` เพื่อให้ sccache เข้ามาช่วย Cache ตัว Workspace Library ที่เข้าเงื่อนไขด้วยได้ ลอง Benchmark เทียบทั้งสองแบบกับโปรเจกต์จริงดูก่อนตัดสินใจครับ
 
 ## เริ่มใช้ในเครื่อง 🛠️
 
-ติดตั้งผ่าน Package Manager หรือดู [วิธีติดตั้งอย่างเป็นทางการ](https://github.com/mozilla/sccache/blob/v0.19.0/README.md#installation) ตัวอย่างบน macOS:
+ติดตั้งผ่าน Package Manager ได้เลย หรือจะดู [วิธีติดตั้งอย่างเป็นทางการ](https://github.com/mozilla/sccache/blob/v0.19.0/README.md#installation) ก็ได้ครับ ตัวอย่างบน macOS:
 
 ```sh
 brew install sccache
 sccache --version
 ```
 
-เปิดใช้ใน Shell ปัจจุบันแล้ว Build โปรเจกต์ Rust:
+ลองเปิดใช้งานใน Shell ปัจจุบัน แล้ว Build โปรเจกต์ Rust ดูครับ:
 
 ```sh
 export RUSTC_WRAPPER=sccache
@@ -125,24 +125,24 @@ cargo build
 sccache --show-stats
 ```
 
-`SCCACHE_CACHE_SIZE` จำกัดขนาด Local Cache ส่วน `SCCACHE_DIR` ใช้เลือก Directory ค่า 2 GB ยกมาเป็นตัวอย่างเท่านั้นครับ ค่าที่ Server ใช้ควรกำหนดก่อนเริ่ม Server หากเปลี่ยนค่าให้หยุดแล้วเริ่ม Server ใหม่ `sccache --zero-stats` รีเซ็ตตัวนับ แต่ไม่ลบ Cache และ `sccache --stop-server` ใช้หยุด Background Server ดู [Local Storage Configuration](https://github.com/mozilla/sccache/blob/v0.19.0/docs/Local.md) เพิ่มเติมได้ครับ
+`SCCACHE_CACHE_SIZE` เอาไว้คุมขนาด Local Cache ส่วน `SCCACHE_DIR` ใช้กำหนดโฟลเดอร์เก็บ Cache (ค่า 2 GB ยกมาเป็นตัวอย่างเฉย ๆ นะครับ) พวกค่า Config ของ Server ต้องตั้งให้เรียบร้อยก่อนเริ่มรัน Server ถ้าไปแก้ทีหลังต้องสั่ง Stop แล้ว Start ใหม่ ส่วน `sccache --zero-stats` ใช้รีเซ็ตตัวเลข Stats โดยไม่ลบ Cache และ `sccache --stop-server` ใช้หยุด Background Server ดูเพิ่มเติมได้ที่ [Local Storage Configuration](https://github.com/mozilla/sccache/blob/v0.19.0/docs/Local.md) ครับ
 
 ### ดูแลพื้นที่ Build ในเครื่อง 🧹
 
-การเปิด Incremental Compilation ช่วยให้ Edit/Build Loop ลื่นขึ้น แต่เมื่อใช้ไปนาน ๆ `target/` อาจโตจากหลาย Profiles, Dependencies และ Incremental Artifacts ครับ ถ้าใช้ Target Directory ค่าเริ่มต้น ลองดูขนาดจาก Workspace Root ด้วย `du -sh target` ถ้า Disk เริ่มเต็ม ให้ Preview ก่อนแล้วค่อย Clean:
+การเปิด Incremental Compilation ช่วยให้ Edit/Build Loop ลื่นขึ้นก็จริง แต่พอใช้ไปนาน ๆ `target/` มักจะโตขึ้นเรื่อย ๆ จากหลาย Profiles, Dependencies และ Incremental Artifacts ครับ ถ้าใช้ Target Directory ตามค่า Default ลองเช็กขนาดจาก Workspace Root ด้วย `du -sh target` ดูก่อนครับ ถ้า Disk เริ่มแน่น ให้สั่ง Preview ดูล่วงหน้าก่อนค่อย Clean จริง:
 
 ```sh
 cargo clean --dry-run
 cargo clean
 ```
 
-ตรวจว่าอยู่ใน Workspace ที่ตั้งใจไว้ก่อนนะครับ เพราะ [`cargo clean`](https://doc.rust-lang.org/cargo/commands/cargo-clean.html) แบบไม่มี Options จะลบ **Target Directory ที่ Cargo กำหนดไว้ทั้งก้อน** รวม Binary และ Incremental State ไม่ได้ลบเฉพาะไฟล์ Incremental เก่า ค่า Workspace หรือ `CARGO_TARGET_DIR` อาจทำให้ Directory นี้อยู่ที่อื่น ไม่ใช่ `./target` และไม่ควรเก็บไฟล์สำคัญที่กู้คืนไม่ได้ไว้ในนั้น Cargo ยังมี Options สำหรับลบแค่บางส่วน เช่น `--release` หรือ `-p package-name` ครับ
+ตรวจให้ชัวร์ก่อนรันว่าเราอยู่ใน Workspace ที่ตั้งใจไว้จริง ๆ นะครับ เพราะ [`cargo clean`](https://doc.rust-lang.org/cargo/commands/cargo-clean.html) แบบไม่ใส่ Options จะกวาดล้าง **Target Directory ทั้งโฟลเดอร์** ทั้ง Binary และ Incremental State ไม่ได้ลบแค่ไฟล์ Incremental เก่า ๆ อีกอย่างค่า Workspace หรือ `CARGO_TARGET_DIR` อาจชี้ไปโฟลเดอร์อื่นที่ไม่ใช่ `./target` ด้วย อย่าเผลอเก็บไฟล์สำคัญไว้ในนั้นนะครับ หรือถ้าอยากลบแค่บางส่วน Cargo ก็มี Options อย่าง `--release` หรือ `-p package-name` ให้เลือกใช้ครับ
 
-Build ครั้งถัดไปต้องสร้าง Output ใหม่และเริ่ม Incremental State ใหม่ จึงอาจใช้เวลามากขึ้น ส่วน Storage ของ sccache ซึ่งปกติอยู่แยกออกไปยังคงอยู่ และ Request ที่ Cache ได้อาจ Hit หลัง Clean ได้ แต่ Incremental Compilation, Linking และงานที่ Cache ไม่ได้ยังต้องทำงานตามปกติ ถ้าตั้ง Directory ของ sccache ไว้ภายใน `target/` เอง Cache นั้นก็จะถูกลบไปด้วย เลือก Clean เมื่ออยากคืนพื้นที่หรือแก้ปัญหา ไม่จำเป็นต้อง Clean ทุกครั้งที่ Build ครับ 🦀
+แน่นอนว่าพอ Clean แล้ว Build รอบถัดไปต้องสร้าง Output กับ Incremental State ใหม่หมด เลยอาจจะช้าลงหน่อย ส่วนข้อมูลใน sccache ที่ปกติเก็บแยกไว้ที่อื่นจะยังอยู่ครบ และ Request ที่ Cache ได้ก็อาจ Hit ทันทีหลัง Clean ยกเว้นส่วน Incremental Compilation, Linking กับงานที่ Cache ไม่ได้ยังต้องรันใหม่ตามเดิม (แต่ถ้าใครตั้ง `SCCACHE_DIR` ไว้ข้างใน `target/` Cache ก็หายไปด้วยนะครับ) ค่อย Clean เฉพาะตอนอยากเคลียร์พื้นที่หรือตอนไล่แก้ปัญหาก็พอ ไม่ต้อง Clean ทุกรอบที่ Build ครับ 🦀
 
 ### ทดลอง Cold และ Warm Cache 🧪
 
-ใช้ Directory สำหรับทดลองและ Server Port แยก ตัวอย่างนี้สร้าง Library ใหม่และ Clean **เฉพาะโปรเจกต์ทดลอง** โดยคง Checkout Path และ Compiler Settings ไว้เหมือนเดิม:
+รอบนี้ให้แยกโฟลเดอร์ทดลองกับ Server Port ออกมาต่างหากครับ ตัวอย่างด้านล่างจะสร้าง Library ใหม่แล้ว Clean **เฉพาะโปรเจกต์ทดลอง** โดยคง Checkout Path กับ Compiler Settings ไว้เหมือนเดิม:
 
 ```sh
 demo_root=$(mktemp -d)
@@ -165,15 +165,15 @@ sccache --show-stats
 sccache --stop-server
 ```
 
-ถ้าต้องการให้รอบแรก Cold จริง ๆ ให้ใช้ Cache Directory ใหม่และ Port ที่ยังว่าง Build แรกควรเห็น Miss สำหรับ Library ที่ Cache ได้ หลัง Clean `target/` แล้ว Build อีกครั้งควรเห็น Hit ให้ดู Stats ประกอบด้วยครับ ตัวอย่างเล็ก ๆ นี้เอาไว้สังเกตพฤติกรรม ไม่ใช่ Performance Benchmark จริงจัง ถ้า Build ซ้ำโดยไม่ Clean Cargo อาจบอกว่า Fresh และไม่มี Request ใหม่ส่งไปถึง sccache เลย
+ถ้าอยากให้รอบแรกเริ่มจาก Cold Cache จริง ๆ ให้ใช้ Cache Directory ที่สร้างใหม่กับ Port ที่ยังว่างครับ Build รอบแรกควรเห็น Miss สำหรับ Library ที่ Cache ได้ จากนั้นพอสั่ง Clean `target/` แล้ว Build ซ้ำ รอบสองควรจะเห็น Hit ลองดู Stats เทียบกันดูครับ ตัวอย่างนี้เอาไว้สังเกตการทำงานเฉย ๆ ไม่ใช่ Performance Benchmark จริงจัง ถ้าเราสั่ง Build ซ้ำสองรอบโดยไม่ Clean ตัว Cargo ก็จะบอกว่า Fresh และไม่ส่ง Request ใหม่มาถึง sccache เลยครับ
 
 ## นำไปใช้ใน CI 🚀
 
-Runner อาจเริ่มด้วย Filesystem ว่างทุกครั้ง เราจึงต้องเก็บ Cache Directory ให้รอดไปถึง Job ถัดไป วิธีหนึ่งคือใช้ระบบ Cache ของ CI โดยแยก Cargo Downloads กับ Compiler Results ออกจากกัน เพราะการ Download Crate กับการ Compile เป็นงานคนละแบบ ส่วน Compiler Archive สามารถแยกตาม Architecture และประเภท Job เมื่อ Target หรือ Flags ต่างกัน
+ปกติ CI Runner มักเริ่มงานด้วย Filesystem เปล่า ๆ ทุกครั้ง เราเลยต้องหาวิธีเก็บ Cache Directory ไว้ส่งต่อให้ Job ถัดไป วิธีหนึ่งที่ใช้ได้คือฝากกับระบบ Cache ของ CI โดยแยกส่วน Cargo Downloads ออกจาก Compiler Results เพราะงานโหลด Crate กับงาน Compile มีจังหวะเปลี่ยนไม่เหมือนกัน ส่วนฝั่ง Compiler Archive ก็แยกคีย์ตาม Architecture กับประเภท Job ได้เลยหากใช้ Target หรือ Flags ต่างกัน
 
 ### ตัวอย่าง GitLab CI
 
-ตัวอย่าง **GitLab CI แบบทั่วไป** นี้ติดตั้ง Public Release ที่ Pin Version ผ่าน Cargo การติดตั้งครั้งแรกใช้เวลา จึง Cache ตัว Binary ไว้ด้วย อย่าลืมปรับ Rust Image และ Dependencies ให้เหมาะกับโปรเจกต์ครับ
+ตัวอย่าง **GitLab CI แบบพื้นฐาน** ด้านล่างจะติดตั้ง Release ที่ Pin Version ไว้ผ่าน Cargo ครับ เพราะตอน Compile ติดตั้งรอบแรกใช้เวลาพอสมควร เราเลย Cache ตัว Binary เก็บไว้ด้วย อย่าลืมปรับ Rust Image กับ Dependencies ให้เข้ากับโปรเจกต์จริงนะครับ
 
 ```yaml
 rust-test:
@@ -209,20 +209,20 @@ rust-test:
       cargo test --locked
 ```
 
-`EXIT` Trap แสดง Stats และหยุด Server ใน Shell เดียวกัน แม้ Test ล้มเหลว โดยรักษา Exit Status เดิมไว้ และทำก่อน Upload Cache ควรทดสอบกับ Runner ของตัวเองด้วย เพราะการหยุด Daemon อาจต่างกันไป Archive Key ใช้เลือก **ชุด Cache** ที่ Restore ส่วน sccache ตรวจ Key ของแต่ละ Entry อีกชั้นหนึ่ง Stable Key จึงช่วยเก็บผลที่ยังใช้ได้ข้าม Dependency Updates ขณะที่ Size Limit ช่วยจำกัดพื้นที่ครับ
+ตัว `EXIT` Trap มีหน้าที่โชว์ Stats แล้วสั่งปิด Server ใน Shell เดียวกันต่อให้ Test พัง โดยยังรักษา Exit Status เดิมไว้ และทำงานก่อนจังหวะ Upload Cache แนะนำให้ลองเทสต์บน Runner ที่ใช้จริงด้วยนะครับ เพราะแต่ละที่อาจปิด Daemon ต่างกัน ส่วน Archive Key มีหน้าที่เลือก **ก้อน Cache** ที่จะดึงมา Restore แล้ว sccache ค่อยไปเช็ก Key ราย Entry อีกชั้น การใช้ Stable Key จึงช่วยให้เก็บของที่ใช้ต่อได้แม้เพิ่งอัปเดต Dependency โดยมี Size Limit คอยคุมไม่ให้บวมเกินครับ
 
-Job ที่รันพร้อมกันแล้วเขียน Archive เดียวกันอาจ Upload ทับกัน การแยก Scope หรือจัดการ Writer ช่วยเพิ่มโอกาส Reuse ได้ แต่ sccache ยังตรวจ Key ของแต่ละ Entry อยู่ อย่าลืมวัดเวลา Extract และ Upload ด้วย เพราะ Archive ที่ใหญ่เกินไปอาจใช้เวลามากกว่างาน Compile ที่ประหยัดได้ครับ
+ถ้ามีหลาย Job รันพร้อมกันแล้วเขียนทับ Archive เดียวกัน อาจเกิดการ Upload ทับกันได้ครับ การแยก Scope หรือคุมสิทธิ์การเขียนจะช่วยเพิ่มโอกาส Reuse ได้มากขึ้น (ซึ่งไม่ว่าจะจัดการแบบไหน sccache ก็ยังเช็ก Key ราย Entry เหมือนเดิม) และอย่าลืมวัดเวลาตอน Extract กับ Upload ด้วยนะครับ เพราะถ้า Archive ใหญ่เกินไป บางทีอาจเสียเวลานานกว่างาน Compile ที่ประหยัดได้เสียอีก
 
 ### หลังเปลี่ยน Lockfile เวลา Build เปลี่ยนไปอย่างไร? 📊
 
-ตัวเลขชุดนี้มาจากโปรเจกต์จริงของ **LINE MAN Wongnai (LMWN)** ครับ ในการทดลอง CI ของ Rust Prediction Service ครั้งหนึ่ง เราเปรียบเทียบการตั้งค่าเดิมที่ใช้ Archive กับการตั้งค่าใหม่ที่ใช้ sccache หลังเปลี่ยน Lockfile แบบเดียวกัน ฝั่งเดิมเป็น **Cold Archive Cache** ส่วนฝั่งใหม่ Restore **Compiler Cache ที่มีอยู่แล้ว** ทั้งสองรันผ่าน Test Suite ชุดเดียวกันครับ
+ตัวเลขชุดนี้มาจากการทดลองบน CI ของ **Rust Prediction Service** จริงตัวหนึ่งครับ รอบนั้นเราจับเอา Setup เก่าที่ใช้ Archive มาเทียบกับ Setup ใหม่ที่ใช้ sccache หลังแก้ Lockfile ชุดเดียวกัน โดยฝั่งเดิมเป็น **Cold Archive Cache** ส่วนฝั่งใหม่ Restore **Compiler Cache ที่มีอยู่แล้ว** และทั้งสองรอบรันผ่าน Test Suite ชุดเดียวกันครับ
 
-![Pipeline Wall Time หลังเปลี่ยน Lockfile ของ Rust Prediction Service ที่ LMWN: Archive Cache แบบ Cold ใช้ 10 นาที 00 วินาที ส่วน sccache ที่มี Compiler Cache อยู่แล้วใช้ 6 นาที 28 วินาที ลดลง 35.3%](https://korntewin.github.io/intro-website/blog/figures/sccache-lockfile-benchmark.png)
+![Pipeline Wall Time หลังเปลี่ยน Lockfile ของ Rust Prediction Service จริง: Archive Cache แบบ Cold ใช้ 10 นาที 00 วินาที ส่วน sccache ที่มี Compiler Cache อยู่แล้วใช้ 6 นาที 28 วินาที ลดลง 35.3%](https://korntewin.github.io/intro-website/blog/figures/sccache-lockfile-benchmark.png)
 
 - **Pipeline Wall Time:** 10 นาที 00 วินาที → 6 นาที 28 วินาที
 - **เวลาที่ลดลง:** 3 นาที 32 วินาที หรือ **35.3%** ในการเปรียบเทียบครั้งนี้
 
-นี่เป็นสถานการณ์ที่เราอยากดูพอดีครับ: การเปลี่ยน Lockfile ทำให้ Archive Key แบบเดิม Miss ขณะที่ sccache ยังนำผล Compile ที่ Cache ได้กลับมาใช้ได้ แต่การตั้งค่าใหม่มีการปรับวิธีจัดการ Cache ส่วนอื่นร่วมด้วย ตัวเลขนี้จึงเป็นผลของ **CI Configuration โดยรวม** ไม่ใช่ Benchmark แยกเฉพาะ sccache ตัวเลขมาจากการรันอย่างละหนึ่งครั้งบน Shared Autoscaling Runners รวมเวลาเริ่ม Job, รับส่ง Cache และงานอื่นใน Pipeline จึงไม่ใช่ค่าเฉลี่ยหรือสิ่งที่จะเกิดขึ้นทุกครั้งที่เปลี่ยน Lockfile และถ้า sccache ว่างตั้งแต่แรก รอบแรกก็ยังต้อง Compile ครับ 😅
+เคสนี้ตรงกับสถานการณ์ที่เราอยากดูพอดีครับ พอแก้ Lockfile ปุ๊บ Archive Key แบบเดิมก็ Miss ทันที แต่ฝั่ง sccache ยังหยิบผล Compile เดิมที่ Cache ไว้กลับมาใช้ต่อได้ อย่างไรก็ตาม Setup ใหม่เรามีการปรับเรื่อง Cache ส่วนอื่นร่วมด้วย ตัวเลขนี้จึงสะท้อนผลของ **CI Configuration ทั้งชุด** ไม่ใช่ Benchmark ของ sccache เพียว ๆ และเป็นการวัดจากการรันอย่างละ 1 รอบบน Shared Autoscaling Runners ที่รวมเวลาบูต Job รับส่ง Cache และ Step อื่นใน Pipeline แล้ว จึงไม่ใช่ค่าเฉลี่ยหรือการันตีว่าจะเร็วขึ้นเท่านี้ทุกครั้งที่แก้ Lockfile แถมถ้า sccache ยังโล่งตั้งแต่เริ่ม รอบแรกก็ยังต้อง Compile ใหม่หมดอยู่ดีครับ 😅
 
 ## Docker Build: cargo-chef เข้ามาช่วยตรงไหน? 🐳
 
@@ -230,7 +230,7 @@ Docker Layer Cache ทำงานคนละระดับกับ sccache �
 
 `cargo chef prepare` สร้าง `recipe.json` จาก Manifests และ Lockfile ของโปรเจกต์ จากนั้น `cargo chef cook` ใช้ Recipe สร้างโครงโปรเจกต์และ Build Dependencies ก่อน Copy Source จริงเข้า Builder ถ้า Recipe และ Inputs อื่นของ Docker Layer ไม่เปลี่ยน **และ Builder ยังเข้าถึง Layer เดิมได้** Docker ก็อาจใช้ Layer นั้นซ้ำเมื่อเราแก้ Application Source ครับ
 
-ตัวอย่าง Multi-stage แบบทั่วไปสำหรับ Rust Project ที่มี Binary ชื่อ `app`:
+ตัวอย่าง Multi-stage แบบพื้นฐานสำหรับ Rust Project ที่มี Binary ชื่อ `app`:
 
 ```dockerfile
 FROM lukemathwalker/cargo-chef:latest-rust-1 AS chef
@@ -247,24 +247,24 @@ COPY . .
 RUN cargo build --release --bin app
 ```
 
-ตัวอย่างจบที่ Builder Stage ครับ สามารถเพิ่ม Runtime Stage ให้เหมาะกับ Binary และ System Libraries ของตัวเอง ใส่ `target/` และ `.git/` ใน `.dockerignore` เพื่อไม่ให้ Local Build Artifacts ถูก Copy ทับ Output ใน Container ใช้ Rust Version, Working Directory, Build Profile, Target และ Features ที่เกี่ยวข้องให้ตรงกันระหว่าง `cook` กับ Build จริง พร้อม Pin Toolchain และ Image Version เพื่อให้ Build ทำซ้ำได้ ส่วน Workspace Path Dependencies, Build Scripts หรือ Native Libraries อาจต้องตั้งค่าเพิ่มเติมตามโปรเจกต์
+ตัวอย่างด้านบนจะจบที่ Builder Stage นะครับ ของจริงก็ต่อ Runtime Stage ให้เข้ากับ Binary และ System Libraries ของโปรเจกต์ได้เลย อย่าลืมใส่ `target/` กับ `.git/` ลงใน `.dockerignore` ด้วย เดี๋ยว Local Build Artifacts จากเครื่องเราจะถูก Copy ไปทับของใน Container และคุม Rust Version, Working Directory, Build Profile, Target รวมถึง Features ระหว่างขั้น `cook` กับ Build จริงให้ตรงกัน พร้อม Pin Toolchain กับ Image Version เพื่อให้ Build ออกมาคงที่เหมือนกันทุกครั้ง ส่วนพวก Workspace Path Dependencies, Build Scripts หรือ Native Libraries อาจต้องปรับแต่งเพิ่มตามโปรเจกต์ครับ
 
-**ใช้ cargo-chef กับ sccache ร่วมกันได้ไหม?** ได้ครับ cargo-chef ช่วยให้ Docker ใช้ Dependency **Layer** ซ้ำ ส่วน sccache ช่วยใช้ผล **Compiler** ที่ Cache ได้ซ้ำเมื่อมีการ Compile จริง Dockerfile ด้านบนแสดงเฉพาะ cargo-chef หากต้องการ sccache ต้องติดตั้งและตั้งค่า Wrapper ภายใน Build รวมถึงทำให้ Build เข้าถึง Cache ได้ด้วย สำหรับ CI Builder ที่เริ่มใหม่ทุกครั้ง ต้องจัดเก็บ Layer Cache หรือ Export/Import กลับมาใช้ด้วย เพราะ Builder ใหม่ไม่ได้มี Layer จากรอบก่อนโดยอัตโนมัติ ลองวัดทั้งสองวิธีและต้นทุน Restore/Upload ก่อนเพิ่มความซับซ้อนครับ
+**แล้วใช้ cargo-chef คู่กับ sccache ได้ไหม?** ได้เลยครับ cargo-chef ช่วยให้ Docker เอา Dependency **Layer** กลับมาใช้ซ้ำ ส่วน sccache จะช่วยประหยัดเวลาตอนที่ต้อง Compile จริง Dockerfile ด้านบนใส่แค่ cargo-chef ให้ดูเป็นตัวอย่าง ถ้าอยากพ่วง sccache ด้วยก็ต้องติดตั้งและตั้งค่า Wrapper ใน Build พร้อมเปิดทางให้ Build มองเห็น Cache ด้วย อีกอย่างคือถ้า CI Builder เริ่มใหม่ทุกครั้ง เราต้องเซฟ Docker Layer Cache หรือ Export/Import กลับมาใช้ด้วยนะครับ เพราะเครื่องใหม่ไม่ได้มี Layer รอบก่อนติดมาให้อัตโนมัติ ลองวัดเวลาทั้งสองวิธีรวมเวลา Restore/Upload ดูก่อนที่จะเพิ่มความซับซ้อนให้ Build ครับ
 
 ## ทำไม Compile แล้วไม่ Hit? 🤔
 
-- **Cargo บอกว่า Fresh อยู่แล้ว:** ไม่มี Compile Request ก็ไม่มี Hit เพิ่ม ลองใช้การทดลอง Clean Build ใน Directory แยกด้านบน
-- **เปิด Incremental:** Dependencies ที่ไม่ Incremental อาจ Hit ขณะที่ Workspace Crates ไม่ Hit ลองปิด Incremental เพื่อเปรียบเทียบภายใต้เงื่อนไขเดียวกัน
-- **เป็น Request ที่ Cache ไม่ได้:** ใน v0.19.0 Crate ที่เรียก System Linker รวมถึง Binary และ Procedural Macro ไม่ถูก Cache ส่วน Build Scripts, Linking และการรัน Test ก็ยังกินเวลาอยู่ Procedural Macro ที่อ่านไฟล์มีข้อควรระวังเรื่องความถูกต้องเพิ่มเติม ดูใน Rust Documentation ครับ
-- **Inputs เปลี่ยน:** Toolchain, Target Architecture, Features, Profile, Flags, Source Path หรือ Environment อาจเปลี่ยน Key ได้ ควรใช้ Checkout Path ที่สม่ำเสมอใน CI และเปรียบเทียบงานที่มีเงื่อนไขเดียวกัน รายละเอียด Path ขึ้นกับเวอร์ชัน
-- **Native Code ใช้ Compiler อีกตัว:** Dependency ของ Rust อาจ Compile C/C++ ด้วย ให้กำหนด Compiler Wrapper หรือ CMake Compiler Launcher ที่เหมาะสม เครื่องมือ Coverage อาจมี Rust Wrapper ของตัวเอง จึงควรตรวจการทำงานร่วมกันและ Native Compiler Settings ด้วยครับ
-- **Restore/Upload Cache นานเกินไป:** เทียบเวลารวมของ Cold และ Warm ทั้ง Install, Restore/Upload และ Test พร้อมดู Miss, Request ที่ Cache ไม่ได้, Errors และการลบ Entry เก่า
+- **Cargo บอกว่า Fresh อยู่แล้ว:** ถ้าไม่มี Compile Request ส่งมา ก็ไม่มี Hit เพิ่มครับ ลองเอาสคริปต์ทดสอบ Clean Build ในโฟลเดอร์แยกด้านบนไปรันดูได้
+- **เปิด Incremental อยู่:** Dependencies ที่ปิด Incremental อาจ Hit แต่ตัว Workspace Crates เองจะไม่ Hit ลองปิด Incremental เทียบดูภายใต้เงื่อนไขเดียวกันครับ
+- **เป็น Request ที่ Cache ไม่ได้:** ใน v0.19.0 พวก Crate ที่ต้องเรียก System Linker รวมถึง Binary กับ Procedural Macro จะไม่ถูก Cache ส่วน Build Scripts, Linking และการรัน Test ก็ยังกินเวลาเท่าเดิม ยิ่งถ้าเป็น Procedural Macro ที่อ่านไฟล์จากดิสก์ ยังมีข้อควรระวังเรื่องความถูกต้องเพิ่มอีก ลองดูรายละเอียดใน Rust Documentation ครับ
+- **Inputs เปลี่ยน:** Toolchain, Target Architecture, Features, Profile, Flags, Source Path หรือ Environment แค่จุดเดียวเปลี่ยน Key ก็เปลี่ยนแล้ว ใน CI ควรคุม Checkout Path ให้คงที่เหมือนเดิมทุกครั้ง แล้วเทียบเฉพาะงานที่เงื่อนไขตรงกันครับ (การจัดการ Path ต่างกันตามเวอร์ชัน)
+- **Native Code ใช้ Compiler อีกตัว:** บาง Dependency ของ Rust มีการ Compile C/C++ ด้วย เราต้องตั้ง Compiler Wrapper หรือ CMake Compiler Launcher ให้ครอบคลุมฝั่งนั้นด้วยครับ รวมถึงเครื่องมือ Coverage ที่มักมี Rust Wrapper ของตัวเอง ก็ต้องเช็กให้แน่ใจว่าไม่ตีกันและตั้ง Native Compiler ไว้ครบด้วย
+- **เสียเวลากับ Restore/Upload Cache นานไป:** ลองจับเวลารวมทั้งรอบ Cold และรอบ Warm ทั้ง Install, Restore/Upload ไปจนถึง Test พร้อมไล่เช็กยอด Miss, Request ที่ Cache ไม่ได้, Errors และจำนวนการ Evict Entry เก่าครับ
 
 ## สิ่งที่ผมอยากฝากไว้ 💡
 
-เริ่มจาก Developer Loop และ CI Job ที่เราใช้อยู่จริง เปิด Wrapper ดูว่า Request ไหน Cache ได้ แล้วเปรียบเทียบ Clean Build ภายใต้สภาพแวดล้อมเดียวกัน Cache จะมีประโยชน์เมื่อช่วยลดการ Compile ซ้ำได้มากกว่าเวลาที่ใช้ในการ Upload/Download ไปที่ Object Storage ครับ
+แนะนำให้เริ่มดูจาก Developer Loop กับ CI Job ที่ทีมใช้อยู่จริงครับ ลองเปิด Wrapper เช็กก่อนว่า Request ส่วนไหน Cache ได้บ้าง แล้วค่อยเทียบเวลา Clean Build บนสภาพแวดล้อมเดียวกัน เพราะ Cache จะช่วยได้จริงก็ต่อเมื่อเวลา Compile ที่ลดลง มันชนะเวลาที่ใช้ Upload/Download ระหว่างเครื่องกับ Object Storage ครับ
 
-เป้าหมายไม่จำเป็นต้องเป็น Hit Rate 100% แต่คือการได้ Feedback เร็วขึ้น โดยที่ Build ยังถูกต้องและเข้าใจได้ครับ 🦀
+สุดท้ายแล้ว เป้าหมายไม่ได้อยู่ที่การไล่ปั้น Hit Rate ให้ถึง 100% ครับ แต่อยู่ที่การได้ Feedback เร็วขึ้น โดยที่ Build ยังทำงานถูกต้องและไล่ตรวจสอบได้ง่ายเหมือนเดิม 🦀
 
 ## อ่านต่อ / References 📚
 

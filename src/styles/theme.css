@@ -50,5 +50,5 @@ body { background: var(--theme-bg) !important; color: var(--theme-fg) !important
 .article-prose th { background: var(--theme-surface-hover); }
 .article-prose :not(pre) > code { padding: .12rem .35rem; border-radius: .3rem; background: var(--theme-surface-hover); color: var(--theme-fg); }
 .article-prose pre { overflow-x: auto; padding: 1.2rem; border-radius: .7rem; background: #101b30; color: #edf4ff; line-height: 1.5; }
-.article-prose pre code { background: transparent; color: inherit; }
+.article-prose pre code { background: transparent; color: inherit; padding: 0; border-radius: 0; }
 @media (max-width: 690px) { .site-header .nav.wrap { flex-wrap: wrap; row-gap: .6rem; } .navlinks { justify-content: space-between; width: 100%; } .article-prose table { font-size: .82rem; } .article-prose th, .article-prose td { padding: .6rem .7rem; } }

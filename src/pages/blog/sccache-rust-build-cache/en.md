@@ -12,7 +12,7 @@ coverImageAlt: "Cargo, sccache, and rustc working together"
 
 Have you ever changed a few lines of Rust, pushed a branch, and watched CI compile the same dependencies all over again? 😅 On a developer machine, `target/` may already contain most of that work. On a fresh CI runner, those files may be gone before the next job even starts.
 
-While working on a Rust service with a sizeable dependency graph, I started looking at what we could reuse between builds. One useful tool was **sccache**: a compiler wrapper that can save eligible compilation results and reuse them later. The examples below are simplified and use a generic project; the settings and numbers are illustrative, except for the CI comparison near the end, which comes from a real project at LINE MAN Wongnai (LMWN).
+While working on a Rust service with a sizeable dependency graph, I started looking at what we could reuse between builds. One useful tool was **sccache**: a compiler wrapper that can save eligible compilation results and reuse them later. The examples below are simplified and use a generic project; the settings and numbers are illustrative, except for the CI comparison near the end, which comes from a real production Rust project.
 
 ## The short version ⚡
 
@@ -24,7 +24,7 @@ While working on a Rust service with a sizeable dependency graph, I started look
 
 ## What is sccache? 📦
 
-[sccache](https://github.com/mozilla/sccache/blob/v0.19.0/README.md) sits between a build tool and a compiler. It supports Rust, C/C++, and other supported compiler families. It can store results on local disk or use supported remote backends so multiple machines can reuse them.
+[sccache](https://github.com/mozilla/sccache/blob/v0.19.0/README.md) originated at **Mozilla** — the organization behind the creation of Rust — as a ccache-style shared compiler cache. It sits between a build tool and a compiler, supporting Rust, C/C++, and other compiler families. It can store compilation results on local disk or use supported remote backends so multiple machines can reuse them.
 
 A **shared cache** lets machines reuse completed compilations. sccache also supports **distributed compilation**, where work can be executed on remote build machines. They are separate capabilities: the examples here use compiler caching and do not require a distributed compiler cluster.
 
@@ -216,9 +216,9 @@ Parallel jobs writing the same archive can replace one another's uploaded cache.
 
 ### What happened after a lockfile change? 📊
 
-These numbers come from a real project at **LINE MAN Wongnai (LMWN)**. In one CI experiment for a Rust prediction service, we compared the old archive-based setup with the revised sccache setup after the same lockfile change. The old setup had a **cold archive cache**; the revised setup restored an **existing compiler cache**. Both runs passed the same test suite.
+These numbers come from a real **production Rust prediction service**. In one CI experiment, we compared the old archive-based setup with the revised sccache setup after the same lockfile change. The old setup had a **cold archive cache**; the revised setup restored an **existing compiler cache**. Both runs passed the same test suite.
 
-![Pipeline wall time after the same lockfile change for a Rust prediction service at LMWN: 10m 00s with a cold archive cache versus 6m 28s with a warm sccache compiler cache, 35.3% less](https://korntewin.github.io/intro-website/blog/figures/sccache-lockfile-benchmark.png)
+![Pipeline wall time after the same lockfile change for a production Rust prediction service: 10m 00s with a cold archive cache versus 6m 28s with a warm sccache compiler cache, 35.3% less](https://korntewin.github.io/intro-website/blog/figures/sccache-lockfile-benchmark.png)
 
 - **Pipeline wall time:** 10m 00s → 6m 28s
 - **Time saved:** 3m 32s, or **35.3%** in this comparison

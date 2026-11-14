@@ -1,11 +1,11 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1560 760" role="img" aria-labelledby="title desc">
 <title id="title">Pipeline wall time after a lockfile change</title>
-<desc id="desc">CI pipeline wall time for a Rust prediction service at LMWN after the same lockfile change. The archive cache setup, cold after the change, took 10 minutes 0 seconds. The sccache setup with a warm compiler cache took 6 minutes 28 seconds, which is 3 minutes 32 seconds or 35.3 percent less.</desc>
+<desc id="desc">CI pipeline wall time for a production Rust prediction service after the same lockfile change. The archive cache setup, cold after the change, took 10 minutes 0 seconds. The sccache setup with a warm compiler cache took 6 minutes 28 seconds, which is 3 minutes 32 seconds or 35.3 percent less.</desc>
 <rect x="1" y="1" width="1558" height="758" rx="24" fill="#ffffff" stroke="#d8e2ec"/>
 <g font-family="Arial,sans-serif">
 <text x="65" y="74" font-size="20" font-weight="700" fill="#536582">ENGINEERING NOTES / SCCACHE</text>
 <text x="65" y="135" font-size="42" font-weight="800" fill="#19233e">Pipeline wall time after a lockfile change</text>
-<text x="65" y="180" font-size="24" fill="#536582">Rust prediction service at LMWN · same lockfile change, same test suite</text>
+<text x="65" y="180" font-size="24" fill="#536582">Production Rust prediction service · same lockfile change, same test suite</text>
 
 <!-- Time axis: 0 to 10 minutes, 1.55 units per second from x=400 -->
 <g stroke="#e3e9f1" stroke-width="2">
