@@ -64,6 +64,6 @@ References:
 | Thai | https://korntewin.github.io/intro-website/blog/sccache-rust-build-cache/ | https://korntewin.github.io/intro-website/blog/sccache-rust-build-cache/medium/th/ |
 | English | https://korntewin.github.io/intro-website/blog/sccache-rust-build-cache/en/ | https://korntewin.github.io/intro-website/blog/sccache-rust-build-cache/medium/en/ |
 
-Use the appropriate import URL in Medium's **Stories > Import a story**. Both clean pages can also be copied directly. The [ordered image ZIP](https://korntewin.github.io/intro-website/blog/sccache-rust-build-cache/medium-images.zip) contains the four PNGs for manual upload. The original article has its own ZIP at `/blog/riir-rust-prediction-service/medium-images.zip`; its older `/blog/medium-images.zip` address continues to work.
+Use the appropriate import URL in Medium's **Stories > Import a story**. Both clean pages can also be copied directly. The [ordered image ZIP](https://korntewin.github.io/intro-website/blog/sccache-rust-build-cache/medium-images.zip) contains the five PNGs for manual upload. The original article has its own ZIP at `/blog/riir-rust-prediction-service/medium-images.zip`; its older `/blog/medium-images.zip` address continues to work.
 
 The build discovers each Thai/English pair, verifies that both versions use the same images in the same order, and packages the figures separately for each story. After deployment, check the resulting Medium drafts, especially images and code blocks: the external importer may change formatting.

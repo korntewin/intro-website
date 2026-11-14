@@ -47,6 +47,9 @@ out/
 # Rasterized blog figures generated from editable SVG sources
 public/blog/figures/*.png
 
+# Original generated illustration, used directly by the articles
+!public/blog/figures/sccache-ci.png
+
 # Medium fallback image bundle, created from generated PNGs
 public/blog/medium-images.zip
 public/blog/*/medium-images.zip

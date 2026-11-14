@@ -1,0 +1,38 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1560 760" role="img" aria-labelledby="title desc">
+<title id="title">Pipeline wall time after a lockfile change</title>
+<desc id="desc">CI pipeline wall time for a Rust prediction service at LMWN after the same lockfile change. The archive cache setup, cold after the change, took 10 minutes 0 seconds. The sccache setup with a warm compiler cache took 6 minutes 28 seconds, which is 3 minutes 32 seconds or 35.3 percent less.</desc>
+<rect x="1" y="1" width="1558" height="758" rx="24" fill="#ffffff" stroke="#d8e2ec"/>
+<g font-family="Arial,sans-serif">
+<text x="65" y="74" font-size="20" font-weight="700" fill="#536582">ENGINEERING NOTES / SCCACHE</text>
+<text x="65" y="135" font-size="42" font-weight="800" fill="#19233e">Pipeline wall time after a lockfile change</text>
+<text x="65" y="180" font-size="24" fill="#536582">Rust prediction service at LMWN · same lockfile change, same test suite</text>
+
+<!-- Time axis: 0 to 10 minutes, 1.55 units per second from x=400 -->
+<g stroke="#e3e9f1" stroke-width="2">
+<path d="M586 236v258M772 236v258M958 236v258M1144 236v258M1330 236v258"/>
+</g>
+<path d="M400 236v258" stroke="#aebbd2" stroke-width="2"/>
+<g font-size="18" fill="#536582" text-anchor="middle">
+<text x="400" y="524">0</text><text x="586" y="524">2 min</text><text x="772" y="524">4 min</text><text x="958" y="524">6 min</text><text x="1144" y="524">8 min</text><text x="1330" y="524">10 min</text>
+</g>
+
+<!-- Before: archive cache, 600 s -->
+<text x="65" y="285" font-size="26" font-weight="700" fill="#19233e">Archive cache</text>
+<text x="65" y="313" font-size="20" fill="#536582">cold after lockfile change</text>
+<path d="M400 266H1322a8 8 0 0 1 8 8v32a8 8 0 0 1-8 8H400z" fill="#8794a6"/>
+<text x="1346" y="299" font-size="26" font-weight="700" fill="#19233e">10m 00s</text>
+
+<!-- After: sccache, 388 s -->
+<text x="65" y="435" font-size="26" font-weight="700" fill="#19233e">sccache</text>
+<text x="65" y="463" font-size="20" fill="#536582">warm compiler cache</text>
+<path d="M400 416H993.4a8 8 0 0 1 8 8v32a8 8 0 0 1-8 8H400z" fill="#2265b6"/>
+<text x="1017" y="449" font-size="26" font-weight="700" fill="#19233e">6m 28s</text>
+
+<!-- Difference: 212 s -->
+<rect x="1016" y="332" width="300" height="34" fill="#ffffff"/>
+<path d="M1001.4 362v54M1330 314v68M1001.4 372H1330" fill="none" stroke="#64748b" stroke-width="2"/>
+<text x="1165.7" y="358" font-size="24" font-weight="700" fill="#19233e" text-anchor="middle">3m 32s saved (−35.3%)</text>
+
+<rect x="65" y="605" width="1430" height="94" rx="16" fill="#14283b"/>
+<text x="88" y="660" font-size="23" font-weight="700" fill="#ffffff">One run per setup on shared runners. The whole CI cache setup changed, not only sccache.</text>
+</g></svg>

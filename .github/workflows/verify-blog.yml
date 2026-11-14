@@ -40,6 +40,7 @@ jobs:
           test -s dist/blog/figures/sccache-flow.png
           test -s dist/blog/figures/sccache-layers.png
           test -s dist/blog/figures/sccache-ci.png
+          test -s dist/blog/figures/sccache-lockfile-benchmark.png
           test -s dist/blog/sccache-rust-build-cache/index.html
           test -s dist/blog/sccache-rust-build-cache/en/index.html
           test -s dist/blog/sccache-rust-build-cache/medium/th/index.html
