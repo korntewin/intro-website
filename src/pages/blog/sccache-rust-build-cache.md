@@ -68,6 +68,19 @@ sccache --show-stats
 
 `SCCACHE_CACHE_SIZE` จำกัดขนาด Local Cache ส่วน `SCCACHE_DIR` ใช้เลือก Directory ค่า 2 GB ในตัวอย่างเป็นเพียงค่าประกอบครับ ค่าที่ Server ใช้ควรกำหนดก่อนเริ่ม Server หากเปลี่ยนค่าให้หยุดแล้วเริ่ม Server ใหม่ `sccache --zero-stats` รีเซ็ตตัวนับ แต่ไม่ลบ Cache และ `sccache --stop-server` ใช้หยุด Background Server ดู [Local Storage Configuration](https://github.com/mozilla/sccache/blob/v0.19.0/docs/Local.md) เพิ่มเติมได้ครับ
 
+### ดูแลพื้นที่ Build ในเครื่อง 🧹
+
+การเปิด Incremental Compilation ช่วยให้ Edit/Build Loop ลื่นขึ้น แต่เมื่อใช้ไปนาน ๆ `target/` อาจโตจากหลาย Profiles, Dependencies และ Incremental Artifacts ครับ ถ้าใช้ Target Directory ค่าเริ่มต้น ลองดูขนาดจาก Workspace Root ด้วย `du -sh target` เมื่ออยากคืนพื้นที่ให้ Preview ก่อนแล้วค่อย Clean:
+
+```sh
+cargo clean --dry-run
+cargo clean
+```
+
+ตรวจว่าอยู่ใน Workspace ที่ตั้งใจไว้ก่อนนะครับ เพราะ [`cargo clean`](https://doc.rust-lang.org/cargo/commands/cargo-clean.html) แบบไม่มี Options จะลบ **Target Directory ที่ Cargo กำหนดไว้ทั้งก้อน** รวม Binary และ Incremental State ไม่ได้ลบเฉพาะไฟล์ Incremental เก่า ค่า Workspace หรือ `CARGO_TARGET_DIR` อาจทำให้ Directory นี้อยู่ที่อื่น ไม่ใช่ `./target` และไม่ควรเก็บไฟล์สำคัญที่กู้คืนไม่ได้ไว้ในนั้น Cargo ยังมี Options ที่แคบลง เช่น `--release` หรือ `-p package-name` ครับ
+
+Build ครั้งถัดไปต้องสร้าง Output ใหม่และเริ่ม Incremental State ใหม่ จึงอาจใช้เวลามากขึ้น ส่วน Storage ของ sccache ซึ่งปกติอยู่แยกออกไปยังคงอยู่ และคำขอที่เข้าเงื่อนไขอาจ Hit หลัง Clean ได้ แต่ Incremental Compilation, Linking และงานที่ Cache ไม่ได้ยังต้องทำงานตามปกติ ถ้าตั้ง Directory ของ sccache ไว้ภายใน `target/` เอง Cache นั้นก็จะถูกลบไปด้วย เลือก Clean เมื่ออยากคืนพื้นที่หรือแก้ปัญหา ไม่จำเป็นต้อง Clean ทุกครั้งที่ Build ครับ 🦀
+
 ### ทดลอง Cold และ Warm Cache 🧪
 
 ใช้ Directory สำหรับทดลองและ Server Port แยก ตัวอย่างนี้สร้าง Library ใหม่และ Clean **เฉพาะโปรเจกต์ทดลอง** โดยคง Checkout Path และ Compiler Settings ไว้เหมือนเดิม:
@@ -140,6 +153,33 @@ rust-test:
 `EXIT` Trap แสดง Stats และหยุด Server ใน Shell เดียวกัน แม้ Test ล้มเหลว โดยรักษา Exit Status เดิมไว้ และทำก่อน Upload Cache ควรทดสอบกับ Runner ของตัวเองด้วย เพราะการหยุด Daemon อาจต่างกันไป Archive Key ใช้เลือก **ชุด Cache** ที่ Restore ส่วน sccache ตรวจ Key ของแต่ละ Entry อีกชั้นหนึ่ง Stable Key จึงช่วยเก็บผลที่ยังใช้ได้ข้าม Dependency Updates ขณะที่ Size Limit ช่วยจำกัดพื้นที่ครับ
 
 Job ที่รันพร้อมกันแล้วเขียน Archive เดียวกันอาจ Upload ทับกัน การแยก Scope หรือจัดการ Writer ช่วยเพิ่มโอกาส Reuse ได้ แต่ sccache ยังตรวจ Key ของแต่ละ Entry อยู่ อย่าลืมวัดเวลา Extract และ Upload ด้วย เพราะ Archive ที่ใหญ่เกินไปอาจใช้เวลามากกว่างาน Compile ที่ประหยัดได้ครับ
+
+## Docker Build: cargo-chef เข้ามาช่วยตรงไหน? 🐳
+
+Docker Layer Cache ทำงานคนละระดับกับ sccache ครับ ถ้า Dockerfile ใช้ `COPY . .` แล้วตามด้วย `cargo build` การแก้ Source อาจทำให้ Build Layer เดิมใช้ซ้ำไม่ได้ Container จึงอาจต้อง Compile Dependencies อีกครั้ง [cargo-chef](https://github.com/LukeMathWalker/cargo-chef) ช่วยแยกขั้นเตรียม Dependencies ออกจากขั้น Build Application เพื่อเพิ่มโอกาสใช้ Dependency Layer ซ้ำ
+
+`cargo chef prepare` สร้าง `recipe.json` จาก Manifests และ Lockfile ของโปรเจกต์ จากนั้น `cargo chef cook` ใช้ Recipe สร้างโครงโปรเจกต์และ Build Dependencies ก่อน Copy Source จริงเข้า Builder ถ้า Recipe และ Inputs อื่นของ Docker Layer ไม่เปลี่ยน **และ Builder ยังเข้าถึง Layer เดิมได้** Docker ก็อาจใช้ Layer นั้นซ้ำเมื่อเราแก้ Application Source ครับ
+
+ตัวอย่าง Multi-stage แบบทั่วไปสำหรับ Rust Project ที่มี Binary ชื่อ `app`:
+
+```dockerfile
+FROM lukemathwalker/cargo-chef:latest-rust-1 AS chef
+WORKDIR /app
+
+FROM chef AS planner
+COPY . .
+RUN cargo chef prepare --recipe-path recipe.json
+
+FROM chef AS builder
+COPY --from=planner /app/recipe.json recipe.json
+RUN cargo chef cook --release --recipe-path recipe.json
+COPY . .
+RUN cargo build --release --bin app
+```
+
+ตัวอย่างจบที่ Builder Stage ครับ สามารถเพิ่ม Runtime Stage ให้เหมาะกับ Binary และ System Libraries ของตัวเอง ใส่ `target/` และ `.git/` ใน `.dockerignore` เพื่อไม่ให้ Local Build Artifacts ถูก Copy ทับ Output ใน Container ใช้ Rust Version, Working Directory, Build Profile, Target และ Features ที่เกี่ยวข้องให้ตรงกันระหว่าง `cook` กับ Build จริง พร้อม Pin Toolchain และ Image Version เพื่อให้ Build ทำซ้ำได้ ส่วน Workspace Path Dependencies, Build Scripts หรือ Native Libraries อาจต้องตั้งค่าเพิ่มเติมตามโปรเจกต์
+
+**ใช้ cargo-chef กับ sccache ร่วมกันได้ไหม?** ได้ครับ cargo-chef ช่วยให้ Docker ใช้ Dependency **Layer** ซ้ำ ส่วน sccache ช่วยใช้ผล **Compiler** ที่เข้าเงื่อนไขซ้ำเมื่อมีการ Compile จริง Dockerfile ด้านบนแสดงเฉพาะ cargo-chef หากต้องการ sccache ต้องติดตั้งและตั้งค่า Wrapper ภายใน Build รวมถึงทำให้ Build เข้าถึง Cache ได้ด้วย สำหรับ CI Builder ที่เริ่มใหม่ทุกครั้ง ต้องจัดเก็บ Layer Cache หรือ Export/Import กลับมาใช้ด้วย เพราะ Builder ใหม่ไม่ได้มี Layer จากรอบก่อนโดยอัตโนมัติ ลองวัดทั้งสองวิธีและต้นทุน Restore/Upload ก่อนเพิ่มความซับซ้อนครับ
 
 ## ทำไม Compile แล้วไม่ Hit? 🤔
 

@@ -69,6 +69,19 @@ sccache --show-stats
 
 `SCCACHE_CACHE_SIZE` controls the local cache limit; `SCCACHE_DIR` selects a local directory. These examples use 2 GB as an illustrative limit. Settings used by the server should be set before it starts; stop and restart the server when changing them. `sccache --zero-stats` resets counters, not the stored cache. `sccache --stop-server` stops the background server. See [local storage configuration](https://github.com/mozilla/sccache/blob/v0.19.0/docs/Local.md).
 
+### Keeping local build artifacts under control 🧹
+
+Keeping incremental compilation enabled makes the edit/build loop pleasant, but `target/` can grow as profiles, dependencies, and incremental artifacts accumulate. Check its size from the workspace root with `du -sh target` (if you use Cargo's default target directory). When you need the disk space, preview the cleanup and then clean:
+
+```sh
+cargo clean --dry-run
+cargo clean
+```
+
+Run this from the intended workspace: without options, [`cargo clean`](https://doc.rust-lang.org/cargo/commands/cargo-clean.html) removes the **entire configured target directory**, including compiled binaries and incremental state, not just old incremental files. A workspace or `CARGO_TARGET_DIR` setting can make that directory different from `./target`. Don't keep irreplaceable files there. Cargo also supports narrower options such as `--release` or `-p package-name`.
+
+The next build has to recreate those outputs and loses its incremental starting point, so expect extra work. The separate sccache storage is normally unaffected, and eligible requests may hit it after the clean; incremental compilations, linking, and other non-cacheable work still run. If you explicitly put the sccache directory inside `target/`, cleaning removes that cache too. Clean when space or troubleshooting calls for it, rather than after every build. 🦀
+
 ### A cold and warm experiment 🧪
 
 Use a disposable directory and an isolated server port. This example creates a new library and cleans **only that demo project**. It keeps the checkout path and compiler settings constant:
@@ -141,6 +154,33 @@ rust-test:
 The `EXIT` trap prints statistics and stops the server in the same shell, even if tests fail, while retaining the original exit status. It runs before the job's cache upload. Test this lifecycle with your runner: daemon shutdown behavior can vary. An archive key controls which **collection** is restored; sccache still checks individual entries. A stable key can retain useful results across dependency updates, while the cache's size limit bounds disk use.
 
 Parallel jobs writing the same archive can replace one another's uploaded cache. Scoping jobs or coordinating writers can improve reuse, but it doesn't make a stale entry correct: sccache still checks its own keys. Measure cache extraction and upload too; a huge archive can cost more than the compilation it saves.
+
+## Docker builds: where cargo-chef fits 🐳
+
+Docker's layer cache works at a different level from sccache. With a simple `COPY . .` followed by `cargo build`, a source change can invalidate the build layer, so the container may need to compile dependencies again. [cargo-chef](https://github.com/LukeMathWalker/cargo-chef) separates dependency preparation from the final application build to make the dependency layer reusable.
+
+`cargo chef prepare` creates a `recipe.json` from the project's manifests and lockfile. `cargo chef cook` uses that recipe to build the dependency skeleton before the real source is copied into the builder. If the recipe and the other inputs to that Docker layer are unchanged **and the builder has that layer available**, Docker can reuse it when application source changes.
+
+Here's a generic multi-stage example for a Rust project with a binary named `app`:
+
+```dockerfile
+FROM lukemathwalker/cargo-chef:latest-rust-1 AS chef
+WORKDIR /app
+
+FROM chef AS planner
+COPY . .
+RUN cargo chef prepare --recipe-path recipe.json
+
+FROM chef AS builder
+COPY --from=planner /app/recipe.json recipe.json
+RUN cargo chef cook --release --recipe-path recipe.json
+COPY . .
+RUN cargo build --release --bin app
+```
+
+This example ends at the builder stage; add a runtime stage suited to your binary and its system libraries. Put `target/` and `.git/` in `.dockerignore` so local build artifacts are not copied over the container's outputs. Keep the Rust version, working directory, build profile, target, and relevant features compatible between `cook` and the final build. Pin the toolchain and image version for reproducible builds. Workspace path dependencies, build scripts, and native libraries may need additional project-specific setup.
+
+**Can cargo-chef and sccache work together?** Yes. cargo-chef helps Docker reuse a dependency **layer**; sccache can reuse eligible **compiler results** when compilation actually runs. The Dockerfile above demonstrates cargo-chef only: adding sccache requires installing/configuring the wrapper inside the build and making its cache available to that build. An ephemeral CI builder also needs access to a retained or exported/imported Docker layer cache; a fresh builder won't magically have previous layers. Measure both approaches and their combined restore/upload costs before adding complexity.
 
 ## Why didn't that compile hit the cache? 🤔
 
