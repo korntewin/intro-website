@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1560 760" role="img" aria-label="A cache lifecycle for CI"><rect x="1" y="1" width="1558" height="758" rx="24" fill="#ffffff" stroke="#d8e2ec"/><text x="65" y="74" font-family="Arial,sans-serif" font-size="20" font-weight="700" fill="#536582">ENGINEERING NOTES / SCCACHE</text><text x="65" y="135" font-family="Arial,sans-serif" font-size="42" font-weight="800" fill="#19233e">A cache lifecycle for CI</text><text x="65" y="180" font-family="Arial,sans-serif" font-size="24" fill="#536582">Ephemeral job, persistent compiler results.</text>
+<rect x="65.0" y="250" width="331.25" height="300" rx="18" fill="#f4f8fc" stroke="#2265b6" stroke-width="2"/><rect x="65.0" y="250" width="331.25" height="9" rx="4" fill="#2265b6"/><text x="87.0" y="310" font-family="Arial,sans-serif" font-size="25" font-weight="700" fill="#2265b6">1 / RESTORE</text>
+<text x="87.0" y="365" font-family="Arial,sans-serif" font-size="20" fill="#19233e">Download cache archives</text>
+<text x="87.0" y="404" font-family="Arial,sans-serif" font-size="20" fill="#19233e">Separate tools and results</text>
+<path d="M402.25 400h23m-8-8 8 8-8 8" fill="none" stroke="#536582" stroke-width="3"/>
+<rect x="431.25" y="250" width="331.25" height="300" rx="18" fill="#f4f8fc" stroke="#188676" stroke-width="2"/><rect x="431.25" y="250" width="331.25" height="9" rx="4" fill="#188676"/><text x="453.25" y="310" font-family="Arial,sans-serif" font-size="25" font-weight="700" fill="#188676">2 / BUILD</text>
+<text x="453.25" y="365" font-family="Arial,sans-serif" font-size="20" fill="#19233e">Configure compiler wrapper</text>
+<text x="453.25" y="404" font-family="Arial,sans-serif" font-size="20" fill="#19233e">Compile or restore results</text>
+<path d="M768.5 400h23m-8-8 8 8-8 8" fill="none" stroke="#536582" stroke-width="3"/>
+<rect x="797.5" y="250" width="331.25" height="300" rx="18" fill="#f4f8fc" stroke="#b35c35" stroke-width="2"/><rect x="797.5" y="250" width="331.25" height="9" rx="4" fill="#b35c35"/><text x="819.5" y="310" font-family="Arial,sans-serif" font-size="25" font-weight="700" fill="#b35c35">3 / FINISH</text>
+<text x="819.5" y="365" font-family="Arial,sans-serif" font-size="20" fill="#19233e">Print cache statistics</text>
+<text x="819.5" y="404" font-family="Arial,sans-serif" font-size="20" fill="#19233e">Stop server before upload</text>
+<path d="M1134.75 400h23m-8-8 8 8-8 8" fill="none" stroke="#536582" stroke-width="3"/>
+<rect x="1163.75" y="250" width="331.25" height="300" rx="18" fill="#f4f8fc" stroke="#7355a0" stroke-width="2"/><rect x="1163.75" y="250" width="331.25" height="9" rx="4" fill="#7355a0"/><text x="1185.75" y="310" font-family="Arial,sans-serif" font-size="25" font-weight="700" fill="#7355a0">4 / SAVE</text>
+<text x="1185.75" y="365" font-family="Arial,sans-serif" font-size="20" fill="#19233e">Upload compiler cache</text>
+<text x="1185.75" y="404" font-family="Arial,sans-serif" font-size="20" fill="#19233e">Next job can reuse results</text>
+<rect x="65" y="605" width="1430" height="94" rx="16" fill="#14283b"/><text x="88" y="660" font-family="Arial,sans-serif" font-size="23" font-weight="700" fill="#ffffff">Measure restore and upload time as well as compilation time.</text></svg>

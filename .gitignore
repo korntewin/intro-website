@@ -19,6 +19,8 @@
 
 # production
 /build
+/dist
+/.astro
 
 # misc
 .DS_Store
@@ -47,3 +49,4 @@ public/blog/figures/*.png
 
 # Medium fallback image bundle, created from generated PNGs
 public/blog/medium-images.zip
+public/blog/*/medium-images.zip

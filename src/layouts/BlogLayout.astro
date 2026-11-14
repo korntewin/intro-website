@@ -37,6 +37,7 @@ const mediumUrl = rootArticleUrl + 'medium/' + language + '/';
         <a href={englishUrl} lang="en" aria-current={language === 'en' ? 'page' : undefined}>EN</a>
       </nav>
       <a class="blog-medium-link" href={mediumUrl}>Medium export ({language.toUpperCase()}) ↗</a>
+      <a class="blog-medium-link" href={rootArticleUrl + 'medium-images.zip'}>Medium images ↗</a>
     </div>
     <article class="reading prose article-prose h-entry" aria-labelledby="post-title" itemscope itemtype="https://schema.org/BlogPosting">
       <h1 id="post-title" class="p-name" itemprop="headline">{frontmatter.title}</h1>

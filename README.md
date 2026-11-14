@@ -28,3 +28,5 @@ Article figures are stored as SVG sources in `public/blog/figures/`. Running `np
 The [16-image ZIP](https://korntewin.github.io/intro-website/blog/medium-images.zip) remains available for direct uploads if Medium's third-party importer still drops an image. See `docs/medium-import.md` for the verified diagnosis, checks, and import instructions.
 
 The “Why Rust” section includes an editable three-region landscape showing applied ML with Python, Go web services, and the Prediction Service Direction toward Rust/native ML optimization. Its source is `public/blog/figures/lmwn-ml-web-landscape.svg`.
+
+The bilingual [sccache guide](https://korntewin.github.io/intro-website/blog/sccache-rust-build-cache/) also has [Thai](https://korntewin.github.io/intro-website/blog/sccache-rust-build-cache/medium/th/) and [English](https://korntewin.github.io/intro-website/blog/sccache-rust-build-cache/medium/en/) Medium-ready views and an [ordered image pack](https://korntewin.github.io/intro-website/blog/sccache-rust-build-cache/medium-images.zip). Each article gets its own image pack; the original `/blog/medium-images.zip` remains available.

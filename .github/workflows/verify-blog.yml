@@ -36,8 +36,16 @@ jobs:
           test -s dist/blog/riir-rust-prediction-service/medium/th/index.html
           test -s dist/blog/riir-rust-prediction-service/medium/en/index.html
           test -s dist/blog/riir-rust-prediction-service/medium/index.html
-          test "$(find dist/blog/figures -maxdepth 1 -name '*.png' | wc -l | tr -d ' ')" -eq 17
+          test -s dist/blog/figures/sccache-cover.png
+          test -s dist/blog/figures/sccache-flow.png
+          test -s dist/blog/figures/sccache-layers.png
+          test -s dist/blog/figures/sccache-ci.png
+          test -s dist/blog/sccache-rust-build-cache/index.html
+          test -s dist/blog/sccache-rust-build-cache/en/index.html
+          test -s dist/blog/sccache-rust-build-cache/medium/th/index.html
+          test -s dist/blog/sccache-rust-build-cache/medium/en/index.html
+          test -s dist/blog/sccache-rust-build-cache/medium-images.zip
+          unzip -tqq dist/blog/sccache-rust-build-cache/medium-images.zip
           test -s dist/blog/medium-images.zip
           unzip -tqq dist/blog/medium-images.zip
-          png_count="$(unzip -Z -1 dist/blog/medium-images.zip | grep -c '[.]png$')"
-          test "$png_count" -eq 17
+          cmp dist/blog/medium-images.zip dist/blog/riir-rust-prediction-service/medium-images.zip
