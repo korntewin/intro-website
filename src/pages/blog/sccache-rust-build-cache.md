@@ -33,7 +33,7 @@ sccache ไม่ได้ทำให้ rustc เร็วขึ้นนะ�
 
 เมื่อกำหนด `RUSTC_WRAPPER=sccache` Cargo จะเรียก `sccache rustc …` สำหรับทุก Crate ที่ตัดสินใจว่าต้อง Build คำสั่งนี้เป็นแค่ Client บาง ๆ โดยค่าเริ่มต้นจะส่ง Request ต่อให้ **sccache Server** ที่ทำงานอยู่เบื้องหลัง (ถ้ายังไม่มีก็จะเริ่มให้) Server เป็นตัวถือการเชื่อมต่อกับ Storage และเก็บ Stats นี่จึงเป็นเหตุผลที่ `--show-stats`, `--zero-stats` และ `--stop-server` ต้องคุยกับ Server และค่าอย่างขนาด Cache จะถูกอ่านตอน Server เริ่มทำงานครับ
 
-![sccache ใช้ผล Compile ซ้ำเมื่อ Key ตรงกัน Compile ใหม่เมื่อ Miss ข้าม Cache สำหรับ Request ที่ Cache ไม่ได้ และลบ Local Entry ที่ใช้งานล่าสุดนานที่สุดเมื่อพื้นที่เต็ม](https://korntewin.github.io/intro-website/blog/figures/sccache-ci.png)
+![Compile Request ที่ Cache ได้ใช้ Inputs ค้นหา Cache ถ้า Hit จะคืนผลลัพธ์ ถ้า Miss จะเรียก Compiler](https://korntewin.github.io/intro-website/blog/figures/sccache-flow.png)
 
 สำหรับแต่ละ Request Server จะตรวจก่อนว่า Cache ได้ไหม ถ้าได้ sccache จะสร้าง Key จาก Inputs ของ Request นั้นแล้วค้นหาใน Storage ถ้า **Hit** ก็คืน Output ที่เก็บไว้ ถ้า **Miss** ก็เรียก Compiler แล้วอาจเก็บผลลัพธ์ที่สำเร็จไว้ ส่วน Request ที่ Cache ไม่ได้จะส่งต่อให้ Compiler ทำงานตามปกติ อ่านเพิ่มเติมได้จาก [Architecture Documentation](https://github.com/mozilla/sccache/blob/v0.19.0/docs/Architecture.md) ครับ
 

@@ -34,7 +34,7 @@ sccache doesn't make rustc any faster. It saves time by **not running rustc** fo
 
 With `RUSTC_WRAPPER=sccache`, Cargo runs `sccache rustc …` for every crate it decides to build. That command is a thin client: by default it hands the request to a long-running **sccache server** in the background, starting one if needed. The server owns the storage connection and the statistics. That's why `--show-stats`, `--zero-stats`, and `--stop-server` talk to the server, and why settings such as the cache size are read when the server starts.
 
-![sccache reuses matching compiler keys, compiles cache misses, bypasses uncacheable work, and evicts least recently used local entries when full](https://korntewin.github.io/intro-website/blog/figures/sccache-ci.png)
+![An eligible compiler request uses its inputs for a cache lookup; a hit restores outputs and a miss runs the compiler](https://korntewin.github.io/intro-website/blog/figures/sccache-flow.png)
 
 For each request, the server first checks whether it can be cached. If it can, sccache computes a key from the request's inputs and checks the configured storage. On a **hit**, it restores the stored outputs. On a **miss**, it invokes the compiler and can save an eligible successful result. A request that cannot be cached passes through to the compiler. See the [architecture documentation](https://github.com/mozilla/sccache/blob/v0.19.0/docs/Architecture.md).
 
