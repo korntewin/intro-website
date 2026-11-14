@@ -123,6 +123,19 @@ body.portfolio-mode a:focus-visible { outline: 3px solid var(--p-accent); outlin
 .portfolio .writing-copy h3 { font-size:1.65rem; line-height:1.32; letter-spacing:-.035em; margin:6px 0 9px; }
 .portfolio .writing-copy p:last-child { color:var(--p-muted); margin:0; font-size:.92rem; line-height:1.6; }
 .portfolio .writing-arrow { font-size:1.6rem; justify-self:end; align-self:start; color:var(--p-accent); }
+/* "NEW" marker for the latest project/post. Lists are newest first, so index 0 gets it. */
+.portfolio .new-badge { display:inline-flex; align-items:center; gap:7px; margin-right:10px; padding:3px 10px 3px 9px; border-radius:999px; background:var(--p-accent-ink); color:var(--p-card); font:800 .62rem/1.5 ui-monospace,Menlo,Consolas,monospace; letter-spacing:.14em; vertical-align:middle; white-space:nowrap; }
+.portfolio .new-badge .status-dot { width:6px; height:6px; background:var(--p-card); box-shadow:0 0 0 3px color-mix(in srgb,var(--p-card) 30%,transparent); animation:port-pulse 2s ease-in-out infinite; }
+.portfolio .is-latest { border-color:color-mix(in srgb,var(--p-accent) 50%,var(--p-line)); box-shadow:0 0 0 3px color-mix(in srgb,var(--p-accent) 9%,transparent); }
+.portfolio .feature-head-end { display:flex; align-items:center; gap:10px; }
+.portfolio .feature-head-end .new-badge { margin-right:0; }
+.portfolio .writing-archive { list-style:none; margin:14px 0 0; padding:0; display:grid; gap:10px; }
+.portfolio .writing-row { display:grid; grid-template-columns:130px 1fr 24px; gap:20px; align-items:center; padding:17px 34px; border:1px solid var(--p-line); border-radius:16px; transition:border-color .2s,transform .2s; }
+.portfolio .writing-row:hover { transform:translateY(-2px); border-color:var(--p-accent); text-decoration:none; }
+.portfolio .writing-row-date { color:var(--p-muted); font:700 .68rem/1.5 ui-monospace,Menlo,Consolas,monospace; letter-spacing:.1em; white-space:nowrap; }
+.portfolio .writing-row-title { font-weight:700; font-size:1rem; line-height:1.45; letter-spacing:-.02em; }
+.portfolio .writing-row:hover .writing-row-title { color:var(--p-accent-ink); }
+.portfolio .writing-row-arrow { color:var(--p-accent); font-size:1.15rem; justify-self:end; }
 .portfolio .closing-panel { display:flex; justify-content:space-between; align-items:center; gap:55px; background:#16252b; border-radius:25px; color:#eef3f0; padding:52px 58px; margin-top:112px; overflow:hidden; position:relative; }
 .portfolio .closing-panel::after { content:''; position:absolute; width:350px; height:350px; border:1px solid rgba(255,255,255,.07); border-radius:50%; right:-110px; bottom:-240px; pointer-events:none; }
 .portfolio .closing-panel .kicker { color:#ffad80; margin-bottom:17px; }
@@ -184,6 +197,7 @@ body.portfolio-mode a:focus-visible { outline: 3px solid var(--p-accent); outlin
 .portfolio .career-card h3 { margin:13px 0 9px; font-size:1.4rem; line-height:1.3; letter-spacing:-.04em; }
 .portfolio .career-card p { margin:0; color:var(--p-muted); font-size:.91rem; line-height:1.75; }
 @keyframes port-cursor { 50% {opacity:0;} }
+@keyframes port-pulse { 50% { box-shadow:0 0 0 5px transparent; } }
 @media (max-width:1060px) {
   .portfolio .port-hero { grid-template-columns:1fr .95fr; gap:4px; }
   .portfolio .port-hero h1 { font-size:clamp(3rem,5.4vw,4.7rem); }
@@ -220,6 +234,8 @@ body.portfolio-mode a:focus-visible { outline: 3px solid var(--p-accent); outlin
   .portfolio .writing-icon { border-radius:12px; font-size:2rem; }
   .portfolio .writing-arrow { display:none; }
   .portfolio .writing-copy h3 { font-size:1.25rem; }
+  .portfolio .writing-row { grid-template-columns:1fr; gap:4px; padding:15px 18px; }
+  .portfolio .writing-row-arrow { display:none; }
   .portfolio .closing-panel { margin-top:80px; padding:35px 26px; display:block; }
   .portfolio .closing-links { margin-top:28px; }
   .portfolio .interior-page .page-lead { padding:70px 0 50px; }
@@ -238,7 +254,7 @@ body.portfolio-mode a:focus-visible { outline: 3px solid var(--p-accent); outlin
   .portfolio .small-cta { margin-top:75px; }
 }
 @media (prefers-reduced-motion: reduce) {
-  .portfolio .feature-project,.portfolio .feature-project img,.portfolio .project-row,.portfolio .port-button,.portfolio .writing-feature { transition:none; }
-  .portfolio .feature-project:hover,.portfolio .project-row:hover,.portfolio .port-button:hover,.portfolio .writing-feature:hover { transform:none; }
-  .portfolio .blink-cursor,.portfolio .writing-caret { animation:none; }
+  .portfolio .feature-project,.portfolio .feature-project img,.portfolio .project-row,.portfolio .port-button,.portfolio .writing-feature,.portfolio .writing-row { transition:none; }
+  .portfolio .feature-project:hover,.portfolio .project-row:hover,.portfolio .port-button:hover,.portfolio .writing-feature:hover,.portfolio .writing-row:hover { transform:none; }
+  .portfolio .blink-cursor,.portfolio .writing-caret,.portfolio .new-badge .status-dot { animation:none; }
 }

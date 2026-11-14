@@ -1,13 +1,8 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
 import '../styles/portfolio.css';
+import { projects } from '../data/projects';
 const base = import.meta.env.BASE_URL.replace(/\/$/, '');
-const projects = [
-  { id:'01', kind:'INFERENCE / BENCHMARKS', title:'Python vs Rust ML inference', description:'Exploring inference performance and language trade-offs for deep learning workloads.', href:'https://github.com/korntewin/python-vs-rust-DL-inference', image:'/visuals/benchmark.svg', tags:['Rust','Python','ML inference'] },
-  { id:'02', kind:'RUST / AUTOMATION', title:'Rust crypto trading bot', description:'An engineering write-up about building trading bots with Rust.', href:'https://medium.com/thinking-machines-thailand/crypto-trading-bots-with-rust-db754daf474e', image:'/visuals/rust-core.svg', tags:['Rust','Systems','Automation'] },
-  { id:'03', kind:'RUST / WEBASSEMBLY', title:'Real-time object detection', description:'An experiment bringing real-time object detection to Rust and WebAssembly.', href:'https://github.com/korntewin/yolo-wasm', image:'/visuals/benchmark.svg', tags:['Rust','WASM','Computer vision'] },
-  { id:'04', kind:'DATA / STREAMING', title:'Kafka → Delta Lake', description:'A look at real-time event streaming and Delta table liquid clustering.', href:'https://medium.com/@korntewin-b/delta-table-liquid-clustering-for-real-time-event-streaming-b6f48d111aa6', image:'/visuals/data-stream.svg', tags:['Kafka','Delta Lake','Streaming'] },
-];
 ---
 <BaseLayout title="Projects · Korntewin" description="Selected Rust, ML inference, WebAssembly and data engineering projects by Korntewin." portfolio={true}>
   <div class="portfolio interior-page">
@@ -17,11 +12,11 @@ const projects = [
       <p>A collection of side quests, implementations, and engineering write-ups spanning Rust, machine learning, and data systems.</p>
     </section>
     <section aria-label="Project collection" class="project-list">
-      {projects.map(project => (
-        <a class="project-row" href={project.href} target="_blank" rel="noopener noreferrer">
+      {projects.map((project, index) => (
+        <a class:list={['project-row', { 'is-latest': index === 0 }]} href={project.href} target="_blank" rel="noopener noreferrer">
           <div class="project-preview"><img src={base + project.image} alt="" width="460" height="220" loading="lazy" /></div>
           <div class="project-row-content">
-            <span class="project-kicker">{project.id} / {project.kind}</span>
+            <span class="project-kicker">{index === 0 && <span class="new-badge"><span class="status-dot" aria-hidden="true"></span>NEW</span>}{project.id} / {project.kind}</span>
             <h2>{project.title}</h2>
             <p>{project.description}</p>
             <div class="project-tags">{project.tags.map(tag => <span>{tag}</span>)}</div>
