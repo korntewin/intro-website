@@ -38,6 +38,10 @@ jobs:
           test -s dist/blog/riir-rust-prediction-service/medium/index.html
           test -s dist/blog/figures/sccache-cover.png
           test -s dist/blog/figures/sccache-flow.png
+          test -s dist/blog/figures/sccache-key.png
+          test -s dist/blog/figures/sccache-hit-miss.png
+          test -s dist/blog/figures/sccache-graph.png
+          test -s dist/blog/figures/sccache-lru.png
           test -s dist/blog/figures/sccache-layers.png
           test -s dist/blog/figures/sccache-ci.png
           test -s dist/blog/figures/sccache-lockfile-benchmark.png

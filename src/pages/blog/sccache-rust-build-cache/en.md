@@ -18,6 +18,7 @@ While working on a Rust service with a sizeable dependency graph, I started look
 
 - Cargo can reuse existing outputs in `target/`; sccache keeps a separate cache of eligible compiler results.
 - A cache hit avoids the corresponding compiler invocation, but linking, build scripts, and some Rust crate types still do work.
+- Each compilation is keyed by its inputs. An edit misses for that crate and the crates that depend on it, and LRU eviction keeps the local cache under its size limit.
 - Local incremental compilation and shared compiler caching solve different problems. Choose based on the workflow.
 - Measure the **entire job**, including cache restore and upload. A high hit rate is useful only if the overall build benefits.
 
@@ -27,15 +28,73 @@ While working on a Rust service with a sizeable dependency graph, I started look
 
 A **shared cache** lets machines reuse completed compilations. sccache also supports **distributed compilation**, where work can be executed on remote build machines. They are separate capabilities: the examples here use compiler caching and do not require a distributed compiler cluster.
 
-## How does a cache hit happen? 🔍
+## How sccache works under the hood 🔍
 
-![An eligible compiler request uses its inputs for a cache lookup; a hit restores outputs and a miss runs the compiler](https://korntewin.github.io/intro-website/blog/figures/sccache-flow.png)
+sccache doesn't make rustc any faster. It saves time by **not running rustc** for a crate when it has already seen exactly the same compilation. This section answers two questions: how does sccache decide that two compilations are “exactly the same,” and how does it keep stored results from filling the disk? The details describe Rust support in sccache 0.19.0 and can change between versions.
 
-With `RUSTC_WRAPPER=sccache`, Cargo invokes sccache with `rustc` and its arguments. For an eligible request, sccache considers inputs such as the compiler, arguments, source files, and relevant environment values. It computes a key and checks the configured storage.
+With `RUSTC_WRAPPER=sccache`, Cargo runs `sccache rustc …` for every crate it decides to build. That command is a thin client: by default it hands the request to a long-running **sccache server** in the background, starting one if needed. The server owns the storage connection and the statistics. That's why `--show-stats`, `--zero-stats`, and `--stop-server` talk to the server, and why settings such as the cache size are read when the server starts.
 
-On a **hit**, sccache restores the stored outputs. On a **miss**, it invokes the compiler and can save an eligible successful result. A request that cannot be cached passes through to the compiler. The exact inputs and eligibility rules depend on the language and sccache version; see the [architecture documentation](https://github.com/mozilla/sccache/blob/v0.19.0/docs/Architecture.md).
+![sccache reuses matching compiler keys, compiles cache misses, bypasses uncacheable work, and evicts least recently used local entries when full](https://korntewin.github.io/intro-website/blog/figures/sccache-ci.png)
+
+For each request, the server first checks whether it can be cached. If it can, sccache computes a key from the request's inputs and checks the configured storage. On a **hit**, it restores the stored outputs. On a **miss**, it invokes the compiler and can save an eligible successful result. A request that cannot be cached passes through to the compiler. See the [architecture documentation](https://github.com/mozilla/sccache/blob/v0.19.0/docs/Architecture.md).
 
 This is a compiler cache, so it does not know that a whole pipeline is “the same.” It evaluates individual compilation requests. Changing a compiler, feature, target, profile, flags, source, or other relevant input can cause a miss. That is useful: an older result should not be reused when the compilation meaningfully changes.
+
+### Which compilations are cacheable? ✅
+
+Being a dependency is not enough. In sccache 0.19.0, a typical Rust library compilation with incremental mode disabled can be cached when its arguments and outputs meet the supported rules. Incremental compilations and crate types that invoke the system linker, such as `bin`, `dylib`, `cdylib`, and `proc-macro`, bypass caching. Build-script execution, linking, and running tests still take time. See the [Rust cacheability rules](https://github.com/mozilla/sccache/blob/v0.19.0/docs/Rust.md).
+
+### What goes into the cache key? 🔑
+
+![The compiler, arguments, source files, dependencies, environment, and working directory are hashed into a cache key; the same inputs hit and a changed input misses](https://korntewin.github.io/intro-website/blog/figures/sccache-key.png)
+
+The key has to change whenever the output could change, so **the key represents a compilation, not just a crate name and version.** Before hashing, sccache asks rustc for the crate's dependency information (`--emit dep-info`). That lists every file the crate reads, including modules and files pulled in with `include_str!`, plus environment variables read with `env!`. sccache then hashes these inputs with blake3:
+
+- **Compiler:** the rustc version and the libraries in its sysroot. A toolchain update means new keys.
+- **Arguments:** crate name, edition, `--cfg` values such as enabled features, optimization level, target, and codegen flags. Output locations such as `--out-dir` and `-L` search paths are left out.
+- **Source files:** the contents of every file in the dep-info list.
+- **Dependencies:** the contents of every `--extern` crate (`.rlib` or `.rmeta`) the crate compiles against.
+- **Environment:** `CARGO_*` variables, except a few such as `CARGO_BUILD_JOBS` and `CARGO_MAKEFLAGS`, plus the values of variables read with `env!`.
+- **Working directory:** where rustc runs. This is one reason a stable CI checkout path matters.
+
+Nothing in the cache is edited in place. A changed input selects a different key, which may not have an entry yet; it doesn't delete the old entry. That older result can still be useful when a branch or its inputs return to a previous state. This list simplifies the [Rust key-generation implementation](https://github.com/mozilla/sccache/blob/v0.19.0/src/compiler/rust.rs); see also the [hashing documentation](https://github.com/mozilla/sccache/blob/v0.19.0/docs/Caching.md).
+
+### Hit or miss: where the time goes ⏱️
+
+![Timeline for one crate: a miss hashes, looks up, compiles, and stores; a hit hashes, looks up, and restores; a non-cacheable request runs rustc directly](https://korntewin.github.io/intro-website/blog/figures/sccache-hit-miss.png)
+
+A miss does slightly **more** work than plain rustc. sccache runs rustc once for dep-info, reads and hashes every input, runs the real compilation, and then compresses and stores the result. A hit does the same hashing and lookup, then skips the compilation entirely. The saving per hit is roughly that crate's compile time minus the restore time, so large, slow-to-compile dependencies benefit the most.
+
+Each entry is a small archive: compiled outputs such as `.rlib` and `.rmeta`, compressed with zstd, plus rustc's stdout and stderr. On a hit, sccache writes the files where Cargo expects them and replays the compiler messages, so warnings from a cached workspace crate still show up. Requests that aren't cacheable go straight to rustc and store nothing.
+
+### Why one edit doesn't rebuild everything 🕸️
+
+![Crate graph after editing core on a fresh runner: core and its dependent api miss, untouched crates hit, and the proc-macro and binary always compile](https://korntewin.github.io/intro-website/blog/figures/sccache-graph.png)
+
+Picture a fresh CI runner with an empty `target/` and a warm sccache, running a commit that only edited the workspace crate `core`. Cargo has no outputs, so it asks for every crate. Each request is checked on its own:
+
+- Third-party crates and untouched workspace libraries have the same inputs as before: **hit**.
+- `core` has a changed source file: **miss**.
+- `api` wasn't edited, but it compiles against `core`'s new `.rlib`. That dependency's contents are part of `api`'s key, so it's a **miss** too. Changes ripple downstream.
+- The `macros` procedural macro and the `app` binary invoke the linker, so they are **always compiled**.
+
+Hits ripple too. A hit restores byte-for-byte the output that was stored, so crates further down still see the same dependency contents and keep matching. The remaining work is roughly “what changed, everything downstream of it, and whatever can't be cached.” That's also why editing a crate near the bottom of the graph, bumping a widely used dependency, or changing the toolchain or flags costs far more than editing a leaf crate.
+
+A `Cargo.lock` edit therefore does not automatically empty sccache: unaffected compilations can still hit. Conversely, an unchanged crate version does not guarantee a hit if its compiler, features, or other inputs differ. Even an unchanged key misses if the entry was never saved or has been evicted.
+
+### How the cache stays within its size limit 🧹
+
+![Local cache entries ordered by last use: a hit moves an entry to the most recent end, and storing a new entry over the size limit evicts the least recently used entry](https://korntewin.github.io/intro-website/blog/figures/sccache-lru.png)
+
+**Changed inputs and disk cleanup are separate mechanisms.** A new key never deletes anything; space is reclaimed only when the cache fills up. For the local disk cache, every entry is a file under `SCCACHE_DIR`. The server keeps a running total against `SCCACHE_CACHE_SIZE` (10 GB by default; the examples below use 2 GB) and orders entries by when they were last used, known as **least recently used (LRU)** eviction:
+
+1. A hit marks the entry as most recently used. sccache also updates the file's modification time, so the order survives a server restart.
+2. Before storing a new entry, the server checks whether it fits under the limit.
+3. If it doesn't, the server deletes the least recently used entries until it fits, then stores the new one. An entry larger than the whole limit is not stored. If an evicted result is needed later, that compilation misses and runs again.
+
+There's no separate cleanup job to run. Entries that builds keep hitting stay warm, while results for old toolchains, flags, or dependency versions age out on their own. The catch is a limit that's **too small**. If one clean build produces more entries than the cache can hold, the earliest entries are evicted before the next build reaches them, and hits collapse. Size the cache to hold at least one full build for each configuration you want to keep warm (profile, target, and toolchain), then compare the cache size with the maximum in `sccache --show-stats`. See the [local-cache settings](https://github.com/mozilla/sccache/blob/v0.19.0/docs/Local.md) and [LRU storage implementation](https://github.com/mozilla/sccache/blob/v0.19.0/src/lru_disk_cache/mod.rs).
+
+This limit does not clean `target/`, Cargo's downloaded sources, or old cache archives retained by the CI provider. It also applies only to the local disk cache. With remote storage, retention is configured on the backend: for example, Redis `maxmemory` with the `allkeys-lru` policy or `SCCACHE_REDIS_EXPIRATION`, lifecycle rules on an object-storage bucket, or the CI platform's own cache retention. In the CI example below, the archive is a copy of the local `SCCACHE_DIR`, so `SCCACHE_CACHE_SIZE` also bounds what each job restores and uploads.
 
 ## Cargo, incremental compilation, and sccache are different 🧩
 
@@ -111,36 +170,7 @@ For a truly cold first run, use a fresh cache directory and an unused port. The 
 
 ## Bring it into CI 🚀
 
-![sccache reuses matching compiler keys, compiles cache misses, bypasses uncacheable work, and evicts least recently used local entries when full](https://korntewin.github.io/intro-website/blog/figures/sccache-ci.png)
-
 A runner can start with an empty filesystem each time, so the cache directory must survive the job. One approach is to archive it with the CI provider's cache mechanism. Keep downloaded Cargo sources and compiler results in separate caches: downloading a crate and compiling it are different kinds of work. Scope compiler archives by architecture and job purpose when jobs use different targets or flags.
-
-### Which compilations are cacheable?
-
-Being a dependency is not enough. In sccache 0.19.0, a typical Rust library compilation with incremental mode disabled can be cached when its arguments and outputs meet the supported rules. Incremental compilations and crate types that invoke the system linker, such as `bin`, `dylib`, `cdylib`, and `proc-macro`, bypass caching. Build-script execution, linking, and running tests still take time. See the [Rust cacheability rules](https://github.com/mozilla/sccache/blob/v0.19.0/docs/Rust.md).
-
-### How does it choose reuse or recompilation?
-
-For an eligible compilation, sccache asks rustc for dependency information, hashes source files and input dependency artifacts, and combines them with compiler identity, arguments, and relevant environment values. Features, target, and optimization settings matter through these inputs. **The key represents a compilation, not just a crate name and version.** This is a simplified description of the [Rust key-generation implementation](https://github.com/mozilla/sccache/blob/v0.19.0/src/compiler/rust.rs) and [hashing documentation](https://github.com/mozilla/sccache/blob/v0.19.0/docs/Caching.md).
-
-Imagine a clean CI runner with a restored cache. Library A is independent of B, while library C uses B. Assume the unchanged key is stored and the new keys are not:
-
-| Compilation | What changed? | What happens? |
-| --- | --- | --- |
-| Library A | All tracked inputs stay the same | Same key and an entry exists: hit, restore outputs. |
-| Library B | Its source changes, producing a different key | New key has no entry: miss, compile and save the successful result. |
-| Library C | Its own source is unchanged, but the input artifact from B changes | Its key also changes: miss, compile and save. |
-| Application binary | It requires the system linker | Not cacheable in this setup; compile and link normally. |
-
-A `Cargo.lock` edit therefore does not automatically empty sccache: unaffected compilations can still hit. Conversely, an unchanged crate version does not guarantee a hit if its compiler, features, or other inputs differ. Even an unchanged key misses if the entry was never saved or has been evicted. See the [lookup and compilation flow](https://github.com/mozilla/sccache/blob/v0.19.0/docs/Architecture.md).
-
-### How does it keep disk usage under control?
-
-**Changed inputs and disk cleanup are separate mechanisms.** A changed input selects a different key; it does not immediately delete the old entry. That older result can still be useful when a branch or its inputs return to the previous state.
-
-For the **local disk backend** used here, `SCCACHE_CACHE_SIZE=2G` sets the compiler-cache capacity. When adding a result needs more room, sccache removes **least recently used (LRU)** entries. Reading an entry refreshes its recency. If an evicted result is needed later, that compilation misses and runs again. See the [local-cache settings](https://github.com/mozilla/sccache/blob/v0.19.0/docs/Local.md) and [LRU storage implementation](https://github.com/mozilla/sccache/blob/v0.19.0/src/lru_disk_cache/mod.rs).
-
-This limit does not clean `target/`, Cargo's downloaded sources, or old cache archives retained by the CI provider. Remote storage backends also need their own storage and retention policies.
 
 ### A GitLab CI example
 
