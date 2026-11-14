@@ -155,6 +155,15 @@ The `EXIT` trap prints statistics and stops the server in the same shell, even i
 
 Parallel jobs writing the same archive can replace one another's uploaded cache. Scoping jobs or coordinating writers can improve reuse, but it doesn't make a stale entry correct: sccache still checks its own keys. Measure cache extraction and upload too; a huge archive can cost more than the compilation it saves.
 
+### What happened after a lockfile change? 📊
+
+In one CI experiment for a Rust prediction service, we compared the old archive-based setup with the revised sccache setup after the same lockfile change. The old setup had a **cold archive cache**; the revised setup restored an **existing compiler cache**. Both runs passed the same test suite.
+
+- **Pipeline wall time:** 10m 00s → 6m 28s
+- **Time saved:** 3m 32s, or **35.3%** in this comparison
+
+This is precisely the situation we wanted to understand: a lockfile change caused the old archive key to miss, while sccache could still reuse eligible compilations. The revised setup also changed how caches were handled, so the result is for the **overall CI configuration**, not an isolated benchmark of sccache alone. The measurements are individual runs on shared autoscaling runners and include job startup, cache transfers, and other pipeline work. They are not an average or a guarantee for every lockfile change. With an empty sccache, the first run still needs to compile. 😅
+
 ## Docker builds: where cargo-chef fits 🐳
 
 Docker's layer cache works at a different level from sccache. With a simple `COPY . .` followed by `cargo build`, a source change can invalidate the build layer, so the container may need to compile dependencies again. [cargo-chef](https://github.com/LukeMathWalker/cargo-chef) separates dependency preparation from the final application build to make the dependency layer reusable.

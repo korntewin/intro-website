@@ -154,6 +154,15 @@ rust-test:
 
 Job ที่รันพร้อมกันแล้วเขียน Archive เดียวกันอาจ Upload ทับกัน การแยก Scope หรือจัดการ Writer ช่วยเพิ่มโอกาส Reuse ได้ แต่ sccache ยังตรวจ Key ของแต่ละ Entry อยู่ อย่าลืมวัดเวลา Extract และ Upload ด้วย เพราะ Archive ที่ใหญ่เกินไปอาจใช้เวลามากกว่างาน Compile ที่ประหยัดได้ครับ
 
+### หลังเปลี่ยน Lockfile เวลา Build เปลี่ยนไปอย่างไร? 📊
+
+ในการทดลอง CI ของ Rust Prediction Service ครั้งหนึ่ง เราเปรียบเทียบการตั้งค่าเดิมที่ใช้ Archive กับการตั้งค่าใหม่ที่ใช้ sccache หลังเปลี่ยน Lockfile แบบเดียวกัน ฝั่งเดิมเป็น **Cold Archive Cache** ส่วนฝั่งใหม่ Restore **Compiler Cache ที่มีอยู่แล้ว** ทั้งสองรันผ่าน Test Suite ชุดเดียวกันครับ
+
+- **Pipeline Wall Time:** 10 นาที 00 วินาที → 6 นาที 28 วินาที
+- **เวลาที่ลดลง:** 3 นาที 32 วินาที หรือ **35.3%** ในการเปรียบเทียบครั้งนี้
+
+นี่เป็นสถานการณ์ที่เราอยากดูพอดีครับ: การเปลี่ยน Lockfile ทำให้ Archive Key แบบเดิม Miss ขณะที่ sccache ยังนำผล Compile ที่เข้าเงื่อนไขกลับมาใช้ได้ แต่การตั้งค่าใหม่มีการปรับวิธีจัดการ Cache ส่วนอื่นร่วมด้วย ตัวเลขนี้จึงเป็นผลของ **CI Configuration โดยรวม** ไม่ใช่ Benchmark แยกเฉพาะ sccache ตัวเลขมาจากการรันอย่างละหนึ่งครั้งบน Shared Autoscaling Runners รวมเวลาเริ่ม Job, รับส่ง Cache และงานอื่นใน Pipeline จึงไม่ใช่ค่าเฉลี่ยหรือสิ่งที่จะเกิดขึ้นทุกครั้งที่เปลี่ยน Lockfile และถ้า sccache ว่างตั้งแต่แรก รอบแรกก็ยังต้อง Compile ครับ 😅
+
 ## Docker Build: cargo-chef เข้ามาช่วยตรงไหน? 🐳
 
 Docker Layer Cache ทำงานคนละระดับกับ sccache ครับ ถ้า Dockerfile ใช้ `COPY . .` แล้วตามด้วย `cargo build` การแก้ Source อาจทำให้ Build Layer เดิมใช้ซ้ำไม่ได้ Container จึงอาจต้อง Compile Dependencies อีกครั้ง [cargo-chef](https://github.com/LukeMathWalker/cargo-chef) ช่วยแยกขั้นเตรียม Dependencies ออกจากขั้น Build Application เพื่อเพิ่มโอกาสใช้ Dependency Layer ซ้ำ
