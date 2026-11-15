@@ -16,7 +16,8 @@ While working on a Rust service with a sizeable dependency graph, I started look
 
 ## The short version ⚡
 
-- Cargo can reuse existing outputs in `target/`; sccache keeps a separate cache of eligible compiler results.
+- **What it is:** sccache is a compiler cache that started at Mozilla. It wraps rustc (and C/C++ compilers), saves the result of each compilation, and hands it back the next time exactly the same compilation comes up, from local disk or from remote storage shared across machines.
+- **Why use it:** it's especially useful in CI. Every fresh runner starts with an empty `target/` and compiles the same dependencies again. sccache keeps compiler results outside `target/`, so a new runner can reuse them instead of recompiling. After a lockfile change on a production Rust service, our pipeline took 6m 28s with a warm sccache versus 10m 00s with the old archive cache. It helps locally too: the cache survives `cargo clean`, so a clean rebuild doesn't start from scratch.
 - A cache hit avoids the corresponding compiler invocation, but linking, build scripts, and some Rust crate types still do work.
 - Each compilation is keyed by its inputs. An edit misses for that crate and the crates that depend on it, and LRU eviction keeps the local cache under its size limit.
 - Local incremental compilation and shared compiler caching solve different problems. Choose based on the workflow.

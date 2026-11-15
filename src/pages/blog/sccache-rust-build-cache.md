@@ -15,7 +15,8 @@ coverImageAlt: "Cargo, sccache และ rustc ทำงานร่วมกั
 
 ## สรุปสั้น ๆ ก่อน ⚡
 
-- Cargo เอาของเดิมใน `target/` กลับมาใช้ต่อได้อยู่แล้ว ส่วน sccache จะเป็นชั้น Cache แยกที่ช่วยเก็บผลลัพธ์การ Compile ไว้ เพื่อดึงกลับมาใช้ซ้ำได้
+- **sccache คืออะไร:** เป็น Compiler Cache ที่เริ่มพัฒนาโดย Mozilla คอยครอบ rustc (รวมถึง Compiler ของ C/C++) ไว้ เก็บผลลัพธ์การ Compile แต่ละครั้ง แล้วหยิบกลับมาใช้ได้ทันทีเมื่อเจองาน Compile ที่เหมือนเดิมเป๊ะ ๆ จะเก็บไว้ใน Local Disk หรือบน Remote Storage ที่หลายเครื่องแชร์กันก็ได้
+- **ทำไมต้องใช้:** ตัวนี้ช่วยได้มากเป็นพิเศษบน CI เพราะ Runner ที่เปิดเครื่องใหม่ทุกรอบจะเริ่มจากโฟลเดอร์ `target/` โล่ง ๆ เลยต้อง Compile Dependencies ชุดเดิมซ้ำทุกครั้ง แต่ sccache เก็บผล Compile ไว้นอก `target/` Runner เครื่องใหม่จึงหยิบไปใช้ต่อได้เลยโดยไม่ต้อง Compile ใหม่ จากที่วัดบน Rust Service จริงหลังแก้ Lockfile ชุดเดียวกัน Pipeline ที่ใช้ sccache ซึ่งมี Cache อยู่แล้วใช้เวลา 6 นาที 28 วินาที เทียบกับ 10 นาทีของ Archive Cache แบบเดิม ส่วนในเครื่องเราเองก็ได้ประโยชน์เหมือนกัน เพราะ Cache ยังอยู่ครบแม้จะสั่ง `cargo clean` ไปแล้ว Build รอบใหม่เลยไม่ต้องเริ่มจากศูนย์ครับ
 - เวลา Cache Hit เราจะข้ามขั้นตอนเรียก Compiler รอบนั้นไปได้เลย แต่พวก Linking, Build Script และ Crate บางประเภทก็ยังต้องรันอยู่ดี
 - sccache สร้าง Key จาก Inputs ของการ Compile แต่ละครั้ง ถ้าเราแก้ Crate ไหน ตัวมันกับ Crate ที่เรียกใช้ต่อจากมันก็จะ Miss ส่วน Local Cache จะใช้ LRU Eviction คอยคุมขนาดไม่ให้เกิน Limit
 - Rust Incremental Compilation กับ Shared Compiler Cache ช่วยแก้คนละโจทย์กัน ต้องเลือกเปิดใช้ให้ตรงกับ Workflow
