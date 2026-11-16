@@ -1,0 +1,75 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1560 850" role="img" aria-labelledby="title desc">
+<title id="title">One edit on a fresh CI runner</title>
+<desc id="desc">A crate graph on a runner with an empty target directory and a warm sccache, after only the core crate was edited. serde, tokio, syn, regex, utils, and metrics hit. core misses because its source changed, and api misses because it depends on core's new rlib. The macros proc-macro and the app binary are not cacheable and always compile.</desc>
+<defs>
+<marker id="arrow" markerWidth="10" markerHeight="10" refX="7" refY="4" orient="auto"><path d="M0 0 L8 4 L0 8" fill="none" stroke="#8a99ad" stroke-width="1.6"/></marker>
+<marker id="arrow-miss" markerWidth="6" markerHeight="6" refX="4.2" refY="2.5" orient="auto"><path d="M0 0 L5 2.5 L0 5" fill="none" stroke="#b35c35" stroke-width="1"/></marker>
+</defs>
+<rect x="1" y="1" width="1558" height="848" rx="24" fill="#fff" stroke="#d8e2ec"/>
+<g font-family="Arial,sans-serif">
+<text x="65" y="74" font-size="20" font-weight="700" fill="#536582">ENGINEERING NOTES / SCCACHE</text>
+<text x="65" y="135" font-size="42" font-weight="800" fill="#19233e">One edit on a fresh CI runner</text>
+<text x="65" y="180" font-size="24" fill="#536582">Empty target/, warm sccache, and only the core crate was edited.</text>
+
+<text x="65" y="228" font-size="17" font-weight="700" fill="#536582">DEPENDENCIES</text>
+<text x="440" y="228" font-size="17" font-weight="700" fill="#536582">WORKSPACE CRATES</text>
+<text x="1190" y="228" font-size="17" font-weight="700" fill="#536582">FINAL BINARY</text>
+
+<g fill="none" stroke="#8a99ad" stroke-width="3" marker-end="url(#arrow)">
+<path d="M372 285 C405 285 405 335 432 335"/>
+<path d="M372 385 C405 385 405 335 432 335"/>
+<path d="M372 505 H432"/>
+<path d="M372 625 H432"/>
+<path d="M747 505 C780 505 780 420 807 420"/>
+<path d="M747 625 H807"/>
+<path d="M1122 420 C1155 420 1155 522 1182 522"/>
+<path d="M1122 625 C1155 625 1155 522 1182 522"/>
+</g>
+<path d="M747 335 C780 335 780 420 807 420" fill="none" stroke="#b35c35" stroke-width="5" marker-end="url(#arrow-miss)"/>
+
+<rect x="65" y="246" width="305" height="78" rx="14" fill="#e8f7f2" stroke="#188676" stroke-width="2"/>
+<text x="88" y="279" font-size="22" font-weight="700" fill="#19233e">serde</text>
+<text x="88" y="306" font-size="17" font-weight="700" fill="#188676">HIT</text>
+<rect x="65" y="346" width="305" height="78" rx="14" fill="#e8f7f2" stroke="#188676" stroke-width="2"/>
+<text x="88" y="379" font-size="22" font-weight="700" fill="#19233e">tokio</text>
+<text x="88" y="406" font-size="17" font-weight="700" fill="#188676">HIT</text>
+<rect x="65" y="466" width="305" height="78" rx="14" fill="#e8f7f2" stroke="#188676" stroke-width="2"/>
+<text x="88" y="499" font-size="22" font-weight="700" fill="#19233e">syn</text>
+<text x="88" y="526" font-size="17" font-weight="700" fill="#188676">HIT</text>
+<rect x="65" y="586" width="305" height="78" rx="14" fill="#e8f7f2" stroke="#188676" stroke-width="2"/>
+<text x="88" y="619" font-size="22" font-weight="700" fill="#19233e">regex</text>
+<text x="88" y="646" font-size="17" font-weight="700" fill="#188676">HIT</text>
+
+<rect x="440" y="296" width="305" height="78" rx="14" fill="#fff0e8" stroke="#b35c35" stroke-width="3"/>
+<text x="463" y="329" font-size="22" font-weight="700" fill="#19233e">core</text>
+<rect x="525" y="309" width="84" height="26" rx="13" fill="#b35c35"/>
+<text x="567" y="328" font-size="15" font-weight="700" fill="#fff" text-anchor="middle">EDITED</text>
+<text x="463" y="356" font-size="17" font-weight="700" fill="#b35c35">MISS · source changed</text>
+<rect x="440" y="466" width="305" height="78" rx="14" fill="#eef1f5" stroke="#64748b" stroke-width="2" stroke-dasharray="9 6"/>
+<text x="463" y="499" font-size="22" font-weight="700" fill="#19233e">macros <tspan font-size="17" font-weight="400" fill="#536582">proc-macro</tspan></text>
+<text x="463" y="526" font-size="17" font-weight="700" fill="#536582">NOT CACHEABLE</text>
+<rect x="440" y="586" width="305" height="78" rx="14" fill="#e8f7f2" stroke="#188676" stroke-width="2"/>
+<text x="463" y="619" font-size="22" font-weight="700" fill="#19233e">utils</text>
+<text x="463" y="646" font-size="17" font-weight="700" fill="#188676">HIT</text>
+
+<rect x="815" y="381" width="305" height="78" rx="14" fill="#fff0e8" stroke="#b35c35" stroke-width="3"/>
+<text x="838" y="414" font-size="22" font-weight="700" fill="#19233e">api</text>
+<text x="838" y="441" font-size="17" font-weight="700" fill="#b35c35">MISS · core's .rlib changed</text>
+<rect x="815" y="586" width="305" height="78" rx="14" fill="#e8f7f2" stroke="#188676" stroke-width="2"/>
+<text x="838" y="619" font-size="22" font-weight="700" fill="#19233e">metrics</text>
+<text x="838" y="646" font-size="17" font-weight="700" fill="#188676">HIT</text>
+
+<rect x="1190" y="483" width="305" height="78" rx="14" fill="#eef1f5" stroke="#64748b" stroke-width="2" stroke-dasharray="9 6"/>
+<text x="1213" y="516" font-size="22" font-weight="700" fill="#19233e">app <tspan font-size="17" font-weight="400" fill="#536582">binary</tspan></text>
+<text x="1213" y="543" font-size="17" font-weight="700" fill="#536582">NOT CACHEABLE · links</text>
+
+<rect x="65" y="696" width="30" height="24" rx="6" fill="#e8f7f2" stroke="#188676" stroke-width="2"/>
+<text x="106" y="715" font-size="19" fill="#19233e"><tspan font-weight="700" fill="#188676">HIT</tspan> restored from cache</text>
+<rect x="410" y="696" width="30" height="24" rx="6" fill="#fff0e8" stroke="#b35c35" stroke-width="2"/>
+<text x="451" y="715" font-size="19" fill="#19233e"><tspan font-weight="700" fill="#b35c35">MISS</tspan> compiled, then stored</text>
+<rect x="800" y="696" width="30" height="24" rx="6" fill="#eef1f5" stroke="#64748b" stroke-width="2" stroke-dasharray="6 4"/>
+<text x="841" y="715" font-size="19" fill="#19233e"><tspan font-weight="700" fill="#536582">NOT CACHEABLE</tspan> compiled every time</text>
+
+<rect x="65" y="752" width="1430" height="62" rx="16" fill="#14283b"/>
+<text x="88" y="791" font-size="22" font-weight="700" fill="#fff">6 of 10 crates hit. Misses ripple to dependents; hits keep dependents' keys matching.</text>
+</g></svg>

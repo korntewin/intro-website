@@ -1,0 +1,116 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1500 685" role="img" aria-label="One request with N items fans out to both model A and model B. Each model independently splits all N items into its own mini-batches before its preprocessing and inference actor pools.">
+<rect x="0" y="0" width="1500" height="685" rx="19" fill="#FFFFFF" stroke="#DCE4F3" stroke-width="1"/>
+<text x="45" y="51" fill="#536582" font-family="Inter,Arial,sans-serif" font-size="18" font-weight="700" text-anchor="start">CONCURRENCY ARCHITECTURE</text>
+<text x="45" y="100" fill="#19233e" font-family="Inter,Arial,sans-serif" font-size="35" font-weight="700" text-anchor="start">Per-model mini-batches from the same request</text>
+<text x="45" y="137" fill="#536582" font-family="Inter,Arial,sans-serif" font-size="19" font-weight="400" text-anchor="start">The full N-item request reaches each model. Each model chooses how to split its items.</text>
+<rect x="343" y="184" width="1112" height="183" rx="17" fill="#FBFCFF" stroke="#DCE4F3" stroke-width="1.5"/>
+<text x="366" y="213" fill="#286DD0" font-family="Inter,Arial,sans-serif" font-size="18" font-weight="750" text-anchor="start">MODEL A</text>
+<rect x="366" y="231" width="120" height="113" rx="12" fill="#EAF2FF" stroke="#DCE4F3" stroke-width="1.5"/>
+<text x="381" y="260" fill="#536582" font-family="Inter,Arial,sans-serif" font-size="13" font-weight="700" text-anchor="start">FULL INPUT</text>
+<text x="381" y="296" fill="#19233e" font-family="Inter,Arial,sans-serif" font-size="23" font-weight="750" text-anchor="start">N items</text>
+<text x="381" y="323" fill="#536582" font-family="Inter,Arial,sans-serif" font-size="12" font-weight="500" text-anchor="start">same items</text>
+<rect x="538" y="231" width="240" height="113" rx="12" fill="#F2F8FF" stroke="#DCE4F3" stroke-width="1.5"/>
+<text x="553" y="258" fill="#286DD0" font-family="Inter,Arial,sans-serif" font-size="15" font-weight="750" text-anchor="start">MINI-BATCHES</text>
+<text x="553" y="280" fill="#354D6B" font-family="Inter,Arial,sans-serif" font-size="15" font-weight="600" text-anchor="start">3 batches × 4 items</text>
+<rect x="556" y="291" width="62" height="37" rx="7" fill="#FFFFFF" stroke="#C8D9EC" stroke-width="1.1"/>
+<rect x="561.75" y="303" width="10" height="13" rx="3" fill="#6DAAEF"/>
+<rect x="575.25" y="303" width="10" height="13" rx="3" fill="#6DAAEF"/>
+<rect x="588.75" y="303" width="10" height="13" rx="3" fill="#6DAAEF"/>
+<rect x="602.25" y="303" width="10" height="13" rx="3" fill="#6DAAEF"/>
+<rect x="627" y="291" width="62" height="37" rx="7" fill="#FFFFFF" stroke="#C8D9EC" stroke-width="1.1"/>
+<rect x="632.75" y="303" width="10" height="13" rx="3" fill="#6DAAEF"/>
+<rect x="646.25" y="303" width="10" height="13" rx="3" fill="#6DAAEF"/>
+<rect x="659.75" y="303" width="10" height="13" rx="3" fill="#6DAAEF"/>
+<rect x="673.25" y="303" width="10" height="13" rx="3" fill="#6DAAEF"/>
+<rect x="698" y="291" width="62" height="37" rx="7" fill="#FFFFFF" stroke="#C8D9EC" stroke-width="1.1"/>
+<rect x="703.75" y="303" width="10" height="13" rx="3" fill="#6DAAEF"/>
+<rect x="717.25" y="303" width="10" height="13" rx="3" fill="#6DAAEF"/>
+<rect x="730.75" y="303" width="10" height="13" rx="3" fill="#6DAAEF"/>
+<rect x="744.25" y="303" width="10" height="13" rx="3" fill="#6DAAEF"/>
+<rect x="830" y="231" width="250" height="113" rx="12" fill="#EAF2FF" stroke="#DCE4F3" stroke-width="1.5"/>
+<text x="955" y="268" fill="#19233E" font-family="Inter,Arial,sans-serif" font-size="17" font-weight="700" text-anchor="middle">Preprocess actor pool</text>
+<rect x="846" y="287" width="67" height="37" rx="8" fill="#FFFFFF" stroke="#D2E0F4" stroke-width="1.5"/>
+<text x="879.5" y="312" fill="#536582" font-family="Inter,Arial,sans-serif" font-size="15" font-weight="700" text-anchor="middle">W1</text>
+<rect x="922" y="287" width="67" height="37" rx="8" fill="#FFFFFF" stroke="#D2E0F4" stroke-width="1.5"/>
+<text x="955.5" y="312" fill="#536582" font-family="Inter,Arial,sans-serif" font-size="15" font-weight="700" text-anchor="middle">W2</text>
+<rect x="998" y="287" width="67" height="37" rx="8" fill="#FFFFFF" stroke="#D2E0F4" stroke-width="1.5"/>
+<text x="1031.5" y="312" fill="#536582" font-family="Inter,Arial,sans-serif" font-size="15" font-weight="700" text-anchor="middle">W3</text>
+<rect x="1132" y="231" width="275" height="113" rx="12" fill="#FFF0E9" stroke="#ECD8D2" stroke-width="1.5"/>
+<text x="1269.5" y="268" fill="#19233E" font-family="Inter,Arial,sans-serif" font-size="17" font-weight="700" text-anchor="middle">Inference actor pool</text>
+<rect x="1146" y="287" width="74" height="37" rx="8" fill="#FFFFFF" stroke="#D2E0F4" stroke-width="1.5"/>
+<text x="1183" y="312" fill="#536582" font-family="Inter,Arial,sans-serif" font-size="15" font-weight="700" text-anchor="middle">W1</text>
+<rect x="1232" y="287" width="74" height="37" rx="8" fill="#FFFFFF" stroke="#D2E0F4" stroke-width="1.5"/>
+<text x="1269" y="312" fill="#536582" font-family="Inter,Arial,sans-serif" font-size="15" font-weight="700" text-anchor="middle">W2</text>
+<rect x="1318" y="287" width="74" height="37" rx="8" fill="#FFFFFF" stroke="#D2E0F4" stroke-width="1.5"/>
+<text x="1355" y="312" fill="#536582" font-family="Inter,Arial,sans-serif" font-size="15" font-weight="700" text-anchor="middle">W3</text>
+<path d="M489 290H518 M518 283L529 290L518 297" fill="none" stroke="#397bea" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M781 290H810 M810 283L821 290L810 297" fill="none" stroke="#397bea" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M1083 290H1112 M1112 283L1123 290L1112 297" fill="none" stroke="#397bea" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+<rect x="343" y="396" width="1112" height="183" rx="17" fill="#FBFCFF" stroke="#DCE4F3" stroke-width="1.5"/>
+<text x="366" y="425" fill="#128477" font-family="Inter,Arial,sans-serif" font-size="18" font-weight="750" text-anchor="start">MODEL B</text>
+<rect x="366" y="443" width="120" height="113" rx="12" fill="#EAF2FF" stroke="#DCE4F3" stroke-width="1.5"/>
+<text x="381" y="472" fill="#536582" font-family="Inter,Arial,sans-serif" font-size="13" font-weight="700" text-anchor="start">FULL INPUT</text>
+<text x="381" y="508" fill="#19233e" font-family="Inter,Arial,sans-serif" font-size="23" font-weight="750" text-anchor="start">N items</text>
+<text x="381" y="535" fill="#536582" font-family="Inter,Arial,sans-serif" font-size="12" font-weight="500" text-anchor="start">same items</text>
+<rect x="538" y="443" width="240" height="113" rx="12" fill="#F0FAF6" stroke="#DCE4F3" stroke-width="1.5"/>
+<text x="553" y="470" fill="#128477" font-family="Inter,Arial,sans-serif" font-size="15" font-weight="750" text-anchor="start">MINI-BATCHES</text>
+<text x="553" y="492" fill="#354D6B" font-family="Inter,Arial,sans-serif" font-size="15" font-weight="600" text-anchor="start">4 batches × 3 items</text>
+<rect x="549.5" y="503" width="49" height="37" rx="7" fill="#FFFFFF" stroke="#C8D9EC" stroke-width="1.1"/>
+<rect x="556.00" y="515" width="10" height="13" rx="3" fill="#60BCAA"/>
+<rect x="569.00" y="515" width="10" height="13" rx="3" fill="#60BCAA"/>
+<rect x="582.00" y="515" width="10" height="13" rx="3" fill="#60BCAA"/>
+<rect x="605.5" y="503" width="49" height="37" rx="7" fill="#FFFFFF" stroke="#C8D9EC" stroke-width="1.1"/>
+<rect x="612.00" y="515" width="10" height="13" rx="3" fill="#60BCAA"/>
+<rect x="625.00" y="515" width="10" height="13" rx="3" fill="#60BCAA"/>
+<rect x="638.00" y="515" width="10" height="13" rx="3" fill="#60BCAA"/>
+<rect x="661.5" y="503" width="49" height="37" rx="7" fill="#FFFFFF" stroke="#C8D9EC" stroke-width="1.1"/>
+<rect x="668.00" y="515" width="10" height="13" rx="3" fill="#60BCAA"/>
+<rect x="681.00" y="515" width="10" height="13" rx="3" fill="#60BCAA"/>
+<rect x="694.00" y="515" width="10" height="13" rx="3" fill="#60BCAA"/>
+<rect x="717.5" y="503" width="49" height="37" rx="7" fill="#FFFFFF" stroke="#C8D9EC" stroke-width="1.1"/>
+<rect x="724.00" y="515" width="10" height="13" rx="3" fill="#60BCAA"/>
+<rect x="737.00" y="515" width="10" height="13" rx="3" fill="#60BCAA"/>
+<rect x="750.00" y="515" width="10" height="13" rx="3" fill="#60BCAA"/>
+<rect x="830" y="443" width="250" height="113" rx="12" fill="#EAF2FF" stroke="#DCE4F3" stroke-width="1.5"/>
+<text x="955" y="480" fill="#19233E" font-family="Inter,Arial,sans-serif" font-size="17" font-weight="700" text-anchor="middle">Preprocess actor pool</text>
+<rect x="846" y="499" width="67" height="37" rx="8" fill="#FFFFFF" stroke="#D2E0F4" stroke-width="1.5"/>
+<text x="879.5" y="524" fill="#536582" font-family="Inter,Arial,sans-serif" font-size="15" font-weight="700" text-anchor="middle">W1</text>
+<rect x="922" y="499" width="67" height="37" rx="8" fill="#FFFFFF" stroke="#D2E0F4" stroke-width="1.5"/>
+<text x="955.5" y="524" fill="#536582" font-family="Inter,Arial,sans-serif" font-size="15" font-weight="700" text-anchor="middle">W2</text>
+<rect x="998" y="499" width="67" height="37" rx="8" fill="#FFFFFF" stroke="#D2E0F4" stroke-width="1.5"/>
+<text x="1031.5" y="524" fill="#536582" font-family="Inter,Arial,sans-serif" font-size="15" font-weight="700" text-anchor="middle">W3</text>
+<rect x="1132" y="443" width="275" height="113" rx="12" fill="#FFF0E9" stroke="#ECD8D2" stroke-width="1.5"/>
+<text x="1269.5" y="480" fill="#19233E" font-family="Inter,Arial,sans-serif" font-size="17" font-weight="700" text-anchor="middle">Inference actor pool</text>
+<rect x="1146" y="499" width="74" height="37" rx="8" fill="#FFFFFF" stroke="#D2E0F4" stroke-width="1.5"/>
+<text x="1183" y="524" fill="#536582" font-family="Inter,Arial,sans-serif" font-size="15" font-weight="700" text-anchor="middle">W1</text>
+<rect x="1232" y="499" width="74" height="37" rx="8" fill="#FFFFFF" stroke="#D2E0F4" stroke-width="1.5"/>
+<text x="1269" y="524" fill="#536582" font-family="Inter,Arial,sans-serif" font-size="15" font-weight="700" text-anchor="middle">W2</text>
+<rect x="1318" y="499" width="74" height="37" rx="8" fill="#FFFFFF" stroke="#D2E0F4" stroke-width="1.5"/>
+<text x="1355" y="524" fill="#536582" font-family="Inter,Arial,sans-serif" font-size="15" font-weight="700" text-anchor="middle">W3</text>
+<path d="M489 502H518 M518 495L529 502L518 509" fill="none" stroke="#397bea" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M781 502H810 M810 495L821 502L810 509" fill="none" stroke="#397bea" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M1083 502H1112 M1112 495L1123 502L1112 509" fill="none" stroke="#397bea" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+<rect x="40" y="274" width="222" height="214" rx="16" fill="#EAF2FF" stroke="#CDDBEF" stroke-width="1.7"/>
+<text x="61" y="315" fill="#19233E" font-family="Inter,Arial,sans-serif" font-size="20" font-weight="750" text-anchor="start">ONE REQUEST</text>
+<text x="61" y="350" fill="#286DD0" font-family="Inter,Arial,sans-serif" font-size="25" font-weight="750" text-anchor="start">N items</text>
+<rect x="63" y="371" width="19" height="19" rx="4" fill="#6DAAEF" stroke="#A9CAEF" stroke-width="1"/>
+<rect x="90" y="371" width="19" height="19" rx="4" fill="#6DAAEF" stroke="#A9CAEF" stroke-width="1"/>
+<rect x="117" y="371" width="19" height="19" rx="4" fill="#6DAAEF" stroke="#A9CAEF" stroke-width="1"/>
+<rect x="144" y="371" width="19" height="19" rx="4" fill="#6DAAEF" stroke="#A9CAEF" stroke-width="1"/>
+<rect x="171" y="371" width="19" height="19" rx="4" fill="#6DAAEF" stroke="#A9CAEF" stroke-width="1"/>
+<rect x="198" y="371" width="19" height="19" rx="4" fill="#6DAAEF" stroke="#A9CAEF" stroke-width="1"/>
+<rect x="63" y="398" width="19" height="19" rx="4" fill="#6DAAEF" stroke="#A9CAEF" stroke-width="1"/>
+<rect x="90" y="398" width="19" height="19" rx="4" fill="#6DAAEF" stroke="#A9CAEF" stroke-width="1"/>
+<rect x="117" y="398" width="19" height="19" rx="4" fill="#6DAAEF" stroke="#A9CAEF" stroke-width="1"/>
+<rect x="144" y="398" width="19" height="19" rx="4" fill="#6DAAEF" stroke="#A9CAEF" stroke-width="1"/>
+<rect x="171" y="398" width="19" height="19" rx="4" fill="#6DAAEF" stroke="#A9CAEF" stroke-width="1"/>
+<rect x="198" y="398" width="19" height="19" rx="4" fill="#6DAAEF" stroke="#A9CAEF" stroke-width="1"/>
+<text x="61" y="456" fill="#536582" font-family="Inter,Arial,sans-serif" font-size="14" font-weight="600" text-anchor="start">Full input to each model</text>
+<text x="61" y="475" fill="#536582" font-family="Inter,Arial,sans-serif" font-size="12" font-weight="400" text-anchor="start">12 shown for illustration</text>
+<path d="M262 381H307 M307 290V502" stroke="#397bea" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+<circle cx="307" cy="381" r="5" fill="#397bea"/>
+<path d="M307 290H346 M346 283L357 290L346 297" fill="none" stroke="#397bea" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M307 502H346 M346 495L357 502L346 509" fill="none" stroke="#397bea" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+<text x="45" y="636" fill="#16845A" font-family="Inter,Arial,sans-serif" font-size="20" font-weight="700" text-anchor="start">Each model independently tunes batch size, worker counts and ONNX Runtime threads.</text>
+<text x="45" y="663" fill="#536582" font-family="Inter,Arial,sans-serif" font-size="15" font-weight="500" text-anchor="start">Illustrative example: N = 12; Model A uses 3 × 4 items, while Model B uses 4 × 3 items. Both see all 12.</text>
+</svg>
