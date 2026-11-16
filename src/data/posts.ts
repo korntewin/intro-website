@@ -35,7 +35,7 @@ export const posts: Post[] = [
     category: 'RUST / PRODUCTION ML',
     date: '23 OCT 2026',
     language: 'TH / EN',
-    title: 'จาก Go สู่ Rust: เมื่อ ML Prediction Service ต้องเร็วขึ้นอีกครั้ง และใช้ CPU น้อยลง 5.4 เท่า 🦀',
+    title: 'จาก Go สู่ Rust: เมื่อ ML Prediction Service ต้องเร็วขึ้นอีกรอบ พร้อมลดการใช้ CPU ลง 5.4 เท่า 🦀',
     description: 'The story behind rewriting a production ML prediction service in Rust: from CPU and memory constraints to Arrow, actor-based execution, and measurable results.',
     href: '/blog/riir-rust-prediction-service/',
     hrefEn: '/blog/riir-rust-prediction-service/en/',
