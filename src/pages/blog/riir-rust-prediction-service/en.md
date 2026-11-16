@@ -5,7 +5,6 @@ description: "Behind the rewrite of an ML Prediction Service from Go to Rust at 
 date: 2026-10-23
 language: en
 coverImage: https://korntewin.github.io/intro-website/blog/figures/riir-cover.png
-coverImageAlt: "From Go to Rust: rebuilding an ML Prediction Service"
 ---
 
 ![Go to Rust: rebuilding an ML Prediction Service](https://korntewin.github.io/intro-website/blog/figures/riir-cover.png)
@@ -31,7 +30,7 @@ These are results from a **production recommendation ranker at LMWN**, measured 
 
 As more ML use cases arrived, so did more models, more data, and more traffic. That naturally meant more demand on our Kubernetes cluster. And since it's **a shared cluster used by multiple teams**, we also have to think about resource usage across the cluster, not just our own service. Cost isn't the only consideration either: expanding **compute capacity in LINE MAN Wongnai's private cloud** comes with some constraints. So we wanted to make better use of the capacity we already had before scaling up. 😅
 
-Here's the tricky part: **a request doesn't predict just one item**. It can rank **roughly 500–10,000 items per request**. When a bunch of requests hit during peak traffic, we're suddenly talking about **hundreds of thousands of items predicted per second**. 😵‍💫 That's why every unnecessary data copy, cache miss, and thread fighting for CPU time makes a real difference to system capacity.
+Here's the tricky part: **a request doesn't predict just one item**. It needs to predict **roughly 500–10,000 items per request**. When a bunch of requests hit during peak traffic, we're suddenly talking about **hundreds of thousands of items predicted per second**. 😵‍💫 That's why every unnecessary data copy, cache miss, and thread fighting for CPU time makes a real difference to system capacity.
 
 So the question became: **How do we support growing ML workloads while making better use of our shared cluster's capacity?**
 
@@ -196,17 +195,18 @@ On Linux with glibc, the default system allocator is **ptmalloc**. It works well
 | Allocator | Strengths | Trade-offs to measure |
 | --- | --- | --- |
 | **ptmalloc** (glibc default) | No additional dependency; works well for general-purpose code | Concurrent allocation, contention, and fragmentation under particular allocation patterns |
-| **mimalloc** | Fast allocation paths, thread-local mechanisms, low contention | Results depend on object sizes, allocation patterns, and memory footprint |
+| **mimalloc 3.6.1** (Official Rust bindings) | Fast allocation paths, thread-local mechanisms, low contention, and official Rust bindings maintained by Microsoft in the upstream repo | Requires a C compiler at build time; results depend on object sizes, allocation patterns, and memory footprint |
 | **jemalloc via tikv-jemallocator** | Arenas, thread caches, tuning options, and heap profiling | Build configuration, RSS behavior, and extra operational complexity |
 
-We chose **tikv-jemallocator** as the application's global allocator because our benchmarks against ptmalloc and mimalloc showed meaningful reductions in memory usage, CPU, and latency for this workload.
+Earlier in our deployment, we chose **tikv-jemallocator** as the application's global allocator because benchmarks against `ptmalloc` showed meaningful reductions in memory usage, CPU, and latency. **More recently, however, we switched the application's global allocator to [mimalloc 3.6.1](https://github.com/microsoft/mimalloc/tree/v3.6.1/contrib/rust).** Starting in `3.6.0` (and improved further in `3.6.1`), **Microsoft now officially maintains Rust bindings inside the upstream repository itself**, making the bindings much more stable than relying solely on third-party wrappers.
 
-An interesting bit of allocator history: [jemalloc](https://github.com/jemalloc/jemalloc) was archived and later unarchived in early 2026, with jemalloc 5.3.1 released in April. After several years of accumulated changes, it was quite a comeback. 😂
+The official bindings in [`contrib/rust`](https://github.com/microsoft/mimalloc/tree/v3.6.1/contrib/rust) are split into two crates: `mimalloc-sys` (which builds and links the `mimalloc` C source directly) and `mimalloc` (which exposes `MiMalloc` for `#[global_allocator]` alongside `Heap` and `Arena` APIs):
 
 ~~~rust
+use mimalloc::MiMalloc;
+
 #[global_allocator]
-static GLOBAL_ALLOCATOR: tikv_jemallocator::Jemalloc =
-    tikv_jemallocator::Jemalloc;
+static GLOBAL_ALLOCATOR: MiMalloc = MiMalloc;
 ~~~
 
 To compare allocators fairly, keep the traffic, model, worker count, batch size, binary, and environment the same, then measure throughput, P99, CPU, and RSS.
@@ -321,4 +321,4 @@ These results have also made us more confident about what's next. **For new ML p
 
 ---
 
-**Further reading / References:** [Our previous optimization story](https://life.lmwn.com/เบื้องหลังการลด-cost-ai-server-ลง-9-เท่า-และทำให้แอปเร็วขึ้น-4-เท่าที่-line-man-wongnai-da855335de5f) · [Rust 1.98 Release Notes](https://blog.rust-lang.org/2026/08/20/Rust-1.98.0/) · [Apache Arrow Columnar Format](https://arrow.apache.org/docs/format/Columnar.html) · [Go Swiss Tables](https://go.dev/blog/swisstable) · [Polars](https://pola.rs/) · [tikv/jemallocator](https://github.com/tikv/jemallocator)
+**Further reading / References:** [Our previous optimization story](https://life.lmwn.com/เบื้องหลังการลด-cost-ai-server-ลง-9-เท่า-และทำให้แอปเร็วขึ้น-4-เท่าที่-line-man-wongnai-da855335de5f) · [Rust 1.98 Release Notes](https://blog.rust-lang.org/2026/08/20/Rust-1.98.0/) · [Apache Arrow Columnar Format](https://arrow.apache.org/docs/format/Columnar.html) · [Go Swiss Tables](https://go.dev/blog/swisstable) · [Polars](https://pola.rs/) · [microsoft/mimalloc (Rust Bindings)](https://github.com/microsoft/mimalloc/tree/v3.6.1/contrib/rust) · [tikv/jemallocator](https://github.com/tikv/jemallocator)
