@@ -1,58 +1,49 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 508" role="img" aria-labelledby="title desc">
-  <title id="title">Prediction request illustration</title>
-  <desc id="desc">Scattered feature values are arranged into columns, processed, and returned as ranking scores.</desc>
-  <rect x="0" y="0" width="1200" height="508" fill="#f7f4ed"/>
-  <circle cx="598" cy="254" r="170" fill="#eeddd1"/>
-  <path d="M131 158C375 158 382 189 486 189" fill="none" stroke="#21685d" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" opacity=".38"/>
-  <circle cx="131" cy="158" r="9" fill="#536570"/>
-  <path d="M188 133C375 133 382 252 486 252" fill="none" stroke="#21685d" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" opacity=".38"/>
-  <circle cx="188" cy="133" r="11" fill="#21685d"/>
-  <path d="M251 163C375 163 382 315 486 315" fill="none" stroke="#a3452f" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" opacity=".38"/>
-  <circle cx="251" cy="163" r="13" fill="#a3452f"/>
-  <path d="M116 218C375 218 382 189 486 189" fill="none" stroke="#21685d" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" opacity=".38"/>
-  <circle cx="116" cy="218" r="9" fill="#536570"/>
-  <path d="M203 220C375 220 382 252 486 252" fill="none" stroke="#21685d" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" opacity=".38"/>
-  <circle cx="203" cy="220" r="11" fill="#21685d"/>
-  <path d="M292 210C375 210 382 315 486 315" fill="none" stroke="#a3452f" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" opacity=".38"/>
-  <circle cx="292" cy="210" r="13" fill="#a3452f"/>
-  <path d="M153 278C375 278 382 189 486 189" fill="none" stroke="#21685d" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" opacity=".38"/>
-  <circle cx="153" cy="278" r="9" fill="#536570"/>
-  <path d="M239 286C375 286 382 252 486 252" fill="none" stroke="#21685d" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" opacity=".38"/>
-  <circle cx="239" cy="286" r="11" fill="#21685d"/>
-  <path d="M313 261C375 261 382 315 486 315" fill="none" stroke="#a3452f" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" opacity=".38"/>
-  <circle cx="313" cy="261" r="13" fill="#a3452f"/>
-  <path d="M109 343C375 343 382 189 486 189" fill="none" stroke="#21685d" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" opacity=".38"/>
-  <circle cx="109" cy="343" r="9" fill="#536570"/>
-  <path d="M184 363C375 363 382 252 486 252" fill="none" stroke="#21685d" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" opacity=".38"/>
-  <circle cx="184" cy="363" r="11" fill="#21685d"/>
-  <path d="M279 349C375 349 382 315 486 315" fill="none" stroke="#a3452f" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" opacity=".38"/>
-  <circle cx="279" cy="349" r="13" fill="#a3452f"/>
-  <rect x="464" y="163" width="283" height="52" fill="#21685d"/>
-  <path d="M511 168V210" fill="none" stroke="#f7f4ed" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-  <path d="M558 168V210" fill="none" stroke="#f7f4ed" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-  <path d="M605 168V210" fill="none" stroke="#f7f4ed" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-  <path d="M652 168V210" fill="none" stroke="#f7f4ed" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-  <path d="M699 168V210" fill="none" stroke="#f7f4ed" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-  <path d="M748 189C792 189 810 254 852 254" fill="none" stroke="#21685d" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
-  <rect x="464" y="228" width="283" height="52" fill="#397c6f"/>
-  <path d="M511 233V275" fill="none" stroke="#f7f4ed" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-  <path d="M558 233V275" fill="none" stroke="#f7f4ed" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-  <path d="M605 233V275" fill="none" stroke="#f7f4ed" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-  <path d="M652 233V275" fill="none" stroke="#f7f4ed" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-  <path d="M699 233V275" fill="none" stroke="#f7f4ed" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-  <path d="M748 254C792 254 810 254 852 254" fill="none" stroke="#21685d" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
-  <rect x="464" y="293" width="283" height="52" fill="#a3452f"/>
-  <path d="M511 298V340" fill="none" stroke="#f7f4ed" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-  <path d="M558 298V340" fill="none" stroke="#f7f4ed" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-  <path d="M605 298V340" fill="none" stroke="#f7f4ed" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-  <path d="M652 298V340" fill="none" stroke="#f7f4ed" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-  <path d="M699 298V340" fill="none" stroke="#f7f4ed" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-  <path d="M748 319C792 319 810 254 852 254" fill="none" stroke="#a3452f" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
-  <circle cx="859" cy="254" r="10" fill="#252b29"/>
-  <path d="M869 254H928" fill="none" stroke="#252b29" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
-  <path d="M928 155V354" fill="none" stroke="#535951" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-  <rect x="929" y="177" width="149" height="24" fill="#a3452f" opacity="1"/>
-  <rect x="929" y="220" width="111" height="24" fill="#21685d" opacity="0.87"/>
-  <rect x="929" y="263" width="77" height="24" fill="#21685d" opacity="0.74"/>
-  <rect x="929" y="306" width="42" height="24" fill="#21685d" opacity="0.61"/>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 610" role="img" aria-label="Illustration of ML Prediction Service architecture changing from Go to Rust with streamlined memory and CPU processing">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#0a1733"/><stop offset=".55" stop-color="#172b55"/><stop offset="1" stop-color="#102b37"/></linearGradient>
+    <linearGradient id="blue" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#9fd8ff"/><stop offset="1" stop-color="#3382e6"/></linearGradient>
+    <linearGradient id="orange" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#ffd19f"/><stop offset="1" stop-color="#ec6a3b"/></linearGradient>
+    <linearGradient id="road" gradientUnits="userSpaceOnUse" x1="512" y1="412" x2="850" y2="412"><stop stop-color="#5094e9"/><stop offset=".53" stop-color="#a4c9ed"/><stop offset="1" stop-color="#ffa36e"/></linearGradient>
+    <filter id="glow"><feGaussianBlur stdDeviation="42"/></filter>
+  </defs>
+  <rect width="1440" height="610" rx="30" fill="url(#bg)"/>
+  <circle cx="350" cy="290" r="205" fill="#2779e7" opacity=".13" filter="url(#glow)"/>
+  <circle cx="1125" cy="300" r="230" fill="#eb6a40" opacity=".12" filter="url(#glow)"/>
+  <g stroke="#87a4d2" stroke-width="1" opacity=".1">
+    <path d="M0 115H1440M0 204H1440M0 293H1440M0 382H1440M0 471H1440"/>
+    <path d="M120 0V610M300 0V610M480 0V610M660 0V610M840 0V610M1020 0V610M1200 0V610"/>
+  </g>
+  <text x="75" y="99" font-family="Arial,sans-serif" font-size="21" font-weight="600" fill="#99b8e0" letter-spacing="5">ENGINEERING STORY</text>
+  <text x="75" y="176" font-family="Arial,sans-serif" font-size="55" font-weight="800" fill="#fff">ML PREDICTION SERVICE</text>
+  <text x="76" y="223" font-family="Arial,sans-serif" font-size="28" font-weight="500" fill="#c1d4eb">Re-architecting inference, not just rewriting code.</text>
+  <g transform="translate(75 291)">
+    <rect width="360" height="232" rx="22" fill="#182f54" stroke="#4a7aac" stroke-width="2"/>
+    <text x="30" y="52" font-family="Arial,sans-serif" font-size="27" font-weight="700" fill="#a8d8ff">Go</text>
+    <text x="30" y="79" font-family="Arial,sans-serif" font-size="15" fill="#99b8d2">Many data references and workers</text>
+    <g fill="#4188d5" stroke="#99c9fb" stroke-width="1">
+      <rect x="33" y="114" width="52" height="44" rx="7"/><rect x="123" y="114" width="52" height="44" rx="7"/><rect x="213" y="114" width="52" height="44" rx="7"/><rect x="303" y="114" width="35" height="44" rx="7"/>
+      <rect x="67" y="178" width="38" height="31" rx="5"/><rect x="161" y="178" width="38" height="31" rx="5"/><rect x="255" y="178" width="38" height="31" rx="5"/>
+    </g>
+    <g fill="none" stroke="#99c9fb" stroke-width="2" stroke-dasharray="4 5" opacity=".8"><path d="M60 157L85 180L151 145L180 180L237 147L274 180L319 151"/></g>
+  </g>
+  <g>
+    <path d="M512 412H850" fill="none" stroke="url(#road)" stroke-width="13" stroke-linecap="round"/>
+    <path d="M833 383L872 412L833 441" stroke="#ffa46a" stroke-width="13" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+    <text x="690" y="374" text-anchor="middle" font-family="Arial,sans-serif" font-size="22" font-weight="700" fill="#f1f6ff">RIIR</text>
+  </g>
+  <g transform="translate(930 291)">
+    <rect width="420" height="232" rx="22" fill="#1e393e" stroke="#51a69c" stroke-width="2"/>
+    <text x="30" y="52" font-family="Arial,sans-serif" font-size="27" font-weight="700" fill="#ffb38a">Rust</text>
+    <text x="30" y="79" font-family="Arial,sans-serif" font-size="15" fill="#b4d7cf">Columnar buffers + controlled actor pools</text>
+    <rect x="32" y="115" width="355" height="39" rx="9" fill="#2c5551"/>
+    <g fill="url(#orange)">
+      <rect x="44" y="124" width="48" height="21" rx="4"/><rect x="100" y="124" width="48" height="21" rx="4"/><rect x="156" y="124" width="48" height="21" rx="4"/>
+      <rect x="212" y="124" width="48" height="21" rx="4"/><rect x="268" y="124" width="48" height="21" rx="4"/><rect x="324" y="124" width="48" height="21" rx="4"/>
+    </g>
+    <g fill="#71c5b5">
+      <rect x="40" y="177" width="94" height="31" rx="7"/><rect x="161" y="177" width="94" height="31" rx="7"/><rect x="282" y="177" width="94" height="31" rx="7"/>
+    </g>
+    <g stroke="#aacfe0" stroke-width="2"><path d="M86 158V176M208 158V176M329 158V176"/></g>
+  </g>
+  <text x="75" y="573" font-family="Arial,sans-serif" font-size="19" fill="#bcd1ea" letter-spacing="1.2">ARROW · POLARS · ACTORS · DAG · SIMD · ALLOCATORS</text>
 </svg>
