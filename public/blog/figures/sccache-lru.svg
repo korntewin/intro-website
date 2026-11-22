@@ -43,7 +43,8 @@
   <text x="703" y="324" text-anchor="middle" font-family="Menlo, Consolas, monospace" font-size="25" font-weight="700" fill="#21685d">B</text>
   <rect x="782" y="287" width="56" height="56" fill="#eeddd1"/>
   <text x="810" y="324" text-anchor="middle" font-family="Menlo, Consolas, monospace" font-size="25" font-weight="700" fill="#a3452f">F</text>
-  <path d="M489 152C489 183 810 153 810 185" fill="none" stroke="#21685d" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#arrow-teal)"/>
-  <path d="M381 248C381 290 298 274 298 311H275" fill="none" stroke="#a3452f" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#arrow-rust)"/>
-  <text x="261" y="321" text-anchor="end" font-family="Arial, Helvetica, sans-serif" font-size="24" font-weight="400" fill="#a3452f">Evict A</text>
+  <text x="650" y="176" text-anchor="middle" font-family="Arial, Helvetica, sans-serif" font-size="19" fill="#21685d">B becomes most recent</text>
+  <path d="M742 219H775" fill="none" stroke="#21685d" stroke-width="3" stroke-linecap="round" marker-end="url(#arrow-teal)"/>
+  <path d="M353 249L277 269" fill="none" stroke="#a3452f" stroke-width="3" stroke-linecap="round" marker-end="url(#arrow-rust)"/>
+  <text x="261" y="277" text-anchor="end" font-family="Arial, Helvetica, sans-serif" font-size="23" fill="#a3452f">Evict A</text>
 </svg>
