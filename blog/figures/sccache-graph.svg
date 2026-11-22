@@ -1,0 +1,45 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 420" role="img" aria-labelledby="title desc">
+  <title id="title">Crate cache outcomes after editing core</title>
+  <desc id="desc">Editing core causes core and its dependent api to miss. serde, tokio, syn, regex, utils, and metrics hit. The macros proc-macro and the app binary bypass the cache.</desc>
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" markerWidth="13" markerHeight="13" refX="9" refY="5" orient="auto" markerUnits="userSpaceOnUse"><path d="M1 1L9 5 1 9" fill="none" stroke="#535951" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></marker>
+    <marker id="arrow-rust" viewBox="0 0 10 10" markerWidth="13" markerHeight="13" refX="9" refY="5" orient="auto" markerUnits="userSpaceOnUse"><path d="M1 1L9 5 1 9" fill="none" stroke="#a3452f" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></marker>
+  </defs>
+  <rect x="0" y="0" width="1000" height="420" fill="#f7f4ed"/>
+  <path d="M197 83C251 83 257 122 307 122" fill="none" stroke="#535951" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#arrow)"/>
+  <path d="M197 161C251 161 257 122 307 122" fill="none" stroke="#535951" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#arrow)"/>
+  <path d="M197 239H307" fill="none" stroke="#535951" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#arrow)"/>
+  <path d="M197 317H307" fill="none" stroke="#535951" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#arrow)"/>
+  <path d="M445 122C504 122 512 177 566 177" fill="none" stroke="#a3452f" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#arrow-rust)"/>
+  <path d="M445 239C504 239 505 177 566 177" fill="none" stroke="#535951" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#arrow)"/>
+  <path d="M445 317H566" fill="none" stroke="#535951" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#arrow)"/>
+  <path d="M705 177C762 177 762 238 829 238" fill="none" stroke="#535951" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#arrow)"/>
+  <path d="M705 317C762 317 762 238 829 238" fill="none" stroke="#535951" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#arrow)"/>
+  <rect x="61" y="59" width="136" height="48" fill="#d9e8de"/>
+  <text x="129" y="91" text-anchor="middle" font-family="Menlo, Consolas, monospace" font-size="25" font-weight="700" fill="#21685d">serde</text>
+  <rect x="61" y="137" width="136" height="48" fill="#d9e8de"/>
+  <text x="129" y="169" text-anchor="middle" font-family="Menlo, Consolas, monospace" font-size="25" font-weight="700" fill="#21685d">tokio</text>
+  <rect x="61" y="215" width="136" height="48" fill="#d9e8de"/>
+  <text x="129" y="247" text-anchor="middle" font-family="Menlo, Consolas, monospace" font-size="25" font-weight="700" fill="#21685d">syn</text>
+  <rect x="61" y="293" width="136" height="48" fill="#d9e8de"/>
+  <text x="129" y="325" text-anchor="middle" font-family="Menlo, Consolas, monospace" font-size="25" font-weight="700" fill="#21685d">regex</text>
+  <rect x="308" y="98" width="136" height="48" fill="#eeddd1"/>
+  <text x="376" y="130" text-anchor="middle" font-family="Menlo, Consolas, monospace" font-size="25" font-weight="700" fill="#a3452f">core</text>
+  <rect x="308" y="215" width="136" height="48" fill="#f7f4ed" stroke="#536570" stroke-width="2" stroke-dasharray="5 5"/>
+  <text x="376" y="247" text-anchor="middle" font-family="Menlo, Consolas, monospace" font-size="25" font-weight="700" fill="#536570">macros</text>
+  <rect x="308" y="293" width="136" height="48" fill="#d9e8de"/>
+  <text x="376" y="325" text-anchor="middle" font-family="Menlo, Consolas, monospace" font-size="25" font-weight="700" fill="#21685d">utils</text>
+  <rect x="567" y="153" width="136" height="48" fill="#eeddd1"/>
+  <text x="635" y="185" text-anchor="middle" font-family="Menlo, Consolas, monospace" font-size="25" font-weight="700" fill="#a3452f">api</text>
+  <rect x="567" y="293" width="136" height="48" fill="#d9e8de"/>
+  <text x="635" y="325" text-anchor="middle" font-family="Menlo, Consolas, monospace" font-size="25" font-weight="700" fill="#21685d">metrics</text>
+  <rect x="830" y="214" width="136" height="48" fill="#f7f4ed" stroke="#536570" stroke-width="2" stroke-dasharray="5 5"/>
+  <text x="898" y="246" text-anchor="middle" font-family="Menlo, Consolas, monospace" font-size="25" font-weight="700" fill="#536570">app</text>
+  <text x="375" y="78" text-anchor="middle" font-family="Arial, Helvetica, sans-serif" font-size="24" font-weight="400" fill="#a3452f">Edited</text>
+  <rect x="255" y="369" width="22" height="22" fill="#d9e8de"/>
+  <text x="289" y="389" text-anchor="start" font-family="Arial, Helvetica, sans-serif" font-size="24" font-weight="700" fill="#21685d">Hit</text>
+  <rect x="412" y="369" width="22" height="22" fill="#eeddd1"/>
+  <text x="446" y="389" text-anchor="start" font-family="Arial, Helvetica, sans-serif" font-size="24" font-weight="700" fill="#a3452f">Miss</text>
+  <rect x="585" y="369" width="22" height="22" fill="#f7f4ed" stroke="#536570" stroke-width="2" stroke-dasharray="4 3"/>
+  <text x="619" y="389" text-anchor="start" font-family="Arial, Helvetica, sans-serif" font-size="24" font-weight="700" fill="#536570">Bypass</text>
+</svg>

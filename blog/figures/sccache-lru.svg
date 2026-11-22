@@ -1,0 +1,50 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 399" role="img" aria-labelledby="title desc">
+  <title id="title">Least recently used cache eviction</title>
+  <desc id="desc">The entries run from least to most recently used. Hitting B moves it to the right end. When F will not fit, A is evicted and F is stored as the most recent entry.</desc>
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" markerWidth="13" markerHeight="13" refX="9" refY="5" orient="auto" markerUnits="userSpaceOnUse"><path d="M1 1L9 5 1 9" fill="none" stroke="#535951" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></marker>
+    <marker id="arrow-rust" viewBox="0 0 10 10" markerWidth="13" markerHeight="13" refX="9" refY="5" orient="auto" markerUnits="userSpaceOnUse"><path d="M1 1L9 5 1 9" fill="none" stroke="#a3452f" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></marker>
+    <marker id="arrow-teal" viewBox="0 0 10 10" markerWidth="13" markerHeight="13" refX="9" refY="5" orient="auto" markerUnits="userSpaceOnUse"><path d="M1 1L9 5 1 9" fill="none" stroke="#21685d" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></marker>
+  </defs>
+  <rect x="0" y="0" width="1000" height="399" fill="#f7f4ed"/>
+  <text x="354" y="49" text-anchor="start" font-family="Arial, Helvetica, sans-serif" font-size="24" font-weight="400" fill="#535951">Least recent</text>
+  <text x="836" y="49" text-anchor="end" font-family="Arial, Helvetica, sans-serif" font-size="24" font-weight="400" fill="#535951">Most recent</text>
+  <path d="M354 66H835" fill="none" stroke="#535951" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#arrow)"/>
+  <text x="53" y="132" text-anchor="start" font-family="Arial, Helvetica, sans-serif" font-size="30" font-weight="700" fill="#252b29">Before</text>
+  <rect x="354" y="95" width="56" height="56" fill="#e1e5e4"/>
+  <text x="382" y="132" text-anchor="middle" font-family="Menlo, Consolas, monospace" font-size="25" font-weight="700" fill="#252b29">A</text>
+  <rect x="461" y="95" width="56" height="56" fill="#e1e5e4"/>
+  <text x="489" y="132" text-anchor="middle" font-family="Menlo, Consolas, monospace" font-size="25" font-weight="700" fill="#252b29">B</text>
+  <rect x="568" y="95" width="56" height="56" fill="#e1e5e4"/>
+  <text x="596" y="132" text-anchor="middle" font-family="Menlo, Consolas, monospace" font-size="25" font-weight="700" fill="#252b29">C</text>
+  <rect x="675" y="95" width="56" height="56" fill="#e1e5e4"/>
+  <text x="703" y="132" text-anchor="middle" font-family="Menlo, Consolas, monospace" font-size="25" font-weight="700" fill="#252b29">D</text>
+  <rect x="782" y="95" width="56" height="56" fill="#e1e5e4"/>
+  <text x="810" y="132" text-anchor="middle" font-family="Menlo, Consolas, monospace" font-size="25" font-weight="700" fill="#252b29">E</text>
+  <text x="53" y="228" text-anchor="start" font-family="Arial, Helvetica, sans-serif" font-size="30" font-weight="700" fill="#252b29">Hit B</text>
+  <rect x="354" y="191" width="56" height="56" fill="#e1e5e4"/>
+  <text x="382" y="228" text-anchor="middle" font-family="Menlo, Consolas, monospace" font-size="25" font-weight="700" fill="#252b29">A</text>
+  <rect x="461" y="191" width="56" height="56" fill="#e1e5e4"/>
+  <text x="489" y="228" text-anchor="middle" font-family="Menlo, Consolas, monospace" font-size="25" font-weight="700" fill="#252b29">C</text>
+  <rect x="568" y="191" width="56" height="56" fill="#e1e5e4"/>
+  <text x="596" y="228" text-anchor="middle" font-family="Menlo, Consolas, monospace" font-size="25" font-weight="700" fill="#252b29">D</text>
+  <rect x="675" y="191" width="56" height="56" fill="#e1e5e4"/>
+  <text x="703" y="228" text-anchor="middle" font-family="Menlo, Consolas, monospace" font-size="25" font-weight="700" fill="#252b29">E</text>
+  <rect x="782" y="191" width="56" height="56" fill="#d9e8de"/>
+  <text x="810" y="228" text-anchor="middle" font-family="Menlo, Consolas, monospace" font-size="25" font-weight="700" fill="#21685d">B</text>
+  <text x="53" y="324" text-anchor="start" font-family="Arial, Helvetica, sans-serif" font-size="30" font-weight="700" fill="#252b29">Store F</text>
+  <rect x="354" y="287" width="56" height="56" fill="#e1e5e4"/>
+  <text x="382" y="324" text-anchor="middle" font-family="Menlo, Consolas, monospace" font-size="25" font-weight="700" fill="#252b29">C</text>
+  <rect x="461" y="287" width="56" height="56" fill="#e1e5e4"/>
+  <text x="489" y="324" text-anchor="middle" font-family="Menlo, Consolas, monospace" font-size="25" font-weight="700" fill="#252b29">D</text>
+  <rect x="568" y="287" width="56" height="56" fill="#e1e5e4"/>
+  <text x="596" y="324" text-anchor="middle" font-family="Menlo, Consolas, monospace" font-size="25" font-weight="700" fill="#252b29">E</text>
+  <rect x="675" y="287" width="56" height="56" fill="#d9e8de"/>
+  <text x="703" y="324" text-anchor="middle" font-family="Menlo, Consolas, monospace" font-size="25" font-weight="700" fill="#21685d">B</text>
+  <rect x="782" y="287" width="56" height="56" fill="#eeddd1"/>
+  <text x="810" y="324" text-anchor="middle" font-family="Menlo, Consolas, monospace" font-size="25" font-weight="700" fill="#a3452f">F</text>
+  <text x="650" y="176" text-anchor="middle" font-family="Arial, Helvetica, sans-serif" font-size="19" fill="#21685d">B becomes most recent</text>
+  <path d="M742 219H775" fill="none" stroke="#21685d" stroke-width="3" stroke-linecap="round" marker-end="url(#arrow-teal)"/>
+  <path d="M353 249L277 269" fill="none" stroke="#a3452f" stroke-width="3" stroke-linecap="round" marker-end="url(#arrow-rust)"/>
+  <text x="261" y="277" text-anchor="end" font-family="Arial, Helvetica, sans-serif" font-size="23" fill="#a3452f">Evict A</text>
+</svg>

@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="460" height="220" viewBox="0 0 460 220" role="img" aria-labelledby="t">
+<title id="t">Stylized Kafka data stream moving through processing nodes into a lakehouse</title>
+<rect width="460" height="220" fill="#1B2928"/>
+<g stroke="#355552" opacity=".6"><path d="M0 40H460M0 80H460M0 120H460M0 160H460M0 200H460"/><path d="M45 0V220M95 0V220M145 0V220M195 0V220M245 0V220M295 0V220M345 0V220M395 0V220M445 0V220"/></g>
+<g fill="none" stroke="#88D2B1" stroke-width="2.2" stroke-dasharray="5 8"><path d="M135 112H226"/><path d="M280 112H370"/></g>
+<g fill="#273F3C" stroke="#76B39D" stroke-width="1.6">
+<rect x="33" y="67" width="103" height="90" rx="14"/><rect x="206" y="75" width="86" height="75" rx="14"/><rect x="369" y="65" width="63" height="95" rx="14"/>
+</g>
+<g fill="#FFAB76"><rect x="53" y="89" width="62" height="9" rx="4"/><rect x="53" y="106" width="62" height="9" rx="4"/><rect x="53" y="123" width="62" height="9" rx="4"/></g>
+<g fill="#A4E2B8"><circle cx="250" cy="94" r="6"/><circle cx="228" cy="113" r="6"/><circle cx="272" cy="113" r="6"/><circle cx="250" cy="131" r="6"/></g>
+<g fill="#FFB27F"><path d="M384 90l17-10 17 10-17 10z"/><path d="M384 110l17-10 17 10-17 10z"/><path d="M384 130l17-10 17 10-17 10z"/></g>
+<g fill="#BBD4C7" font-family="monospace" text-anchor="middle" font-size="10"><text x="84" y="181">events</text><text x="249" y="177">transform</text><text x="400" y="181">lakehouse</text></g>
+<g fill="#90CFB2"><circle cx="156" cy="112" r="4"/><circle cx="184" cy="112" r="4"/><circle cx="319" cy="112" r="4"/><circle cx="347" cy="112" r="4"/></g>
+</svg>

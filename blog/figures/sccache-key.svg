@@ -1,0 +1,38 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 350" role="img" aria-labelledby="title desc">
+  <title id="title">What gets hashed into a cache key</title>
+  <desc id="desc">Compiler, flags, source, dependencies, environment, and working directory feed into the hash. Identical inputs produce the same key. A changed input produces a different key.</desc>
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" markerWidth="13" markerHeight="13" refX="9" refY="5" orient="auto" markerUnits="userSpaceOnUse"><path d="M1 1L9 5 1 9" fill="none" stroke="#535951" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></marker>
+    <marker id="arrow-rust" viewBox="0 0 10 10" markerWidth="13" markerHeight="13" refX="9" refY="5" orient="auto" markerUnits="userSpaceOnUse"><path d="M1 1L9 5 1 9" fill="none" stroke="#a3452f" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></marker>
+    <marker id="arrow-teal" viewBox="0 0 10 10" markerWidth="13" markerHeight="13" refX="9" refY="5" orient="auto" markerUnits="userSpaceOnUse"><path d="M1 1L9 5 1 9" fill="none" stroke="#21685d" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></marker>
+  </defs>
+  <rect x="0" y="0" width="1000" height="350" fill="#f7f4ed"/>
+  <text x="103" y="64" text-anchor="middle" font-family="Arial, Helvetica, sans-serif" font-size="22" font-weight="700" fill="#252b29">Compiler</text>
+  <circle cx="103" cy="88" r="5" fill="#536570"/>
+  <path d="M103 96V117" fill="none" stroke="#c9c9bd" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+  <text x="262" y="64" text-anchor="middle" font-family="Arial, Helvetica, sans-serif" font-size="22" font-weight="700" fill="#252b29">Flags</text>
+  <circle cx="262" cy="88" r="5" fill="#a3452f"/>
+  <path d="M262 96V117" fill="none" stroke="#c9c9bd" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+  <text x="421" y="64" text-anchor="middle" font-family="Arial, Helvetica, sans-serif" font-size="22" font-weight="700" fill="#252b29">Source</text>
+  <circle cx="421" cy="88" r="5" fill="#536570"/>
+  <path d="M421 96V117" fill="none" stroke="#c9c9bd" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+  <text x="580" y="64" text-anchor="middle" font-family="Arial, Helvetica, sans-serif" font-size="22" font-weight="700" fill="#252b29">Dependencies</text>
+  <circle cx="580" cy="88" r="5" fill="#536570"/>
+  <path d="M580 96V117" fill="none" stroke="#c9c9bd" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+  <text x="739" y="64" text-anchor="middle" font-family="Arial, Helvetica, sans-serif" font-size="22" font-weight="700" fill="#252b29">Environment</text>
+  <circle cx="739" cy="88" r="5" fill="#536570"/>
+  <path d="M739 96V117" fill="none" stroke="#c9c9bd" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+  <text x="898" y="64" text-anchor="middle" font-family="Arial, Helvetica, sans-serif" font-size="22" font-weight="700" fill="#252b29">Directory</text>
+  <circle cx="898" cy="88" r="5" fill="#536570"/>
+  <path d="M898 96V117" fill="none" stroke="#c9c9bd" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="M103 117H898" fill="none" stroke="#c9c9bd" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="M500 117V146" fill="none" stroke="#535951" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#arrow)"/>
+  <rect x="424" y="149" width="152" height="50" fill="#252b29"/>
+  <text x="500" y="183" text-anchor="middle" font-family="Menlo, Consolas, monospace" font-size="25" font-weight="700" fill="#f7f4ed">BLAKE3</text>
+  <path d="M500 199V224H267V247" fill="none" stroke="#21685d" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#arrow-teal)"/>
+  <path d="M500 199V224H733V247" fill="none" stroke="#a3452f" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#arrow-rust)"/>
+  <text x="267" y="281" text-anchor="middle" font-family="Arial, Helvetica, sans-serif" font-size="30" font-weight="700" fill="#21685d">Same key</text>
+  <text x="733" y="281" text-anchor="middle" font-family="Arial, Helvetica, sans-serif" font-size="30" font-weight="700" fill="#a3452f">New key</text>
+  <text x="267" y="315" text-anchor="middle" font-family="Arial, Helvetica, sans-serif" font-size="24" font-weight="400" fill="#535951">Same inputs</text>
+  <text x="733" y="315" text-anchor="middle" font-family="Arial, Helvetica, sans-serif" font-size="24" font-weight="400" fill="#535951">Changed input</text>
+</svg>

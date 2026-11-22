@@ -1,0 +1,27 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 380" role="img" aria-labelledby="title desc">
+  <title id="title">A compiler-cache lookup</title>
+  <desc id="desc">Cargo sends a compilation to sccache. A cache hit restores the outputs. On a miss rustc compiles them and an eligible result can be saved. Non-cacheable requests go straight to rustc.</desc>
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" markerWidth="13" markerHeight="13" refX="9" refY="5" orient="auto" markerUnits="userSpaceOnUse"><path d="M1 1L9 5 1 9" fill="none" stroke="#535951" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></marker>
+    <marker id="arrow-rust" viewBox="0 0 10 10" markerWidth="13" markerHeight="13" refX="9" refY="5" orient="auto" markerUnits="userSpaceOnUse"><path d="M1 1L9 5 1 9" fill="none" stroke="#a3452f" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></marker>
+    <marker id="arrow-teal" viewBox="0 0 10 10" markerWidth="13" markerHeight="13" refX="9" refY="5" orient="auto" markerUnits="userSpaceOnUse"><path d="M1 1L9 5 1 9" fill="none" stroke="#21685d" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></marker>
+  </defs>
+  <rect x="0" y="0" width="1000" height="380" fill="#f7f4ed"/>
+  <path d="M142 162H237" fill="none" stroke="#535951" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#arrow)"/>
+  <path d="M367 162H442" fill="none" stroke="#535951" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#arrow)"/>
+  <path d="M540 162H628" fill="none" stroke="#535951" stroke-width="3"/>
+  <path d="M628 162Q655 162 655 133V103Q655 80 683 80H733" fill="none" stroke="#21685d" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#arrow-teal)"/>
+  <path d="M628 162Q655 162 655 193V220Q655 245 683 245H733" fill="none" stroke="#a3452f" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#arrow-rust)"/>
+  <path d="M303 195V294Q303 309 318 309H688Q707 309 707 288V246" fill="none" stroke="#536570" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" stroke-dasharray="5 8"/>
+  <rect x="48" y="133" width="94" height="58" fill="#e1e5e4"/>
+  <text x="95" y="171" text-anchor="middle" font-family="Arial, Helvetica, sans-serif" font-size="26" font-weight="700" fill="#252b29">Cargo</text>
+  <rect x="240" y="133" width="127" height="58" fill="#e1e5e4"/>
+  <text x="303.5" y="171" text-anchor="middle" font-family="Arial, Helvetica, sans-serif" font-size="26" font-weight="700" fill="#252b29">sccache</text>
+  <path d="M490 109L543 162 490 215 437 162Z" fill="#eee3ca"/>
+  <text x="490" y="169" text-anchor="middle" font-family="Arial, Helvetica, sans-serif" font-size="25" font-weight="700" fill="#252b29">Key</text>
+  <text x="747" y="77" text-anchor="start" font-family="Arial, Helvetica, sans-serif" font-size="30" font-weight="700" fill="#21685d">Restore outputs</text>
+  <text x="747" y="111" text-anchor="start" font-family="Arial, Helvetica, sans-serif" font-size="24" font-weight="400" fill="#535951">Hit</text>
+  <text x="747" y="242" text-anchor="start" font-family="Arial, Helvetica, sans-serif" font-size="30" font-weight="700" fill="#a3452f">Run rustc</text>
+  <text x="640" y="229" text-anchor="end" font-family="Arial, Helvetica, sans-serif" font-size="24" font-weight="400" fill="#a3452f">Miss</text>
+  <text x="505" y="344" text-anchor="middle" font-family="Arial, Helvetica, sans-serif" font-size="24" font-weight="400" fill="#535951">Non-cacheable</text>
+</svg>
