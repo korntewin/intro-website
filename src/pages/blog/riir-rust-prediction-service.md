@@ -6,7 +6,7 @@ date: 2026-10-23
 coverImage: https://korntewin.github.io/intro-website/blog/figures/riir-cover.png
 ---
 
-![ภาพประกอบการย้าย ML Prediction Service จาก Go สู่ Rust](https://korntewin.github.io/intro-website/blog/figures/riir-cover.png)
+![ค่าของ Feature ถูกจัดเรียงเป็น Columns แล้วนำไปคำนวณ Ranking Scores](https://korntewin.github.io/intro-website/blog/figures/riir-cover.png)
 
 ถ้าใครเคยอ่าน[บทความก่อนของผมเรื่องการลด Cost AI Server ลง 9 เท่า และทำให้แอปเร็วขึ้น 4 เท่า](https://life.lmwn.com/%E0%B9%80%E0%B8%9A%E0%B8%B7%E0%B9%89%E0%B8%AD%E0%B8%87%E0%B8%AB%E0%B8%A5%E0%B8%B1%E0%B8%87%E0%B8%81%E0%B8%B2%E0%B8%A3%E0%B8%A5%E0%B8%94-cost-ai-server-%E0%B8%A5%E0%B8%87-9-%E0%B9%80%E0%B8%97%E0%B9%88%E0%B8%B2-%E0%B9%81%E0%B8%A5%E0%B8%B0%E0%B8%97%E0%B8%B3%E0%B9%83%E0%B8%AB%E0%B9%89%E0%B9%81%E0%B8%AD%E0%B8%9B%E0%B9%80%E0%B8%A3%E0%B9%87%E0%B8%A7%E0%B8%82%E0%B8%B6%E0%B9%89%E0%B8%99-4-%E0%B9%80%E0%B8%97%E0%B9%88%E0%B8%B2%E0%B8%97%E0%B8%B5%E0%B9%88-line-man-wongnai-da855335de5f) ก็น่าจะจำได้ว่า **ML Prediction Service เป็นงาน CPU-bound ที่ Optimize ยากกว่า Web Server ทั่วไป** เพราะใน 1 Request ต้องทำทั้ง Preprocessing, Model Inference และ Data Querying กับจำนวนสินค้า/ร้านค้าที่คาดว่า User จะชอบซึ่งมีปริมาณมหาศาล เราเลยต้องคิดตั้งแต่วงจรของ CPU Scheduler ไปจนถึงการทำงานของแต่ละ Thread
 
@@ -39,7 +39,7 @@ coverImage: https://korntewin.github.io/intro-website/blog/figures/riir-cover.pn
 
 **Candidate Items 500–10,000 รายการ → Feature Data → Preprocessing → ONNX Runtime Inference → Ranking Scores**
 
-![ภาพรวม 1 Prediction Request: เริ่มจาก Candidate Items, ดึง Feature Data, ทำ Preprocessing, รัน ONNX Runtime Inference จนได้ Ranking Scores พร้อมจุดที่เกิด Feature Lookup, Data Copy และ Thread Contention](https://korntewin.github.io/intro-website/blog/figures/prediction-request-pipeline.png)
+![จาก Candidate Items ผ่าน Feature Lookup, Preprocessing และ ONNX Inference จนได้ Ranking Scores](https://korntewin.github.io/intro-website/blog/figures/prediction-request-pipeline.png)
 
 ใน 1 Request เราต้องจัดการข้อมูลหลายพัน Records ตั้งแต่เตรียม Feature, ทำ Transformation ตามลำดับ Dependency ไปจนถึงส่ง Tensor เข้า Model Inference ยิ่ง Traffic สูงขึ้น งานรอบข้างที่ไม่ใช่ตัวโมเดลก็ยิ่งโตตาม ทั้ง Feature Lookup, Temporary Allocation, การย้ายข้อมูล และ Threads ที่อาจมาแย่ง CPU กันเอง
 
@@ -82,7 +82,7 @@ coverImage: https://korntewin.github.io/intro-website/blog/figures/riir-cover.pn
 
 แต่งาน Preprocessing ของ ML มักทำงานในรูปแบบ “ทีละ Feature ข้ามหลาย ๆ Records” มากกว่า “ทีละ Record กับทุก Feature” เราเลยเลือกใช้ Apache Arrow เป็น Columnar Memory Format พื้นฐาน และใช้ Polars มาช่วยจัดการระดับ DataFrame ครับ
 
-![ภาพเปรียบเทียบการจัดเก็บข้อมูลแบบ Row-oriented กับ Columnar Memory Layout](https://korntewin.github.io/intro-website/blog/figures/columnar-memory.png)
+![การอ่านค่า score ของสามรายการ: Go ต้อง Lookup ใน Map ของแต่ละรายการ ส่วน Arrow อ่านค่าที่เรียงติดกันใน Column Buffer](https://korntewin.github.io/intro-website/blog/figures/columnar-memory-feature-layout.png)
 
 นี่แหละครับคือหัวใจของ **Memory Layout** เราไม่ได้สนแค่ว่าข้อมูลกิน RAM ไปกี่ MB แต่ต้องดูด้วยว่า **ค่าของแต่ละ Feature วางอยู่ตรงไหน และ CPU เข้าไปอ่านมันยังไง** ตัว Arrow จะวางค่าของ Feature เดียวกันเรียงต่อกันไว้ใน Column Buffer ทำให้การ Scan มี **Data Locality** ดีกว่าการ Lookup ผ่าน Map และ Object หลายชั้น แถมยังเปิดโอกาสให้ Compiler หรือ Library ใช้ SIMD / Vectorized Operations ได้ง่ายขึ้นด้วย
 
@@ -135,7 +135,7 @@ Arrow รองรับการทำ **Slice แบบแชร์ Buffer เ
 
 ในการ Rewrite รอบนี้ เราเลือกใช้ **Actor Model** ผ่าน [**Kameo**](https://github.com/tqwewe/kameo) ซึ่งเป็น Actor Library ของ Rust โดยแยก **Preprocessing Actor Pool** กับ **Inference Actor Pool** ออกจากกันตามแต่ละ ML Model แล้วค่อยหั่น Items ใน Request เป็น Mini-batch ส่งให้ Worker ประมวลผล
 
-![แผนภาพแสดงโครงสร้าง Actor Model ที่แยก Preprocessing และ Inference Worker Pools สำหรับประมวลผล Mini-batches](https://korntewin.github.io/intro-website/blog/figures/actor-mini-batches.png)
+![แต่ละโมเดลแบ่งข้อมูล 12 รายการชุดเดียวกันเป็น Mini-batches แล้วส่งผ่าน Preprocessing Pool และ ONNX Inference Pool เพื่อคำนวณคะแนน](https://korntewin.github.io/intro-website/blog/figures/actor-mini-batches-batch-journey.png)
 
 ข้อดีที่ได้คือเราจูน **Worker Count, Batch Size และ ONNX Runtime Threads** แยกตามรายโมเดลได้เลย ไม่ต้องฝืนใช้ค่าเดียวทั้ง Service เพราะธรรมชาติของแต่ละโมเดลไม่เหมือนกันครับ บางตัวหนักที่ Preprocessing แต่ Inference เบา ส่วนบางตัวตอน Inference กิน Memory Bandwidth เต็มจนอัด Threads เพิ่มไปก็ไม่ได้ช่วยให้เร็วขึ้น
 
@@ -147,7 +147,7 @@ Preprocessing ของ ML ไม่ใช่แค่การวน Loop เ�
 
 ถ้าเราเรียก Function ผิดลำดับ อาจได้ผล Predict ผิดหรือเกิด Missing Column ตอน Runtime ดังนั้นเราจึงจำลอง Dependency ของ Function ทั้งหมดให้อยู่ในรูป **Directed Acyclic Graph (DAG)** แล้วใช้ **Kahn’s Algorithm** ทำ Topological Sort เพื่อ Compile ลำดับการทำงานที่ถูกต้องไว้ตั้งแต่แรก
 
-![แผนภาพ Dependency Graph และ Kahn Topological Sort ของ Preprocessing](https://korntewin.github.io/intro-website/blog/figures/kahn-dag.png)
+![Dependency Graph ของ Preprocessing ที่ใช้ Kahn's Algorithm จัดลำดับ](https://korntewin.github.io/intro-website/blog/figures/kahn-dag.png)
 
 หลักการของ Kahn’s Algorithm คือเริ่มจากการนับจำนวน Dependency ที่ชี้เข้าหาแต่ละ Node (`in-degree`) แล้วหยิบ Node ที่ไม่มี Dependency ค้างอยู่ (`in-degree = 0`) ออกมาจัดลงลำดับ จากนั้นลดค่า `in-degree` ของ Node ถัดไปแล้วทำซ้ำไปเรื่อย ๆ หากยังมี Node เหลือแต่ไม่มีตัวไหนพร้อม แสดงว่ามี Cycle ที่ต้องแก้ก่อน Service Start
 
@@ -240,7 +240,7 @@ Go ตอบโจทย์งาน Networking และ Backend Service ขอ
 
 ดังนั้นในการ Rewrite รอบนี้ เราเลยจัดโครงสร้างเป็น **Monorepo ด้วย Cargo Workspace** เพื่อแยก **Application Layer** (Configuration, Adapters, Use Case Composition) ออกจาก **Prediction Core** (Preprocessing DAG, Actor Pools, ONNX Inference และ Shared Data Structures) อย่างชัดเจน
 
-![แผนภาพ Cargo Workspace ที่แยกหลาย Application ออกจาก Prediction Core และใช้ Semgrep บังคับ Global Allocator](https://korntewin.github.io/intro-website/blog/figures/workspace-semgrep.png)
+![แต่ละแอปดูแล Config และ Adapters ของตัวเองและใช้ prediction-core ร่วมกัน ส่วน Semgrep ตรวจการตั้งค่า Global Allocator ของแต่ละแอปใน CI](https://korntewin.github.io/intro-website/blog/figures/workspace-semgrep-layer-ownership.png)
 
 ฝั่ง Application สามารถประกอบร่าง Predictor เฉพาะทางของตัวเองได้เลย ไม่ว่าจะต้องรันหลายโมเดลต่อเนื่องกัน หรือรับ-ส่ง Input/Output ต่างกันแค่ไหน ขณะที่ Core กลางก็ไม่จำเป็นต้องรู้ว่าโมเดลกำลัง Predict เรื่องอะไร และปลอดจาก Business Logic ของแต่ละ Use Case ครับ
 
@@ -272,7 +272,7 @@ Go ตอบโจทย์งาน Networking และ Backend Service ขอ
 
 ![Production Dashboard เปรียบเทียบค่า CPU, Memory และ P99 Latency ระหว่าง Go กับ Rust](https://korntewin.github.io/intro-website/blog/figures/production-timeseries-dashboard.png)
 
-เส้นสีเหลืองคือ Go, สีเขียวคือ Rust และเส้นประสีน้ำเงินคือ Improvement Ratio (อ่านค่าจากแกนฝั่งขวา) ครับ จะเห็นได้ว่าต่อให้ Load เปลี่ยนแปลงขึ้นลงตลอดทั้งวัน Rust ก็ยังคงกิน CPU และ Memory ต่ำกว่าอย่างชัดเจน
+เส้นประคืออัตราส่วน Go/Rust ซึ่งอ่านค่าจากแกนขวาครับ จะเห็นได้ว่าต่อให้ Load เปลี่ยนแปลงขึ้นลงตลอดทั้งวัน Rust ก็ยังคงกิน CPU และ Memory ต่ำกว่าอย่างชัดเจน
 
 **CPU Usage:** จุดที่น่าสนใจคือในขณะที่กราฟของ Go แกว่งขึ้นลงตาม Traffic ค่อนข้างมาก ตัว Rust กลับคุมการใช้ CPU ให้อยู่ในระดับต่ำได้นิ่งกว่ามากภายใต้ Traffic Split ที่เท่ากัน
 

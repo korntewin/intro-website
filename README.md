@@ -21,11 +21,11 @@ The blog intentionally contains publicly shareable explanations, not internal RF
 
 ## Blog images and Medium imports
 
-Article figures are stored as SVG sources or original PNG illustrations in `public/blog/figures/`. Running `npm run dev` or `npm run build` automatically generates PNG copies of the SVGs via `scripts/render-blog-images.mjs`; original PNG illustrations are used directly. The sccache CI illustration's generation prompt is saved in `docs/image-prompts/sccache-ci.txt`. Article Markdown uses absolute HTTPS PNG URLs, and the layout exposes the complete body as `e-content` for article extractors.
+Article figures are stored as SVG sources or original PNG illustrations in `public/blog/figures/`. Running `npm run dev` or `npm run build` automatically generates PNG copies of the SVGs via `scripts/render-blog-images.mjs`; original PNG illustrations are used directly. The sccache CI illustration's generation prompt is saved in `docs/image-prompts/sccache-ci.txt`. Open the [local blog](http://localhost:4321/intro-website/blog/) after running `npm run dev` to see the figures from your checkout. Production HTML uses absolute HTTPS PNG URLs and exposes the complete body as `e-content` for article extractors.
 
-`npm run build` also generates a [plain Medium import view](https://korntewin.github.io/intro-website/blog/riir-rust-prediction-service/medium/) from the finished article HTML. Use that URL in Medium's **Import a story**. It contains the same text and 16 images using simple image paragraphs, with the original article as its canonical URL. The import view is generated after the production build, so use `npm run preview` to inspect it locally.
+`npm run build` also generates a [plain Medium import view](https://korntewin.github.io/intro-website/blog/riir-rust-prediction-service/medium/) from the finished article HTML. Use that URL in Medium's **Import a story**. It contains the same text and all article images using simple image paragraphs, with the original article as its canonical URL. The import view is generated after the production build, so use `npm run preview` to inspect it locally.
 
-The [16-image ZIP](https://korntewin.github.io/intro-website/blog/medium-images.zip) remains available for direct uploads if Medium's third-party importer still drops an image. See `docs/medium-import.md` for the verified diagnosis, checks, and import instructions.
+The [RIIR image ZIP](https://korntewin.github.io/intro-website/blog/medium-images.zip) remains available for direct uploads if Medium's third-party importer still drops an image. See `docs/medium-import.md` for the verified diagnosis, checks, and import instructions.
 
 The “Why Rust” section includes an editable three-region landscape showing applied ML with Python, Go web services, and the Prediction Service Direction toward Rust/native ML optimization. Its source is `public/blog/figures/lmwn-ml-web-landscape.svg`.
 

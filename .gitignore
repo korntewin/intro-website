@@ -47,8 +47,11 @@ out/
 # Rasterized blog figures generated from editable SVG sources
 public/blog/figures/*.png
 
-# Original generated illustration, used directly by the articles
+# Original PNG illustrations, used directly by the articles
+!public/blog/figures/actor-mini-batches-batch-journey.png
+!public/blog/figures/columnar-memory-feature-layout.png
 !public/blog/figures/sccache-ci.png
+!public/blog/figures/workspace-semgrep-layer-ownership.png
 
 # Medium fallback image bundle, created from generated PNGs
 public/blog/medium-images.zip

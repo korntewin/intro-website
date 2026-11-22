@@ -7,7 +7,7 @@ language: en
 coverImage: https://korntewin.github.io/intro-website/blog/figures/riir-cover.png
 ---
 
-![Go to Rust: rebuilding an ML Prediction Service](https://korntewin.github.io/intro-website/blog/figures/riir-cover.png)
+![Feature values arranged into columns and turned into ranking scores](https://korntewin.github.io/intro-website/blog/figures/riir-cover.png)
 
 If you've read [my previous post about cutting AI server costs by 9× and making the app 4× faster](https://life.lmwn.com/เบื้องหลังการลด-cost-ai-server-ลง-9-เท่า-และทำให้แอปเร็วขึ้น-4-เท่าที่-line-man-wongnai-da855335de5f), you might remember that **ML Prediction Services are CPU-bound workloads that are much harder to optimize than your typical web server**. Between preprocessing, model inference, and data querying, one request can involve a huge amount of work over products and restaurants we think a user might like. We have to think about everything from the CPU scheduler down to what each thread is actually doing.
 
@@ -40,7 +40,7 @@ With resource efficiency as the goal, we looked at how much unnecessary CPU work
 
 **500–10,000 candidate items → feature data → preprocessing transformations → ONNX Runtime inference → ranking scores.**
 
-![One prediction request: candidate items, feature data, preprocessing, ONNX Runtime inference and ranking scores, highlighting lookups, copies and thread contention](https://korntewin.github.io/intro-website/blog/figures/prediction-request-pipeline.png)
+![Candidate items go through feature lookup, preprocessing, and ONNX inference to produce ranking scores](https://korntewin.github.io/intro-website/blog/figures/prediction-request-pipeline.png)
 
 One incoming request may touch thousands of records. We build model-ready features, run the transformations in their dependency order, and pass the resulting tensors to inference. As traffic grows, *everything around the model* grows too: feature lookups, temporary allocations, data movement, and the number of workers competing for CPU.
 
@@ -83,7 +83,7 @@ In a row-oriented representation, where each record holds lots of fields in sepa
 
 But ML preprocessing often works **“one feature across many records”** rather than **“every feature for one record.”** That's why we chose **Apache Arrow** as the underlying columnar memory format and **Polars** for DataFrame operations.
 
-![Row-oriented versus columnar memory layout](https://korntewin.github.io/intro-website/blog/figures/columnar-memory.png)
+![Reading scores for three items: Go looks up each score in its item map, while Arrow scans adjacent values in the score buffer](https://korntewin.github.io/intro-website/blog/figures/columnar-memory-feature-layout.png)
 
 This is what I mean by **memory layout**: not just **how many bytes** we store, but **where feature values live and how the CPU reads them**. In Arrow, values of the same feature sit together in column buffers, so scanning that feature can have better **data locality** than looking it up in a map for every record. That also creates more opportunities for **SIMD and vectorized operations**.
 
@@ -136,7 +136,7 @@ The result is **oversubscription**: more runnable threads than CPU cores, more c
 
 For RIIR, we use [**Kameo**](https://github.com/tqwewe/kameo), an **Actor Model** library for Rust, with separate **preprocessing actor pools** and **inference actor pools** for each ML model. We split the items in a request into mini-batches and send those batches to workers.
 
-![Per-model preprocessing and inference actors processing request-level mini-batches](https://korntewin.github.io/intro-website/blog/figures/actor-mini-batches.png)
+![Each model splits the same 12 items into its own mini-batches, then sends them through preprocessing and ONNX inference pools to produce scores](https://korntewin.github.io/intro-website/blog/figures/actor-mini-batches-batch-journey.png)
 
 That lets us tune **worker count, batch size, and ONNX Runtime threads** per model instead of forcing the same settings on the entire service. Different models behave differently. Some spend most of their time in preprocessing; others are limited by memory bandwidth during inference, where adding threads can do more harm than good.
 
@@ -148,7 +148,7 @@ ML preprocessing isn't always a simple loop over features. A bunch of transforma
 
 Run those functions in the wrong order and you might get incorrect predictions or a missing-column error at runtime. So we model their dependencies as a **directed acyclic graph (DAG)** and use **Kahn's Algorithm for topological sorting** to compile a valid execution order ahead of time.
 
-![Preprocessing dependency DAG and Kahn topological sorting](https://korntewin.github.io/intro-website/blog/figures/kahn-dag.png)
+![The preprocessing dependency graph that Kahn's algorithm sorts](https://korntewin.github.io/intro-website/blog/figures/kahn-dag.png)
 
 Kahn's Algorithm counts the dependencies entering each node (its **in-degree**), starts with nodes whose in-degree is zero, and removes ready nodes one at a time. Each removal reduces the in-degree of downstream nodes. If nodes remain but none is ready, there's a cycle to fix before the service starts.
 
@@ -241,7 +241,7 @@ As the prediction service grows to support multiple ML models and new use cases,
 
 So we organized the rewrite as a **Cargo Workspace monorepo**. The **application layer** handles configuration, adapters, and assembling a specific use case; the shared **prediction core** owns the preprocessing DAG, actor pools, ONNX inference, and common data structures.
 
-![Cargo Workspace with use-case applications, a shared prediction core and Semgrep allocator checks](https://korntewin.github.io/intro-website/blog/figures/workspace-semgrep.png)
+![Three apps manage their own configuration and adapters and share prediction-core. Semgrep checks each app's allocator configuration in CI.](https://korntewin.github.io/intro-website/blog/figures/workspace-semgrep-layer-ownership.png)
 
 Each application can compose its own predictor. Perhaps it chains multiple models together, or expects different inputs and outputs. The core doesn't need to know *what* a model is predicting, and business logic stays out of the shared engine.
 
@@ -273,7 +273,7 @@ The aggregate numbers are useful, but I also wanted to see **how CPU, memory, an
 
 ![Production dashboard comparing Go and Rust CPU, memory and P99 latency over 18 hours](https://korntewin.github.io/intro-website/blog/figures/production-timeseries-dashboard.png)
 
-**Yellow is Go**, **green is Rust**, and the **blue dashed line is the improvement ratio**, read from the right-hand axis. Even as load changes throughout the day, Rust consistently uses much less CPU and memory.
+The **dashed Go/Rust ratio** uses the right-hand axis. Even as load changes throughout the day, Rust consistently uses much less CPU and memory.
 
 **CPU Usage:** Go moves around quite a bit with traffic, while Rust stays at a much lower CPU level under an even traffic split.
 

@@ -1,59 +1,30 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1560 880" role="img" aria-labelledby="title desc">
-<title id="title">Hit or miss: where the time goes</title>
-<desc id="desc">Timeline for one crate. A miss hashes the inputs, looks up the key, runs rustc, and stores the entry. A hit hashes and looks up, then restores the entry and skips rustc. A non-cacheable request passes straight through to rustc and stores nothing.</desc>
-<defs><marker id="arrow" markerWidth="10" markerHeight="10" refX="7" refY="4" orient="auto"><path d="M0 0 L8 4 L0 8" fill="none" stroke="#64748b" stroke-width="1.6"/></marker></defs>
-<rect x="1" y="1" width="1558" height="878" rx="24" fill="#fff" stroke="#d8e2ec"/>
-<g font-family="Arial,sans-serif">
-<text x="65" y="74" font-size="20" font-weight="700" fill="#536582">ENGINEERING NOTES / SCCACHE</text>
-<text x="65" y="135" font-size="42" font-weight="800" fill="#19233e">Hit or miss: where the time goes</text>
-<text x="65" y="180" font-size="24" fill="#536582">One crate, three outcomes. Illustrative, not to scale.</text>
-
-<text x="360" y="226" font-size="18" font-weight="700" fill="#536582">TIME</text>
-<path d="M412 220 H1456" fill="none" stroke="#c3cfdc" stroke-width="2" marker-end="url(#arrow)"/>
-
-<text x="65" y="297" font-size="26" font-weight="800" fill="#b35c35">MISS</text>
-<text x="65" y="325" font-size="18" fill="#536582">first time for this key</text>
-<rect x="360" y="268" width="126" height="60" rx="10" fill="#dbe7f5" stroke="#2265b6" stroke-width="2"/>
-<text x="423" y="305" font-size="19" font-weight="700" fill="#19233e" text-anchor="middle">hash</text>
-<rect x="490" y="268" width="96" height="60" rx="10" fill="#e9edf3" stroke="#64748b" stroke-width="2"/>
-<text x="538" y="305" font-size="19" font-weight="700" fill="#19233e" text-anchor="middle">lookup</text>
-<rect x="590" y="268" width="686" height="60" rx="10" fill="#b35c35"/>
-<text x="933" y="305" font-size="21" font-weight="700" fill="#fff" text-anchor="middle">rustc compiles the crate</text>
-<rect x="1280" y="268" width="176" height="60" rx="10" fill="#f3eefa" stroke="#7355a0" stroke-width="2"/>
-<text x="1368" y="305" font-size="19" font-weight="700" fill="#19233e" text-anchor="middle">store entry</text>
-
-<text x="65" y="407" font-size="26" font-weight="800" fill="#188676">HIT</text>
-<text x="65" y="435" font-size="18" fill="#536582">key seen before</text>
-<rect x="360" y="378" width="126" height="60" rx="10" fill="#dbe7f5" stroke="#2265b6" stroke-width="2"/>
-<text x="423" y="415" font-size="19" font-weight="700" fill="#19233e" text-anchor="middle">hash</text>
-<rect x="490" y="378" width="96" height="60" rx="10" fill="#e9edf3" stroke="#64748b" stroke-width="2"/>
-<text x="538" y="415" font-size="19" font-weight="700" fill="#19233e" text-anchor="middle">lookup</text>
-<rect x="590" y="378" width="150" height="60" rx="10" fill="#188676"/>
-<text x="665" y="415" font-size="19" font-weight="700" fill="#fff" text-anchor="middle">restore</text>
-<rect x="745" y="379" width="710" height="58" rx="10" fill="#f3fbf8" stroke="#188676" stroke-width="2" stroke-dasharray="10 8"/>
-<text x="1100" y="415" font-size="21" font-weight="700" fill="#188676" text-anchor="middle">rustc skipped: time saved</text>
-
-<text x="65" y="517" font-size="24" font-weight="800" fill="#536582">PASS-THROUGH</text>
-<text x="65" y="545" font-size="18" fill="#536582">not cacheable</text>
-<rect x="360" y="488" width="96" height="60" rx="10" fill="#e9edf3" stroke="#64748b" stroke-width="2"/>
-<text x="408" y="525" font-size="19" font-weight="700" fill="#19233e" text-anchor="middle">check</text>
-<rect x="460" y="488" width="686" height="60" rx="10" fill="#64748b"/>
-<text x="803" y="525" font-size="21" font-weight="700" fill="#fff" text-anchor="middle">rustc runs as usual</text>
-<text x="1166" y="525" font-size="19" fill="#536582">no entry stored</text>
-<text x="360" y="578" font-size="17" fill="#536582">e.g. binaries, proc-macros, incremental compilations</text>
-
-<rect x="65" y="610" width="700" height="148" rx="16" fill="#f4f8fc" stroke="#188676" stroke-width="2"/>
-<text x="90" y="648" font-size="21" font-weight="700" fill="#188676">WHAT AN ENTRY HOLDS</text>
-<text x="90" y="683" font-size="19" fill="#19233e">One archive per key: compiled outputs such as</text>
-<text x="90" y="710" font-size="19" fill="#19233e">.rlib and .rmeta (zstd-compressed) plus rustc's</text>
-<text x="90" y="737" font-size="19" fill="#19233e">stdout/stderr, so warnings replay on a hit.</text>
-
-<rect x="795" y="610" width="700" height="148" rx="16" fill="#f4f8fc" stroke="#2265b6" stroke-width="2"/>
-<text x="820" y="648" font-size="21" font-weight="700" fill="#2265b6">WHAT THE HASHING COSTS</text>
-<text x="820" y="683" font-size="19" fill="#19233e">sccache runs rustc once for dep-info and reads</text>
-<text x="820" y="710" font-size="19" fill="#19233e">every input. A miss is a little slower than plain</text>
-<text x="820" y="737" font-size="19" fill="#19233e">rustc; a hit skips the compile entirely.</text>
-
-<rect x="65" y="785" width="1430" height="62" rx="16" fill="#14283b"/>
-<text x="88" y="824" font-size="22" font-weight="700" fill="#fff">The slower a crate is to compile, the more each hit on it saves.</text>
-</g></svg>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 353" role="img" aria-labelledby="title desc">
+  <title id="title">Work on a cache hit, miss, or bypass</title>
+  <desc id="desc">A hit hashes, looks up, and restores. A miss hashes, looks up, compiles, and stores. A non-cacheable request runs rustc directly. The segment widths are illustrative.</desc>
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" markerWidth="13" markerHeight="13" refX="9" refY="5" orient="auto" markerUnits="userSpaceOnUse"><path d="M1 1L9 5 1 9" fill="none" stroke="#535951" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></marker>
+  </defs>
+  <rect x="0" y="0" width="1000" height="353" fill="#f7f4ed"/>
+  <text x="48" y="106" text-anchor="start" font-family="Arial, Helvetica, sans-serif" font-size="30" font-weight="700" fill="#21685d">Hit</text>
+  <text x="48" y="185" text-anchor="start" font-family="Arial, Helvetica, sans-serif" font-size="30" font-weight="700" fill="#a3452f">Miss</text>
+  <text x="48" y="264" text-anchor="start" font-family="Arial, Helvetica, sans-serif" font-size="30" font-weight="700" fill="#536570">Bypass</text>
+  <rect x="190" y="72" width="100" height="58" fill="#e1e5e4"/>
+  <text x="240" y="110" text-anchor="middle" font-family="Arial, Helvetica, sans-serif" font-size="26" font-weight="700" fill="#252b29">Hash</text>
+  <rect x="296" y="72" width="117" height="58" fill="#e1e5e4"/>
+  <text x="354.5" y="110" text-anchor="middle" font-family="Arial, Helvetica, sans-serif" font-size="26" font-weight="700" fill="#252b29">Lookup</text>
+  <rect x="190" y="151" width="100" height="58" fill="#e1e5e4"/>
+  <text x="240" y="189" text-anchor="middle" font-family="Arial, Helvetica, sans-serif" font-size="26" font-weight="700" fill="#252b29">Hash</text>
+  <rect x="296" y="151" width="117" height="58" fill="#e1e5e4"/>
+  <text x="354.5" y="189" text-anchor="middle" font-family="Arial, Helvetica, sans-serif" font-size="26" font-weight="700" fill="#252b29">Lookup</text>
+  <rect x="419" y="72" width="132" height="58" fill="#d9e8de"/>
+  <text x="485" y="110" text-anchor="middle" font-family="Arial, Helvetica, sans-serif" font-size="26" font-weight="700" fill="#252b29">Restore</text>
+  <path d="M566 101H952" fill="none" stroke="#21685d" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" stroke-dasharray="5 8"/>
+  <rect x="419" y="151" width="387" height="58" fill="#eeddd1"/>
+  <text x="612.5" y="189" text-anchor="middle" font-family="Arial, Helvetica, sans-serif" font-size="26" font-weight="700" fill="#252b29">Compile</text>
+  <rect x="812" y="151" width="140" height="58" fill="#eee3ca"/>
+  <text x="882" y="189" text-anchor="middle" font-family="Arial, Helvetica, sans-serif" font-size="26" font-weight="700" fill="#252b29">Store</text>
+  <rect x="190" y="230" width="387" height="58" fill="#e1e5e4"/>
+  <text x="383.5" y="268" text-anchor="middle" font-family="Arial, Helvetica, sans-serif" font-size="26" font-weight="700" fill="#252b29">Compile</text>
+  <path d="M190 322H950" fill="none" stroke="#535951" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#arrow)"/>
+  <text x="48" y="330" text-anchor="start" font-family="Arial, Helvetica, sans-serif" font-size="24" font-weight="400" fill="#535951">Time</text>
+</svg>

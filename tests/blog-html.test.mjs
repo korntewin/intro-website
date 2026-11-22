@@ -49,6 +49,18 @@ test('figures are static, captioned, eager and dimensioned; transformation is id
   const snapshot = structuredClone(ast);
   transform(ast, file);
   assert.deepEqual(ast, snapshot);
+
+  const remote = el('img', [], { src: 'https://example.com/photo.png' });
+  const devAst = root(...structuredClone(ast.children), remote);
+  const transformDev = rehypeBlogHtml({ site, base, publicDir, localFigures: true });
+  transformDev(devAst, file);
+  const devImage = devAst.children[0].children[0];
+  assert.equal(devImage.properties.src, base + '/blog/figures/chart.png');
+  assert.equal(devImage.properties.width, 1800);
+  assert.equal(remote.properties.src, 'https://example.com/photo.png');
+  const devSnapshot = structuredClone(devAst);
+  transformDev(devAst, file);
+  assert.deepEqual(devAst, devSnapshot);
 });
 test('turns table rows into labeled paragraphs without losing markup or values', () => {
   const headers = ['Metric', 'Go (median / peak)', 'Rust (median / peak)', 'Improvement'];

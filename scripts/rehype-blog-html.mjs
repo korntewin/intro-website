@@ -28,7 +28,7 @@ export function imageUrl(source, { site, base, slug }) {
 }
 
 /** Build-time HTML only. No client scripts are needed to discover article images. */
-export default function rehypeBlogHtml({ site, base = '/', publicDir = resolve('public') } = {}) {
+export default function rehypeBlogHtml({ site, base = '/', publicDir = resolve('public'), localFigures = false } = {}) {
   if (!site) throw new Error('rehypeBlogHtml requires the canonical site URL.');
   const prefix = '/' + base.split('/').filter(Boolean).join('/');
   const projectBase = prefix === '/' ? '' : prefix;
@@ -42,11 +42,12 @@ export default function rehypeBlogHtml({ site, base = '/', publicDir = resolve('
     function normalizeImage(node) {
       const props = node.properties ?? (node.properties = {});
       const url = imageUrl(props.src, { site, base, slug });
-      props.src = url.href;
+      const ownFigure = url.origin === new URL(site).origin && url.pathname.startsWith(`${projectBase}/blog/figures/`);
+      props.src = localFigures && ownFigure ? url.pathname + url.search + url.hash : url.href;
       props.loading = 'eager';
       props.decoding = 'async';
       for (const key of ['srcSet', 'srcset', 'sizes', 'dataSrc', 'data-src', 'dataSrcset', 'data-srcset', 'data-src-set']) delete props[key];
-      if (url.origin === new URL(site).origin && url.pathname.startsWith(`${projectBase}/blog/figures/`) && url.pathname.endsWith('.png')) {
+      if (ownFigure && url.pathname.endsWith('.png')) {
         const relative = decodeURIComponent(url.pathname.slice(projectBase.length)).replace(/^\/+/, '');
         const diskPath = resolve(publicDir, relative);
         if (!diskPath.startsWith(resolve(publicDir) + '/')) throw new Error('Blog image escapes public directory.');
